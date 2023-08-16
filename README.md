@@ -1,5 +1,6 @@
 ## API
 1. food api
+
 | API 기능 | HTTP method | URL |
 | ------------ | ------------- | ------------- |
 | 음식 전체 조회 | GET  | /api/v1/foods |
