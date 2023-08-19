@@ -1,5 +1,6 @@
 package com.example.fooddelivery.food.service;
 
+import com.example.fooddelivery.food.dto.FoodRequestDto;
 import com.example.fooddelivery.food.repository.FoodRepository;
 import com.example.fooddelivery.food.domain.Food;
 import com.example.fooddelivery.food.dto.FoodResponseDto;
@@ -22,5 +23,11 @@ public class FoodService {
                 () -> new IllegalArgumentException("음식이 존재하지 않습니다.")
         );
         return new FoodResponseDto(food);
+    }
+
+    @Transactional
+    public Long createFood(FoodRequestDto requestDto) {
+        Food food = requestDto.toEntity();
+        return foodRepository.save(food).getId();
     }
 }
