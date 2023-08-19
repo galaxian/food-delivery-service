@@ -1,5 +1,7 @@
-package com.example.fooddelivery.food;
+package com.example.fooddelivery.food.service;
 
+import com.example.fooddelivery.food.repository.FoodRepository;
+import com.example.fooddelivery.food.domain.Food;
 import com.example.fooddelivery.food.dto.FoodResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package com.example.fooddelivery.food.dto;
 
-import com.example.fooddelivery.food.Food;
+import com.example.fooddelivery.food.domain.Food;
 import lombok.Getter;
 
 @Getter

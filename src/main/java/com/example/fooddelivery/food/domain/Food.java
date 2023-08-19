@@ -1,4 +1,4 @@
-package com.example.fooddelivery.food;
+package com.example.fooddelivery.food.domain;
 
 import com.example.fooddelivery.common.TimeStamped;
 import lombok.AccessLevel;
