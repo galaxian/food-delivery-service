@@ -27,11 +27,17 @@ public class Food extends TimeStamped {
     }
 
     private Food(String name, int price) {
+        if (price <= 0) {
+            throw new IllegalArgumentException("음식 가격은 0원 보다 커야 합니다.");
+        }
         this.name = name;
         this.price = price;
     }
 
     public void updateFood(String name, int price) {
+        if (price <= 0) {
+            throw new IllegalArgumentException("음식 가격은 0원 보다 커야 합니다.");
+        }
         this.name = name;
         this.price = price;
     }
