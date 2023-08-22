@@ -30,4 +30,13 @@ public class FoodService {
         Food food = requestDto.toEntity();
         return foodRepository.save(food).getId();
     }
+
+    @Transactional
+    public void updateFood(Long id, FoodRequestDto requestDto) {
+        Food food = foodRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("음식이 존재하지 않습니다.")
+        );
+
+        food.updateFood(requestDto.getName(), requestDto.getPrice());
+    }
 }
