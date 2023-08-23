@@ -39,4 +39,13 @@ public class FoodService {
 
         food.updateFood(requestDto.getName(), requestDto.getPrice());
     }
+
+    @Transactional
+    public void deleteFood(Long id) {
+        Food food = foodRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("음식이 존재하지 않습니다.")
+        );
+
+        foodRepository.delete(food);
+    }
 }
