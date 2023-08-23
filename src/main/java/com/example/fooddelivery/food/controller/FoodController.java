@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 public class FoodController {
@@ -21,6 +22,11 @@ public class FoodController {
     @GetMapping("/api/v1/foods/{id}")
     public ResponseEntity<FoodResponseDto> getFood(@PathVariable Long id) {
         return ResponseEntity.ok().body(foodService.getFood(id));
+    }
+
+    @GetMapping("/api/v1/foods")
+    public ResponseEntity<List<FoodResponseDto>> getAllFood() {
+        return ResponseEntity.ok().body(foodService.getAllFood());
     }
 
     @PostMapping("/api/v1/foods")
