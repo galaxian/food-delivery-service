@@ -33,4 +33,9 @@ public class FoodController {
     public void updateFood(@PathVariable Long id, @RequestBody FoodRequestDto requestDto) {
         foodService.updateFood(id, requestDto);
     }
+
+    @DeleteMapping("/api/v1/foods/{id}")
+    public void deleteFood(@PathVariable Long id) {
+        foodService.deleteFood(id);
+    }
 }
