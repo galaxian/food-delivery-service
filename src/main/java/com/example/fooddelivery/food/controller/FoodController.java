@@ -28,4 +28,9 @@ public class FoodController {
         Long id = foodService.createFood(requestDto);
         return ResponseEntity.created(URI.create("/api/v1/foods/" + id)).build();
     }
+
+    @PutMapping("/api/v1/foods/{id}")
+    public void updateFood(@PathVariable Long id, @RequestBody FoodRequestDto requestDto) {
+        foodService.updateFood(id, requestDto);
+    }
 }
