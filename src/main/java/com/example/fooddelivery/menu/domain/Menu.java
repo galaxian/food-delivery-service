@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@Table(name = "menu")
+@Table(name = "menus")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -22,20 +22,25 @@ public class Menu extends TimeStamped {
     @Column(name = "price", nullable = false)
     private int price;
 
-    @Column(name = "describe", nullable = false)
+    @Column(name = "describes", nullable = false)
     private String describe;
 
-    @Column(name = "is-display", nullable = false)
+    @Column(name = "is_display", nullable = false)
     private boolean isDisplay;
 
-    @Column(name = "menu-status", nullable = false)
+    @Column(name = "menu_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private MenuStatus menuStatus;
 
     private Menu(String name, int price, String describe) {
+        if (price < 0) {
+            throw new IllegalArgumentException();
+        }
         this.name = name;
         this.price = price;
         this.describe = describe;
+        this.isDisplay = false;
+        this.menuStatus = MenuStatus.SALE;
     }
 
     public static Menu createMenu(String name, int price, String describe) {
