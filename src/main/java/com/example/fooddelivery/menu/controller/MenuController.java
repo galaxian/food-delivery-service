@@ -5,12 +5,10 @@ import com.example.fooddelivery.menu.dto.MenuResDto;
 import com.example.fooddelivery.menu.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/menus")
@@ -27,5 +25,10 @@ public class MenuController {
     public ResponseEntity<MenuResDto> createMenu(@RequestBody CreateMenuReqDto requestDto) {
         Long id = menuService.createMenu(requestDto).getId();
         return ResponseEntity.created(URI.create("/api/v1/menus/" + id)).build();
+    }
+
+    @GetMapping("")
+    public ResponseEntity<List<MenuResDto>> findAllMenu() {
+        return ResponseEntity.ok(menuService.findAllMenu());
     }
 }
