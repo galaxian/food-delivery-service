@@ -12,8 +12,10 @@ import com.example.fooddelivery.menufood.domain.MenuFood;
 import com.example.fooddelivery.menufood.repository.MenuFoodRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MenuService {
@@ -29,8 +31,8 @@ public class MenuService {
         this.menuFoodRepository = menuFoodRepository;
     }
 
+    @Transactional
     public MenuResDto createMenu(CreateMenuReqDto requestDto) {
-
         Menu saveMenu = menuRepository.save(requestDto.toEntity());
 
         List<FoodQuantityReqDto> foodIdQuantityList = requestDto.getFoodReqList();
@@ -44,5 +46,12 @@ public class MenuService {
         }
 
         return new MenuResDto(saveMenu);
+    }
+
+    @Transactional
+    public List<MenuResDto> findAllMenu() {
+        List<Menu> menuList = menuRepository.findAll();
+
+        return menuList.stream().map(MenuResDto::new).collect(Collectors.toList());
     }
 }

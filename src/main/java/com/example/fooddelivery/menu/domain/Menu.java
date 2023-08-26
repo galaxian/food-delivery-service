@@ -39,7 +39,7 @@ public class Menu extends TimeStamped {
         this.name = name;
         this.price = price;
         this.describe = describe;
-        this.isDisplay = false;
+        this.isDisplay = true;
         this.menuStatus = MenuStatus.SALE;
     }
 
