@@ -11,6 +11,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/v1/foods")
 public class FoodController {
     private final FoodService foodService;
 
@@ -19,23 +20,23 @@ public class FoodController {
         this.foodService = foodService;
     }
 
-    @GetMapping("/api/v1/foods/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<FoodResponseDto> getFood(@PathVariable Long id) {
         return ResponseEntity.ok().body(foodService.getFood(id));
     }
 
-    @GetMapping("/api/v1/foods")
+    @GetMapping("")
     public ResponseEntity<List<FoodResponseDto>> getAllFood() {
         return ResponseEntity.ok().body(foodService.getAllFood());
     }
 
-    @PostMapping("/api/v1/foods")
+    @PostMapping("")
     public ResponseEntity<?> createFood(@RequestBody FoodRequestDto requestDto) {
         Long id = foodService.createFood(requestDto);
         return ResponseEntity.created(URI.create("/api/v1/foods/" + id)).build();
     }
 
-    @PutMapping("/api/v1/foods/{id}")
+    @PutMapping("/{id}")
     public void updateFood(@PathVariable Long id, @RequestBody FoodRequestDto requestDto) {
         foodService.updateFood(id, requestDto);
     }
