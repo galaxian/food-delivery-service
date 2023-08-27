@@ -33,6 +33,17 @@ public class OrderService {
     @Transactional
     public Long createOrder(CreateOrderReqDto reqDto) {
         Order saveOrder = orderRepository.save(Order.createOrder(LocalDateTime.now()));
+
+        List<MenuQuantityReqDto> menuQuantityDtoList = reqDto.getMenuReqList();
+        for (MenuQuantityReqDto req : menuQuantityDtoList) {
+            Menu menu = menuRepository.findById(req.getId()).orElseThrow(
+                    () -> new NotFoundException("메뉴를 찾을 수 없습니다.")
+            );
+
+            OrderMenu orderMenu = OrderMenu.createOrderMenu(req.getQuantity(), req.getPrice(), saveOrder, menu);
+            orderMenuRepository.save(orderMenu);
+        }
+
         return saveOrder.getId();
     }
 }
