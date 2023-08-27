@@ -22,4 +22,13 @@ public class Order extends TimeStamped {
 
     @Column(name = "order_time")
     private LocalDateTime orderTime;
+
+    private Order(LocalDateTime orderTime) {
+        this.orderStatus = OrderStatus.WAITING;
+        this.orderTime = orderTime;
+    }
+
+    public static Order createOrder(LocalDateTime orderTime) {
+        return new Order(orderTime);
+    }
 }
