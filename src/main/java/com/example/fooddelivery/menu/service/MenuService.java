@@ -91,4 +91,10 @@ public class MenuService {
 
         }
     }
+
+    @Transactional
+    public void deleteMenu(Long id) {
+        menuFoodRepository.deleteAllByMenuId(id);
+        menuRepository.deleteById(id);
+    }
 }
