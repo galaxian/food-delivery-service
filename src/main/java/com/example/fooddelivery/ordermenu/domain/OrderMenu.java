@@ -31,4 +31,15 @@ public class OrderMenu extends TimeStamped {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_id")
     private Menu menu;
+
+    private OrderMenu(int quantity, int price, Order order, Menu menu) {
+        this.quantity = quantity;
+        this.price = price;
+        this.order = order;
+        this.menu = menu;
+    }
+
+    public static OrderMenu createOrderMenu(int quantity, int price, Order order, Menu menu) {
+        return new OrderMenu(quantity, price, order, menu);
+    }
 }
