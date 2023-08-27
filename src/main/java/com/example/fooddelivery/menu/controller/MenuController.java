@@ -36,4 +36,9 @@ public class MenuController {
     public ResponseEntity<?> findMenu(@PathVariable Long id) {
         return ResponseEntity.ok(menuService.findMenu(id));
     }
+
+    @PutMapping("/{id}")
+    public void updateMenu(@PathVariable Long id, @RequestBody CreateMenuReqDto reqDto) {
+        menuService.updateMenu(id, reqDto);
+    }
 }
