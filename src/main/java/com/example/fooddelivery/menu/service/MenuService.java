@@ -54,6 +54,7 @@ public class MenuService {
         return menuList.stream().map(MenuResDto::new).collect(Collectors.toList());
     }
 
+    @Transactional
     public MenuDetailResDto findMenu(Long id) {
         Menu menu = menuRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("메뉴가 존재하지 않습니다.")
@@ -64,5 +65,30 @@ public class MenuService {
         List<MenuFoodResDto> resDtoList = menuFoodList.stream().map(MenuFoodResDto::new).collect(Collectors.toList());
 
         return new MenuDetailResDto(menu, resDtoList);
+    }
+
+    @Transactional
+    public void updateMenu(Long id, CreateMenuReqDto reqDto) {
+        Menu menu = menuRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("메뉴가 존재하지 않습니다.")
+        );
+
+        menu.updateMenu(reqDto.getName(), reqDto.getPrice(), reqDto.getDescribe());
+
+        if (reqDto.getFoodReqList() != null) {
+            List<FoodQuantityReqDto> foodIdQuantityList = reqDto.getFoodReqList();
+
+            menuFoodRepository.deleteAllByMenuId(menu.getId());
+
+            for (FoodQuantityReqDto req : foodIdQuantityList) {
+                Food food = foodRepository.findById(req.getId()).orElseThrow(
+                        () -> new NotFoundException("음식을 찾지 못했습니다.")
+                );
+
+                MenuFood menuFood = MenuFood.createMenuFood(req.getQuantity(), menu, food);
+                menuFoodRepository.save(menuFood);
+            }
+
+        }
     }
 }
