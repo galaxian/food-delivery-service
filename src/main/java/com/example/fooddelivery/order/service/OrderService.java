@@ -62,5 +62,9 @@ public class OrderService {
         for (OrderMenu orderMenu: orderMenuList) {
             totalPrice += orderMenu.sumTotalPrice();
         }
+
+        List<OrderMenuResDto> resDtoList = orderMenuList.stream().map(OrderMenuResDto::new).collect(Collectors.toList());
+
+        return new OrderDetailResDto(order, totalPrice, resDtoList);
     }
 }
