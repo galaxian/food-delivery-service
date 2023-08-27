@@ -32,6 +32,10 @@ public class OrderMenu extends TimeStamped {
     @JoinColumn(name = "menu_id")
     private Menu menu;
 
+    public int sumTotalPrice() {
+        return price * quantity;
+    }
+
     private OrderMenu(int quantity, int price, Order order, Menu menu) {
         this.quantity = quantity;
         this.price = price;
