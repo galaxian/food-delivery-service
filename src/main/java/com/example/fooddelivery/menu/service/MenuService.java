@@ -4,9 +4,7 @@ import com.example.fooddelivery.common.exception.NotFoundException;
 import com.example.fooddelivery.food.domain.Food;
 import com.example.fooddelivery.food.repository.FoodRepository;
 import com.example.fooddelivery.menu.domain.Menu;
-import com.example.fooddelivery.menu.dto.CreateMenuReqDto;
-import com.example.fooddelivery.menu.dto.FoodQuantityReqDto;
-import com.example.fooddelivery.menu.dto.MenuResDto;
+import com.example.fooddelivery.menu.dto.*;
 import com.example.fooddelivery.menu.repository.MenuRepository;
 import com.example.fooddelivery.menufood.domain.MenuFood;
 import com.example.fooddelivery.menufood.repository.MenuFoodRepository;
@@ -14,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,5 +52,17 @@ public class MenuService {
         List<Menu> menuList = menuRepository.findAll();
 
         return menuList.stream().map(MenuResDto::new).collect(Collectors.toList());
+    }
+
+    public MenuDetailResDto findMenu(Long id) {
+        Menu menu = menuRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("메뉴가 존재하지 않습니다.")
+        );
+
+        List<MenuFood> menuFoodList = menuFoodRepository.findByMenuId(id);
+
+        List<MenuFoodResDto> resDtoList = menuFoodList.stream().map(MenuFoodResDto::new).collect(Collectors.toList());
+
+        return new MenuDetailResDto(menu, resDtoList);
     }
 }
