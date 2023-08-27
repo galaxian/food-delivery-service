@@ -56,5 +56,11 @@ public class OrderService {
                 () -> new NotFoundException("주문을 찾을 수 없습니다.")
         );
 
+        List<OrderMenu> orderMenuList = orderMenuRepository.findByOrderId(id);
+
+        int totalPrice = 0;
+        for (OrderMenu orderMenu: orderMenuList) {
+            totalPrice += orderMenu.sumTotalPrice();
+        }
     }
 }
