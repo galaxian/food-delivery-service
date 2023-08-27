@@ -43,6 +43,15 @@ public class Menu extends TimeStamped {
         this.menuStatus = MenuStatus.SALE;
     }
 
+    public void updateMenu(String name, int price, String describe) {
+        if (price < 0) {
+            throw new IllegalArgumentException();
+        }
+        this.name = name;
+        this.price = price;
+        this.describe = describe;
+    }
+
     public static Menu createMenu(String name, int price, String describe) {
         return new Menu(name, price, describe);
     }
