@@ -18,6 +18,7 @@ public class Order extends TimeStamped {
     private Long id;
 
     @Column(name = "order_status")
+    @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
     @Column(name = "order_time")
