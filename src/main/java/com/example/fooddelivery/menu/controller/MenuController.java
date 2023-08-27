@@ -31,4 +31,9 @@ public class MenuController {
     public ResponseEntity<List<MenuResDto>> findAllMenu() {
         return ResponseEntity.ok(menuService.findAllMenu());
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findMenu(@PathVariable Long id) {
+        return ResponseEntity.ok(menuService.findMenu(id));
+    }
 }
