@@ -6,6 +6,8 @@ import com.example.fooddelivery.menu.repository.MenuRepository;
 import com.example.fooddelivery.order.domain.Order;
 import com.example.fooddelivery.order.dto.CreateOrderReqDto;
 import com.example.fooddelivery.order.dto.MenuQuantityReqDto;
+import com.example.fooddelivery.order.dto.OrderDetailResDto;
+import com.example.fooddelivery.order.dto.OrderMenuResDto;
 import com.example.fooddelivery.order.repository.OrderRepository;
 import com.example.fooddelivery.ordermenu.domain.OrderMenu;
 import com.example.fooddelivery.ordermenu.repository.OrderMenuRepository;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -45,5 +48,23 @@ public class OrderService {
         }
 
         return saveOrder.getId();
+    }
+
+    @Transactional
+    public OrderDetailResDto findOrder(Long id) {
+        Order order = orderRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("주문을 찾을 수 없습니다.")
+        );
+
+        List<OrderMenu> orderMenuList = orderMenuRepository.findByOrderId(id);
+
+        int totalPrice = 0;
+        for (OrderMenu orderMenu: orderMenuList) {
+            totalPrice += orderMenu.sumTotalPrice();
+        }
+
+        List<OrderMenuResDto> resDtoList = orderMenuList.stream().map(OrderMenuResDto::new).collect(Collectors.toList());
+
+        return new OrderDetailResDto(order, totalPrice, resDtoList);
     }
 }
