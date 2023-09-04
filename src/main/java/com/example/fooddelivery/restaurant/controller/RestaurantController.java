@@ -44,4 +44,10 @@ public class RestaurantController {
         restaurantService.updateRestaurant(reqDto, restaurantId);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/{restaurantId}")
+    public ResponseEntity<Void> deleteRestaurant(@PathVariable Long restaurantId) {
+        restaurantService.deleteRestaurant(restaurantId);
+        return ResponseEntity.ok().build();
+    }
 }
