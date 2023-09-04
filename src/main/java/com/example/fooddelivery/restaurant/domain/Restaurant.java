@@ -41,4 +41,14 @@ public class Restaurant extends TimeStamped {
     @OneToMany(mappedBy = "restaurant")
     @JoinColumn(name = "food_id")
     private List<Food> foods = new ArrayList<>();
+
+    private Restaurant(String name, int minPrice, int deliveryFee) {
+        this.name = name;
+        this.minPrice = minPrice;
+        this.deliveryFee = deliveryFee;
+    }
+
+    public static Restaurant createRestaurant(String name, int minPrice, int deliveryFee) {
+        return new Restaurant(name, minPrice, deliveryFee);
+    }
 }
