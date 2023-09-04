@@ -23,8 +23,8 @@ public class RestaurantController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Long> createRestaurant(@RequestBody CreateRestaurantReqDto reqDto) {
+    public ResponseEntity<Void> createRestaurant(@RequestBody CreateRestaurantReqDto reqDto) {
         Long id = restaurantService.createRestaurant(reqDto);
-        return ResponseEntity.created(URI.create("/api/v1/restaurants" + id)).body(id);
+        return ResponseEntity.created(URI.create("/api/v1/restaurants" + id)).build();
     }
 }

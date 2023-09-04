@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/api/v1/orders")
+@RequestMapping("/api/v1")
 public class OrderController {
 
     private final OrderService orderService;
@@ -20,14 +20,14 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/orders/{id}")
     public ResponseEntity<OrderDetailResDto> findOrder(@PathVariable Long id) {
         return ResponseEntity.ok(orderService.findOrder(id));
     }
 
-    @PostMapping("")
-    public ResponseEntity<?> createOrder(@RequestBody CreateOrderReqDto reqDto) {
-        Long id = orderService.createOrder(reqDto);
+    @PostMapping("/restaurants/{restaurantsId}/orders")
+    public ResponseEntity<Void> createOrder(@RequestBody CreateOrderReqDto reqDto, @PathVariable Long restaurantsId) {
+        Long id = orderService.createOrder(reqDto, restaurantsId);
         return ResponseEntity.created(URI.create("/api/v1/orders/" + id)).build();
     }
 }
