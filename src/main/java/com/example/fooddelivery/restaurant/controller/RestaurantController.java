@@ -3,6 +3,7 @@ package com.example.fooddelivery.restaurant.controller;
 import com.example.fooddelivery.restaurant.dto.CreateRestaurantReqDto;
 import com.example.fooddelivery.restaurant.dto.RestaurantDetailResDto;
 import com.example.fooddelivery.restaurant.dto.RestaurantResDto;
+import com.example.fooddelivery.restaurant.dto.UpdateRestaurantReqDto;
 import com.example.fooddelivery.restaurant.service.RestaurantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -36,5 +37,11 @@ public class RestaurantController {
     public ResponseEntity<Void> createRestaurant(@RequestBody CreateRestaurantReqDto reqDto) {
         Long id = restaurantService.createRestaurant(reqDto);
         return ResponseEntity.created(URI.create("/api/v1/restaurants" + id)).build();
+    }
+
+    @PutMapping("/{restaurantId}")
+    public ResponseEntity<Void> updateRestaurant(@RequestBody UpdateRestaurantReqDto reqDto, @PathVariable Long restaurantId) {
+        restaurantService.updateRestaurant(reqDto, restaurantId);
+        return ResponseEntity.ok().build();
     }
 }
