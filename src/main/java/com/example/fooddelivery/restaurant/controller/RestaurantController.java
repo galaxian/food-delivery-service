@@ -1,13 +1,11 @@
 package com.example.fooddelivery.restaurant.controller;
 
 import com.example.fooddelivery.restaurant.dto.CreateRestaurantReqDto;
+import com.example.fooddelivery.restaurant.dto.RestaurantDetailResDto;
 import com.example.fooddelivery.restaurant.service.RestaurantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -20,6 +18,11 @@ public class RestaurantController {
     @Autowired
     public RestaurantController(RestaurantService restaurantService) {
         this.restaurantService = restaurantService;
+    }
+
+    @GetMapping("{restaurantId}")
+    public ResponseEntity<RestaurantDetailResDto> findRestaurant(@PathVariable Long restaurantId) {
+        return ResponseEntity.ok(restaurantService.findRestaurant(restaurantId));
     }
 
     @PostMapping("")
