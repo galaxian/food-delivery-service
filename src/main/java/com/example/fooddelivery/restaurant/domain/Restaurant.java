@@ -39,6 +39,12 @@ public class Restaurant extends TimeStamped {
     @OneToMany(mappedBy = "restaurant")
     private List<Food> foods = new ArrayList<>();
 
+    public void update(String name, int minPrice, int deliveryFee) {
+        this.name = name;
+        this.minPrice = minPrice;
+        this.deliveryFee = deliveryFee;
+    }
+
     private Restaurant(String name, int minPrice, int deliveryFee) {
         this.name = name;
         this.minPrice = minPrice;
