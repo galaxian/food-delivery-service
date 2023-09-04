@@ -54,4 +54,9 @@ public class RestaurantService {
         );
         restaurant.update(reqDto.getName(), reqDto.getMinPrice(), reqDto.getDeliveryFee());
     }
+
+    @Transactional
+    public void deleteRestaurant(Long restaurantId) {
+        restaurantRepository.deleteById(restaurantId);
+    }
 }
