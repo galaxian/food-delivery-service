@@ -31,15 +31,12 @@ public class Restaurant extends TimeStamped {
     private int deliveryFee;
 
     @OneToMany(mappedBy = "restaurant")
-    @JoinColumn(name = "order_id")
     private List<Order> orders = new ArrayList<>();
 
     @OneToMany(mappedBy = "restaurant")
-    @JoinColumn(name = "menu_id")
     private List<Menu> menus = new ArrayList<>();
 
     @OneToMany(mappedBy = "restaurant")
-    @JoinColumn(name = "food_id")
     private List<Food> foods = new ArrayList<>();
 
     private Restaurant(String name, int minPrice, int deliveryFee) {
