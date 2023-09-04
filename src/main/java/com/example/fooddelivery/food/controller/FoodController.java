@@ -11,7 +11,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/foods")
+@RequestMapping("/api/v1")
 public class FoodController {
     private final FoodService foodService;
 
@@ -20,29 +20,31 @@ public class FoodController {
         this.foodService = foodService;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/foods/{id}")
     public ResponseEntity<FoodResponseDto> getFood(@PathVariable Long id) {
         return ResponseEntity.ok().body(foodService.getFood(id));
     }
 
-    @GetMapping("")
+    @GetMapping("/foods")
     public ResponseEntity<List<FoodResponseDto>> getAllFood() {
         return ResponseEntity.ok().body(foodService.getAllFood());
     }
 
-    @PostMapping("")
-    public ResponseEntity<?> createFood(@RequestBody FoodRequestDto requestDto) {
-        Long id = foodService.createFood(requestDto);
+    @PostMapping("/restaurants/{restaurantId}/foods")
+    public ResponseEntity<Void> createFood(@RequestBody FoodRequestDto requestDto, @PathVariable Long restaurantId) {
+        Long id = foodService.createFood(requestDto, restaurantId);
         return ResponseEntity.created(URI.create("/api/v1/foods/" + id)).build();
     }
 
     @PutMapping("/{id}")
-    public void updateFood(@PathVariable Long id, @RequestBody FoodRequestDto requestDto) {
+    public ResponseEntity<Void> updateFood(@PathVariable Long id, @RequestBody FoodRequestDto requestDto) {
         foodService.updateFood(id, requestDto);
+        return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/api/v1/foods/{id}")
-    public void deleteFood(@PathVariable Long id) {
+    @DeleteMapping("foods/{id}")
+    public ResponseEntity<Void> deleteFood(@PathVariable Long id) {
         foodService.deleteFood(id);
+        return ResponseEntity.ok().build();
     }
 }

@@ -8,11 +8,12 @@ import com.example.fooddelivery.menu.dto.*;
 import com.example.fooddelivery.menu.repository.MenuRepository;
 import com.example.fooddelivery.menufood.domain.MenuFood;
 import com.example.fooddelivery.menufood.repository.MenuFoodRepository;
+import com.example.fooddelivery.restaurant.domain.Restaurant;
+import com.example.fooddelivery.restaurant.repository.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,17 +23,22 @@ public class MenuService {
     private final MenuRepository menuRepository;
     private final FoodRepository foodRepository;
     private final MenuFoodRepository menuFoodRepository;
+    private final RestaurantRepository restaurantRepository;
 
     @Autowired
-    public MenuService(MenuRepository menuRepository, FoodRepository foodRepository, MenuFoodRepository menuFoodRepository) {
+    public MenuService(MenuRepository menuRepository, FoodRepository foodRepository, MenuFoodRepository menuFoodRepository, RestaurantRepository restaurantRepository) {
         this.menuRepository = menuRepository;
         this.foodRepository = foodRepository;
         this.menuFoodRepository = menuFoodRepository;
+        this.restaurantRepository = restaurantRepository;
     }
 
     @Transactional
-    public MenuResDto createMenu(CreateMenuReqDto requestDto) {
-        Menu saveMenu = menuRepository.save(requestDto.toEntity());
+    public Long createMenu(CreateMenuReqDto requestDto, Long restaurantId) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(
+                () -> new NotFoundException("식당을 찾을 수 없습니다.")
+        );
+        Menu saveMenu = menuRepository.save(requestDto.toEntity(restaurant));
 
         List<FoodQuantityReqDto> foodIdQuantityList = requestDto.getFoodReqList();
         for (FoodQuantityReqDto req : foodIdQuantityList) {
@@ -44,7 +50,7 @@ public class MenuService {
             menuFoodRepository.save(menuFood);
         }
 
-        return new MenuResDto(saveMenu);
+        return saveMenu.getId();
     }
 
     @Transactional

@@ -5,6 +5,8 @@ import com.example.fooddelivery.food.dto.FoodRequestDto;
 import com.example.fooddelivery.food.repository.FoodRepository;
 import com.example.fooddelivery.food.domain.Food;
 import com.example.fooddelivery.food.dto.FoodResponseDto;
+import com.example.fooddelivery.restaurant.domain.Restaurant;
+import com.example.fooddelivery.restaurant.repository.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,10 +17,12 @@ import java.util.stream.Collectors;
 @Service
 public class FoodService {
     private final FoodRepository foodRepository;
+    private final RestaurantRepository restaurantRepository;
 
     @Autowired
-    public FoodService(FoodRepository foodRepository) {
+    public FoodService(FoodRepository foodRepository, RestaurantRepository restaurantRepository) {
         this.foodRepository = foodRepository;
+        this.restaurantRepository = restaurantRepository;
     }
 
     @Transactional
@@ -37,8 +41,11 @@ public class FoodService {
     }
 
     @Transactional
-    public Long createFood(FoodRequestDto requestDto) {
-        Food food = requestDto.toEntity();
+    public Long createFood(FoodRequestDto requestDto, Long restaurantId) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(
+                () -> new NotFoundException("식당을 찾을 수 없습니다.")
+        );
+        Food food = requestDto.toEntity(restaurant);
         return foodRepository.save(food).getId();
     }
 

@@ -27,16 +27,17 @@ public class Food extends TimeStamped {
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
-    public static Food createFood(String name, int price) {
-        return new Food(name, price);
+    public static Food createFood(String name, int price, Restaurant restaurant) {
+        return new Food(name, price, restaurant);
     }
 
-    private Food(String name, int price) {
+    private Food(String name, int price, Restaurant restaurant) {
         if (price <= 0) {
             throw new IllegalArgumentException("음식 가격은 0원 보다 커야 합니다.");
         }
         this.name = name;
         this.price = price;
+        this.restaurant = restaurant;
     }
 
     public void updateFood(String name, int price) {
