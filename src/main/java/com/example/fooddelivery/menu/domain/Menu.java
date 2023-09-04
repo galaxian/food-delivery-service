@@ -37,7 +37,7 @@ public class Menu extends TimeStamped {
     @JoinColumn(name = "restuarant_id")
     private Restaurant restaurant;
 
-    private Menu(String name, int price, String describe) {
+    private Menu(String name, int price, String describe, Restaurant restaurant) {
         if (price < 0) {
             throw new IllegalArgumentException();
         }
@@ -46,6 +46,7 @@ public class Menu extends TimeStamped {
         this.describe = describe;
         this.isDisplay = true;
         this.menuStatus = MenuStatus.SALE;
+        this.restaurant = restaurant;
     }
 
     public void updateMenu(String name, int price, String describe) {
@@ -57,7 +58,7 @@ public class Menu extends TimeStamped {
         this.describe = describe;
     }
 
-    public static Menu createMenu(String name, int price, String describe) {
-        return new Menu(name, price, describe);
+    public static Menu createMenu(String name, int price, String describe, Restaurant restaurant) {
+        return new Menu(name, price, describe, restaurant);
     }
 }

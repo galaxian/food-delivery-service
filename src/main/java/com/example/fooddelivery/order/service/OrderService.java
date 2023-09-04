@@ -11,6 +11,8 @@ import com.example.fooddelivery.order.dto.OrderMenuResDto;
 import com.example.fooddelivery.order.repository.OrderRepository;
 import com.example.fooddelivery.ordermenu.domain.OrderMenu;
 import com.example.fooddelivery.ordermenu.repository.OrderMenuRepository;
+import com.example.fooddelivery.restaurant.domain.Restaurant;
+import com.example.fooddelivery.restaurant.repository.RestaurantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,17 +27,22 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final MenuRepository menuRepository;
     private final OrderMenuRepository orderMenuRepository;
+    private final RestaurantRepository restaurantRepository;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, MenuRepository menuRepository, OrderMenuRepository orderMenuRepository) {
+    public OrderService(OrderRepository orderRepository, MenuRepository menuRepository, OrderMenuRepository orderMenuRepository, RestaurantRepository restaurantRepository) {
         this.orderRepository = orderRepository;
         this.menuRepository = menuRepository;
         this.orderMenuRepository = orderMenuRepository;
+        this.restaurantRepository = restaurantRepository;
     }
 
     @Transactional
-    public Long createOrder(CreateOrderReqDto reqDto) {
-        Order saveOrder = orderRepository.save(Order.createOrder(LocalDateTime.now()));
+    public Long createOrder(CreateOrderReqDto reqDto, Long restaurantsId) {
+        Restaurant restaurant = restaurantRepository.findById(restaurantsId).orElseThrow(
+                () -> new NotFoundException("식당을 찾을 수 없습니다.")
+        );
+        Order saveOrder = orderRepository.save(Order.createOrder(LocalDateTime.now(), restaurant));
 
         List<MenuQuantityReqDto> menuQuantityDtoList = reqDto.getMenuReqList();
         for (MenuQuantityReqDto req : menuQuantityDtoList) {
