@@ -1,6 +1,7 @@
 package com.example.fooddelivery.menu.domain;
 
 import com.example.fooddelivery.common.TimeStamped;
+import com.example.fooddelivery.restaurant.domain.Restaurant;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,6 +32,10 @@ public class Menu extends TimeStamped {
     @Column(name = "menu_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private MenuStatus menuStatus;
+
+    @ManyToOne
+    @JoinColumn(name = "restuarant_id")
+    private Restaurant restaurant;
 
     private Menu(String name, int price, String describe) {
         if (price < 0) {
