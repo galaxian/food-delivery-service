@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,5 +74,49 @@ public class OrderService {
         List<OrderMenuResDto> resDtoList = orderMenuList.stream().map(OrderMenuResDto::new).collect(Collectors.toList());
 
         return new OrderDetailResDto(order, totalPrice, resDtoList);
+    }
+
+    @Transactional
+    public List<OrderDetailResDto> findAllOrder() {
+        List<Order> orderList = orderRepository.findAll();
+        List<OrderDetailResDto> resDtoList = new ArrayList<>();
+
+        for (Order order: orderList) {
+            List<OrderMenu> orderMenuList = orderMenuRepository.findByOrderId(order.getId());
+
+            int totalPrice = 0;
+            for (OrderMenu orderMenu: orderMenuList) {
+                totalPrice += orderMenu.sumTotalPrice();
+            }
+
+            List<OrderMenuResDto> menuList = orderMenuList.stream().map(OrderMenuResDto::new).collect(Collectors.toList());
+            resDtoList.add(new OrderDetailResDto(order, totalPrice, menuList));
+        }
+        return resDtoList;
+    }
+
+    @Transactional
+    public void updateOrder(List<MenuQuantityReqDto> reqDto, Long orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(
+                () -> new NotFoundException("주문을 찾을 수 없습니다.")
+        );
+
+        if (reqDto != null) {
+            orderMenuRepository.deleteAllByOrderId(orderId);
+
+            for (MenuQuantityReqDto req : reqDto) {
+                Menu menu = menuRepository.findById(req.getId()).orElseThrow(
+                        () -> new NotFoundException("메뉴를 찾을 수 없습니다.")
+                );
+
+                OrderMenu orderMenu = OrderMenu.createOrderMenu(req.getQuantity(), req.getPrice(), order, menu);
+                orderMenuRepository.save(orderMenu);
+            }
+        }
+    }
+
+    @Transactional
+    public void deleteOrder(Long orderId) {
+        orderRepository.deleteById(orderId);
     }
 }
