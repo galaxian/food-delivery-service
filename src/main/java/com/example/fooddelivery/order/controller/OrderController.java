@@ -1,6 +1,7 @@
 package com.example.fooddelivery.order.controller;
 
 import com.example.fooddelivery.order.dto.CreateOrderReqDto;
+import com.example.fooddelivery.order.dto.MenuQuantityReqDto;
 import com.example.fooddelivery.order.dto.OrderDetailResDto;
 import com.example.fooddelivery.order.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,5 +36,11 @@ public class OrderController {
     public ResponseEntity<Void> createOrder(@RequestBody CreateOrderReqDto reqDto, @PathVariable Long restaurantsId) {
         Long id = orderService.createOrder(reqDto, restaurantsId);
         return ResponseEntity.created(URI.create("/api/v1/orders/" + id)).build();
+    }
+
+    @PutMapping("/orders/{orderId}")
+    public ResponseEntity<Void> updateOrder(@RequestBody List<MenuQuantityReqDto> reqDto, @PathVariable Long orderId) {
+        orderService.updateOrder(reqDto, orderId);
+        return ResponseEntity.ok().build();
     }
 }
