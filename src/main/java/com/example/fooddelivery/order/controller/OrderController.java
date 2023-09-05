@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -23,6 +24,11 @@ public class OrderController {
     @GetMapping("/orders/{id}")
     public ResponseEntity<OrderDetailResDto> findOrder(@PathVariable Long id) {
         return ResponseEntity.ok(orderService.findOrder(id));
+    }
+
+    @GetMapping("/orders")
+    public ResponseEntity<List<OrderDetailResDto>> findAllOrder() {
+        return ResponseEntity.ok(orderService.findAllOrder());
     }
 
     @PostMapping("/restaurants/{restaurantsId}/orders")
