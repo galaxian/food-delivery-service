@@ -43,4 +43,10 @@ public class OrderController {
         orderService.updateOrder(reqDto, orderId);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/orders/{orderId}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable Long orderId) {
+        orderService.deleteOrder(orderId);
+        return ResponseEntity.ok().build();
+    }
 }
