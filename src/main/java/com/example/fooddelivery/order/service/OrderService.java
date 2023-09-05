@@ -94,4 +94,24 @@ public class OrderService {
         }
         return resDtoList;
     }
+
+    @Transactional
+    public void updateOrder(List<MenuQuantityReqDto> reqDto, Long orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(
+                () -> new NotFoundException("주문을 찾을 수 없습니다.")
+        );
+
+        if (reqDto != null) {
+            orderMenuRepository.deleteAllByOrderId(orderId);
+
+            for (MenuQuantityReqDto req : reqDto) {
+                Menu menu = menuRepository.findById(req.getId()).orElseThrow(
+                        () -> new NotFoundException("메뉴를 찾을 수 없습니다.")
+                );
+
+                OrderMenu orderMenu = OrderMenu.createOrderMenu(req.getQuantity(), req.getPrice(), order, menu);
+                orderMenuRepository.save(orderMenu);
+            }
+        }
+    }
 }
