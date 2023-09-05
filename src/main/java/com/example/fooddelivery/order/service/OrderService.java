@@ -114,4 +114,9 @@ public class OrderService {
             }
         }
     }
+
+    @Transactional
+    public void deleteOrder(Long orderId) {
+        orderRepository.deleteById(orderId);
+    }
 }
