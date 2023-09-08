@@ -1,5 +1,6 @@
 package com.example.fooddelivery.restaurant.service;
 
+import com.example.fooddelivery.common.exception.DuplicateException;
 import com.example.fooddelivery.common.exception.NotFoundException;
 import com.example.fooddelivery.restaurant.domain.Restaurant;
 import com.example.fooddelivery.restaurant.dto.CreateRestaurantReqDto;
@@ -26,11 +27,20 @@ public class RestaurantService {
 
     @Transactional
     public Long createRestaurant(CreateRestaurantReqDto reqDto) {
+
+        if (isExistRestaurantName(reqDto.getName())) {
+            throw new DuplicateException("동일한 식당 이름이 존재합니다.");
+        }
+
         Restaurant restaurant = reqDto.toEntity();
 
         Restaurant saveRestaurant = restaurantRepository.save(restaurant);
 
         return saveRestaurant.getId();
+    }
+
+    private boolean isExistRestaurantName(String name) {
+        return restaurantRepository.findByName(name).isPresent();
     }
 
     @Transactional
