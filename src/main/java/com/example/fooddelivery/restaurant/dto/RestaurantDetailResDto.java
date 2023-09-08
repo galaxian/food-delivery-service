@@ -4,7 +4,9 @@ import com.example.fooddelivery.menu.dto.MenuResDto;
 import com.example.fooddelivery.restaurant.domain.Restaurant;
 import lombok.Getter;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Getter
@@ -20,6 +22,6 @@ public class RestaurantDetailResDto {
         this.name = restaurant.getName();
         this.minPrice = restaurant.getMinPrice();
         this.deliveryFee = restaurant.getDeliveryFee();
-        this.menuList = restaurant.getMenus().stream().map(MenuResDto::new).collect(Collectors.toList());
+        this.menuList = Optional.ofNullable(restaurant.getMenus()).orElseGet(Collections::emptyList).stream().map(MenuResDto::new).collect(Collectors.toList());
     }
 }
