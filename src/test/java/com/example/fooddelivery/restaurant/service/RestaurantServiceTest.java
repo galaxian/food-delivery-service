@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -79,7 +80,7 @@ class RestaurantServiceTest {
         assertThat(result.getId()).isEqualTo(restaurantId);
         assertThat(result.getMinPrice()).isEqualTo(minPrice);
         assertThat(result.getDeliveryFee()).isEqualTo(deliveryFee);
-        assertThat(result.getMenuList()).isEqualTo(new ArrayList<>());
+        assertThat(result.getMenuList()).isEqualTo(Collections.EMPTY_LIST);
         assertThat(result.getName()).isEqualTo(name);
     }
 
