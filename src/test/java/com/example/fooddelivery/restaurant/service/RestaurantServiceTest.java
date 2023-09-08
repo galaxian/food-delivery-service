@@ -1,6 +1,7 @@
 package com.example.fooddelivery.restaurant.service;
 
 import com.example.fooddelivery.common.exception.DuplicateException;
+import com.example.fooddelivery.common.exception.NotFoundException;
 import com.example.fooddelivery.restaurant.domain.Restaurant;
 import com.example.fooddelivery.restaurant.dto.CreateRestaurantReqDto;
 import com.example.fooddelivery.restaurant.dto.RestaurantDetailResDto;
@@ -80,6 +81,19 @@ class RestaurantServiceTest {
         assertThat(result.getDeliveryFee()).isEqualTo(deliveryFee);
         assertThat(result.getMenuList()).isEqualTo(new ArrayList<>());
         assertThat(result.getName()).isEqualTo(name);
+    }
+
+    @Test
+    void 식당_DB없음_단일조회_실패() {
+        //given
+        Long restaurantId = 1L;
+
+        given(restaurantRepository.findById(restaurantId)).willReturn(Optional.empty());
+
+        //when
+        //then
+        assertThatThrownBy(() -> restaurantService.findRestaurant(restaurantId))
+            .isInstanceOf(NotFoundException.class);
     }
 
 }
