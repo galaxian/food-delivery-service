@@ -5,6 +5,7 @@ import com.example.fooddelivery.common.exception.NotFoundException;
 import com.example.fooddelivery.restaurant.domain.Restaurant;
 import com.example.fooddelivery.restaurant.dto.CreateRestaurantReqDto;
 import com.example.fooddelivery.restaurant.dto.RestaurantDetailResDto;
+import com.example.fooddelivery.restaurant.dto.RestaurantResDto;
 import com.example.fooddelivery.restaurant.repository.RestaurantRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +19,7 @@ import static org.mockito.BDDMockito.given;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -95,6 +97,34 @@ class RestaurantServiceTest {
         //then
         assertThatThrownBy(() -> restaurantService.findRestaurant(restaurantId))
             .isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
+    void 식당_전체조회_성공() {
+        //given
+        Long restaurantId1 = 1L;
+        String name1 = "1번식당";
+        int minPrice1 = 10000;
+        int deliveryFee1 = 3000;
+
+        Long restaurantId2 = 2L;
+        String name2 = "2번식당";
+        int minPrice2 = 10000;
+        int deliveryFee2 = 3000;
+
+        List<Restaurant> restaurantList = new ArrayList<>();
+        restaurantList.add(new Restaurant(restaurantId1, name1, minPrice1, deliveryFee1, null, null, null));
+        restaurantList.add(new Restaurant(restaurantId2, name2, minPrice2, deliveryFee2, null, null, null));
+
+        given(restaurantRepository.findAll()).willReturn(restaurantList);
+
+        //when
+        List<RestaurantResDto> result = restaurantService.findAllRestaurant();
+
+        //then
+        assertThat(result.get(0).getId()).isEqualTo(restaurantId1);
+        assertThat(result.get(1).getId()).isEqualTo(restaurantId2);
+        assertThatThrownBy(() -> result.get(result.size())).isInstanceOf(IndexOutOfBoundsException.class);
     }
 
 }
