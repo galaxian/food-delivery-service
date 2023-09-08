@@ -1,5 +1,6 @@
 package com.example.fooddelivery.restaurant.service;
 
+import com.example.fooddelivery.common.exception.DuplicateException;
 import com.example.fooddelivery.restaurant.domain.Restaurant;
 import com.example.fooddelivery.restaurant.dto.CreateRestaurantReqDto;
 import com.example.fooddelivery.restaurant.repository.RestaurantRepository;
@@ -9,9 +10,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class RestaurantServiceTest {
@@ -37,6 +40,21 @@ class RestaurantServiceTest {
 
         //then
         assertThat(result).isEqualTo(1L);
+    }
+
+    @Test
+    void 식당_이름_중복_시_에러() {
+        //given
+        CreateRestaurantReqDto createRestaurantReqDto = new CreateRestaurantReqDto("중복식당",
+            10000, 3000);
+
+        given(restaurantRepository.findByName(any())).willReturn(Optional.of(new Restaurant(1L, "중복식당",
+            10000, 3000,
+            null, null, null)));
+
+        //when, then
+        assertThatThrownBy(() -> restaurantService.createRestaurant(createRestaurantReqDto))
+            .isInstanceOf(DuplicateException.class);
     }
 
 }
