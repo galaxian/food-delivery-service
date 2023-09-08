@@ -12,4 +12,10 @@ public class CreateRestaurantReqDto {
     public Restaurant toEntity() {
         return Restaurant.createRestaurant(name, minPrice, deliveryFee);
     }
+
+    public CreateRestaurantReqDto(String name, int minPrice, int deliveryFee) {
+        this.name = name;
+        this.minPrice = minPrice;
+        this.deliveryFee = deliveryFee;
+    }
 }
