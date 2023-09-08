@@ -6,6 +6,7 @@ import com.example.fooddelivery.restaurant.domain.Restaurant;
 import com.example.fooddelivery.restaurant.dto.CreateRestaurantReqDto;
 import com.example.fooddelivery.restaurant.dto.RestaurantDetailResDto;
 import com.example.fooddelivery.restaurant.dto.RestaurantResDto;
+import com.example.fooddelivery.restaurant.dto.UpdateRestaurantReqDto;
 import com.example.fooddelivery.restaurant.repository.RestaurantRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -125,6 +126,24 @@ class RestaurantServiceTest {
         assertThat(result.get(0).getId()).isEqualTo(restaurantId1);
         assertThat(result.get(1).getId()).isEqualTo(restaurantId2);
         assertThatThrownBy(() -> result.get(result.size())).isInstanceOf(IndexOutOfBoundsException.class);
+    }
+
+    @Test
+    void 식당이_존재하지않아_정보_수정_실패() {
+        //given
+        Long restaurantId = 1L;
+
+        String updateName = "수정식당";
+        int updateMinPrice = 5000;
+        int updateDeliveryFee = 1000;
+        UpdateRestaurantReqDto reqDto = new UpdateRestaurantReqDto(updateName, updateMinPrice, updateDeliveryFee);
+
+        given(restaurantRepository.findById(restaurantId)).willReturn(Optional.empty());
+
+        //when
+        //then
+        assertThatThrownBy(() -> restaurantService.updateRestaurant(reqDto, restaurantId))
+            .isInstanceOf(NotFoundException.class);
     }
 
 }
