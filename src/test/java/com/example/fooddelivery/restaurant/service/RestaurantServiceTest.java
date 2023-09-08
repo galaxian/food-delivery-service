@@ -3,6 +3,7 @@ package com.example.fooddelivery.restaurant.service;
 import com.example.fooddelivery.common.exception.DuplicateException;
 import com.example.fooddelivery.restaurant.domain.Restaurant;
 import com.example.fooddelivery.restaurant.dto.CreateRestaurantReqDto;
+import com.example.fooddelivery.restaurant.dto.RestaurantDetailResDto;
 import com.example.fooddelivery.restaurant.repository.RestaurantRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +15,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,6 +57,29 @@ class RestaurantServiceTest {
         //when, then
         assertThatThrownBy(() -> restaurantService.createRestaurant(createRestaurantReqDto))
             .isInstanceOf(DuplicateException.class);
+    }
+
+    @Test
+    void 식당_단일_조회_성공() {
+        //given
+        Long restaurantId = 1L;
+        String name = "중복식당";
+        int minPrice = 10000;
+        int deliveryFee = 3000;
+
+        given(restaurantRepository.findById(any())).willReturn(Optional.of(new Restaurant(restaurantId, name,
+            minPrice, deliveryFee,
+            null, null, null)));
+
+        //when
+        RestaurantDetailResDto result = restaurantService.findRestaurant(restaurantId);
+
+        //then
+        assertThat(result.getId()).isEqualTo(restaurantId);
+        assertThat(result.getMinPrice()).isEqualTo(minPrice);
+        assertThat(result.getDeliveryFee()).isEqualTo(deliveryFee);
+        assertThat(result.getMenuList()).isEqualTo(new ArrayList<>());
+        assertThat(result.getName()).isEqualTo(name);
     }
 
 }
