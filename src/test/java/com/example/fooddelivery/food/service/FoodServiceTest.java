@@ -134,4 +134,22 @@ class FoodServiceTest {
 		assertThat(result.size()).isEqualTo(foodList.size());
 	}
 
+	@Test
+	void 음식_NotFound_수정_실패() {
+		//given
+		Long foodId = 1L;
+		String updateName = "음식수정";
+		int updatePrice = 500;
+
+		FoodRequestDto requestDto = new FoodRequestDto("음식이름", 1000);
+
+		given(foodRepository.findById(foodId)).willReturn(Optional.empty());
+
+		//when
+		//then
+		assertThatThrownBy(() -> foodService.updateFood(foodId, requestDto))
+			.isInstanceOf(NotFoundException.class);
+
+	}
+
 }
