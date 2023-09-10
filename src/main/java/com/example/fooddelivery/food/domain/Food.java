@@ -3,6 +3,7 @@ package com.example.fooddelivery.food.domain;
 import com.example.fooddelivery.common.TimeStamped;
 import com.example.fooddelivery.restaurant.domain.Restaurant;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import javax.persistence.*;
 @Table(name = "food")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Entity
 public class Food extends TimeStamped {
     @Id
