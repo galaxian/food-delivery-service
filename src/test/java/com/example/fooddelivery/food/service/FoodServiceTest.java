@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.example.fooddelivery.common.exception.NotFoundException;
 import com.example.fooddelivery.food.domain.Food;
 import com.example.fooddelivery.food.dto.FoodRequestDto;
 import com.example.fooddelivery.food.repository.FoodRepository;
@@ -46,6 +47,21 @@ class FoodServiceTest {
 
 		//then
 		assertThat(result).isEqualTo(1L);
+	}
+
+	@Test
+	void 식당없음으로인한_음식_생성_실패() {
+		//given
+		FoodRequestDto requestDto = new FoodRequestDto("음식이름", 10000);
+		Long restaurantId = 1L;
+
+		given(restaurantRepository.findById(any())).willReturn(Optional.empty());
+
+		//when
+		//then
+		assertThatThrownBy(() -> foodService.createFood(requestDto, restaurantId))
+			.isInstanceOf(NotFoundException.class);
+
 	}
 
 }
