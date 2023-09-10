@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -101,6 +103,35 @@ class FoodServiceTest {
 		assertThatThrownBy(() -> foodService.getFood(foodId))
 			.isInstanceOf(NotFoundException.class);
 
+	}
+
+	@Test
+	void 음식_전체_조회_성공() {
+		//given
+		Long foodId1 = 1L;
+		String name1 = "음식이름";
+		int price1 = 1000;
+
+		Long foodId2 = 2L;
+		String name2 = "음식2";
+		int price2 = 2000;
+
+		Restaurant restaurant = new Restaurant(1L, "식당이름", 10000
+			, 1000, null,null, null);
+
+		List<Food> foodList = new ArrayList<>();
+		foodList.add(new Food(foodId1, name1, price1, restaurant));
+		foodList.add(new Food(foodId2, name2, price2, restaurant));
+
+		given(foodRepository.findAll()).willReturn(foodList);
+
+		//when
+		List<FoodResponseDto> result = foodService.getAllFood();
+
+		//then
+		assertThat(result.get(0).getId()).isEqualTo(foodId1);
+		assertThat(result.get(1).getId()).isEqualTo(foodId2);
+		assertThat(result.size()).isEqualTo(foodList.size());
 	}
 
 }
