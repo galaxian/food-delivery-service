@@ -88,4 +88,19 @@ class FoodServiceTest {
 
 	}
 
+	@Test
+	void 음식_NotFound_단일_조회_실패() {
+		//given
+		Long foodId = 1L;
+
+		given(foodRepository.findById(any()))
+			.willReturn(Optional.empty());
+
+		//when
+		//then
+		assertThatThrownBy(() -> foodService.getFood(foodId))
+			.isInstanceOf(NotFoundException.class);
+
+	}
+
 }
