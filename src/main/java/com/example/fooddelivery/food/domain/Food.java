@@ -34,19 +34,29 @@ public class Food extends TimeStamped {
     }
 
     private Food(String name, int price, Restaurant restaurant) {
-        if (price <= 0) {
-            throw new IllegalArgumentException("음식 가격은 0원 보다 커야 합니다.");
-        }
+        validateFood(price);
         this.name = name;
         this.price = price;
         this.restaurant = restaurant;
     }
 
     public void updateFood(String name, int price) {
-        if (price <= 0) {
-            throw new IllegalArgumentException("음식 가격은 0원 보다 커야 합니다.");
-        }
+        validateFood(price);
         this.name = name;
         this.price = price;
+    }
+
+    private void validateFood(int price) {
+        validateFoodPrice(price);
+    }
+
+    private void validateFoodPrice(int price) {
+        if (isNegative(price)) {
+            throw new IllegalArgumentException("음식 가격은 0원 보다 커야 합니다.");
+        }
+    }
+
+    private boolean isNegative(int price) {
+        return price < 0;
     }
 }
