@@ -9,6 +9,11 @@ public class FoodRequestDto {
     private String name;
     private int price;
 
+    public FoodRequestDto(String name, int price) {
+        this.name = name;
+        this.price = price;
+    }
+
     public Food toEntity(Restaurant restaurant) {
         return Food.createFood(name, price, restaurant);
     }
