@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.example.fooddelivery.common.exception.NotFoundException;
 import com.example.fooddelivery.food.domain.Food;
 import com.example.fooddelivery.food.dto.FoodRequestDto;
+import com.example.fooddelivery.food.dto.FoodResponseDto;
 import com.example.fooddelivery.food.repository.FoodRepository;
 import com.example.fooddelivery.restaurant.domain.Restaurant;
 import com.example.fooddelivery.restaurant.repository.RestaurantRepository;
@@ -61,6 +62,29 @@ class FoodServiceTest {
 		//then
 		assertThatThrownBy(() -> foodService.createFood(requestDto, restaurantId))
 			.isInstanceOf(NotFoundException.class);
+
+	}
+
+	@Test
+	void 음식_단일_조회_성공() {
+		//given
+		Long foodId = 1L;
+		String name = "음식이름";
+		int price = 1000;
+
+		Restaurant restaurant = new Restaurant(1L, "식당이름", 10000
+			, 1000, null,null, null);
+
+		given(foodRepository.findById(any()))
+			.willReturn(Optional.of(new Food(foodId, name, price, restaurant)));
+
+		//when
+		FoodResponseDto result = foodService.getFood(foodId);
+
+		//then
+		assertThat(result.getId()).isEqualTo(foodId);
+		assertThat(result.getName()).isEqualTo(name);
+		assertThat(result.getPrice()).isEqualTo(price);
 
 	}
 
