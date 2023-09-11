@@ -151,4 +151,18 @@ class OrderServiceTest {
 			+ orderMenu2.getPrice() * orderMenu2.getQuantity());
 	}
 
+	@Test
+	void 주문_NotFound_주문_단일_조회_실패() {
+		//given
+		Long orderId = 1L;
+
+		given(orderRepository.findById(any()))
+			.willReturn(Optional.empty());
+
+		//when
+		//then
+		assertThatThrownBy(() -> orderService.findOrder(orderId))
+			.isInstanceOf(NotFoundException.class);
+	}
+
 }
