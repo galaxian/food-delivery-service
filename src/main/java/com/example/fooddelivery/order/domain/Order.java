@@ -3,6 +3,7 @@ package com.example.fooddelivery.order.domain;
 import com.example.fooddelivery.common.TimeStamped;
 import com.example.fooddelivery.restaurant.domain.Restaurant;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Table(name = "orders")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Entity
 public class Order extends TimeStamped {
     @Id
