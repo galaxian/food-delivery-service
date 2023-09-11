@@ -22,4 +22,15 @@ class MenuTest {
 		assertDoesNotThrow(() -> Menu.createMenu("양념치킨", price, "비법소스로만든치킨", restaurant));
 	}
 
+	@ParameterizedTest
+	@ValueSource(ints = {-1, -10, -1231231})
+	void 메뉴의_가격이_음수이면_생성_실패(int price) {
+		//given
+		//when
+		//then
+		assertThatThrownBy(() -> Menu.createMenu("양념치킨", price, "비법소스로만든치킨",restaurant))
+			.isInstanceOf(IllegalArgumentException.class);
+
+	}
+
 }
