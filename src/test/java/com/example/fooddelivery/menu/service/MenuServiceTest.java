@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.example.fooddelivery.common.exception.NotFoundException;
 import com.example.fooddelivery.food.domain.Food;
 import com.example.fooddelivery.food.repository.FoodRepository;
 import com.example.fooddelivery.menu.domain.Menu;
@@ -70,6 +71,28 @@ class MenuServiceTest {
 		//when
 		//then
 		assertDoesNotThrow(() -> menuService.createMenu(menuReq, restaurantId));
+
+	}
+
+	@Test
+	void 식당_NotFound_메뉴_생성_실패() {
+		//given
+		FoodQuantityReqDto foodReq1 = new FoodQuantityReqDto(1L, 1);
+		FoodQuantityReqDto foodReq2 = new FoodQuantityReqDto(2L, 1);
+		List<FoodQuantityReqDto> foodReqList = new ArrayList<>();
+		foodReqList.add(foodReq1);
+		foodReqList.add(foodReq2);
+		CreateMenuReqDto menuReq = new CreateMenuReqDto("양념치킨", 20000, "특급소스로 만든 치킨", foodReqList);
+
+		Long restaurantId = 1L;
+
+		given(restaurantRepository.findById(any()))
+			.willReturn(Optional.empty());
+
+		//when
+		//then
+		assertThatThrownBy(() -> menuService.createMenu(menuReq, restaurantId))
+			.isInstanceOf(NotFoundException.class);
 
 	}
 
