@@ -165,4 +165,46 @@ class OrderServiceTest {
 			.isInstanceOf(NotFoundException.class);
 	}
 
+	@Test
+	void 주문_전체_조회_성공() {
+		//given
+		Order order1 = new Order(1L, OrderStatus.WAITING, now, restaurant);
+		Menu menu1 = new Menu(1L, "양념치킨", 20000, "비법소스로 만든 치킨"
+			, true, MenuStatus.SALE, restaurant);
+		Menu menu2 = new Menu(2L, "후라이드치킨", 15000, "잘 튀긴 치킨"
+			, true, MenuStatus.SALE, restaurant);
+
+		Order order2 = new Order(2L, OrderStatus.WAITING, now, restaurant);
+
+		List<Order> orderList = new ArrayList<>();
+		orderList.add(order1);
+		orderList.add(order2);
+
+		OrderMenu orderMenu1 = new OrderMenu(1L, 1, 20000, order1, menu1);
+		OrderMenu orderMenu2 = new OrderMenu(2L, 2, 15000, order1, menu2);
+		List<OrderMenu> orderMenuList1 = new ArrayList<>();
+		orderMenuList1.add(orderMenu1);
+		orderMenuList1.add(orderMenu2);
+
+		OrderMenu orderMenu3 = new OrderMenu(3L, 2, 20000, order1, menu1);
+		OrderMenu orderMenu4 = new OrderMenu(4L, 1, 15000, order1, menu2);
+		List<OrderMenu> orderMenuList2 = new ArrayList<>();
+		orderMenuList2.add(orderMenu3);
+		orderMenuList2.add(orderMenu4);
+
+		given(orderRepository.findAll())
+			.willReturn(orderList);
+		given(orderMenuRepository.findByOrderId(any()))
+			.willReturn(orderMenuList1)
+			.willReturn(orderMenuList2);
+
+		//when
+		List<OrderDetailResDto> result = orderService.findAllOrder();
+
+		//then
+		assertThat(result.get(0).getId()).isEqualTo(order1.getId());
+		assertThat(result.get(1).getId()).isEqualTo(order2.getId());
+		assertThat(result.size()).isEqualTo(orderList.size());
+	}
+
 }
