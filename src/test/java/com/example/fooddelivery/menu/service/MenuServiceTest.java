@@ -21,7 +21,9 @@ import com.example.fooddelivery.menu.domain.Menu;
 import com.example.fooddelivery.menu.domain.MenuStatus;
 import com.example.fooddelivery.menu.dto.CreateMenuReqDto;
 import com.example.fooddelivery.menu.dto.FoodQuantityReqDto;
+import com.example.fooddelivery.menu.dto.MenuDetailResDto;
 import com.example.fooddelivery.menu.repository.MenuRepository;
+import com.example.fooddelivery.menufood.domain.MenuFood;
 import com.example.fooddelivery.menufood.repository.MenuFoodRepository;
 import com.example.fooddelivery.restaurant.domain.Restaurant;
 import com.example.fooddelivery.restaurant.repository.RestaurantRepository;
@@ -120,6 +122,36 @@ class MenuServiceTest {
 		//then
 		assertThatThrownBy(() -> menuService.createMenu(menuReq, restaurantId))
 			.isInstanceOf(NotFoundException.class);
+	}
+
+	@Test
+	void 메뉴_단일_조회_성공() {
+		//given
+		Long menuId = 1L;
+
+		Menu menu = new Menu(menuId, "양념치킨", 20000,
+			"특급소스로 만든 치킨", true, MenuStatus.SALE, restaurant);
+		Food food1 = new Food(1L, "치킨", 20000, restaurant);
+		Food food2 = new Food(2L, "콜라", 3000, restaurant);
+
+		List<MenuFood> menuFoodList = new ArrayList<>();
+		menuFoodList.add(new MenuFood(1L,1, menu, food1));
+		menuFoodList.add(new MenuFood(2L, 2, menu, food2));
+
+		given(menuRepository.findById(any()))
+			.willReturn(Optional.of(menu));
+		given(menuFoodRepository.findByMenuId(any()))
+			.willReturn(menuFoodList);
+
+		//when
+		MenuDetailResDto result = menuService.findMenu(menuId);
+
+		//then
+		assertThat(result.getId()).isEqualTo(menuId);
+		assertThat(result.getName()).isEqualTo(menu.getName());
+		assertThat(result.getDescribe()).isEqualTo(menu.getDescribe());
+		assertThat(result.getPrice()).isEqualTo(menu.getPrice());
+
 	}
 
 }
