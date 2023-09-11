@@ -93,4 +93,28 @@ class OrderServiceTest {
 			.isInstanceOf(NotFoundException.class);
 	}
 
+	@Test
+	void 메뉴_NotFound_주문_생성_실패() {
+		//given
+		MenuQuantityReqDto menuQuantityReqDto = new MenuQuantityReqDto(1L, 1, 20000);
+		List<MenuQuantityReqDto> menuReqList = new ArrayList<>();
+		menuReqList.add(menuQuantityReqDto);
+		CreateOrderReqDto createOrderReqDto = new CreateOrderReqDto(menuReqList);
+
+		Long restaurantId = 1L;
+
+		given(restaurantRepository.findById(any()))
+			.willReturn(Optional.of(restaurant));
+		given(orderRepository.save(any()))
+			.willReturn(new Order(1L, OrderStatus.WAITING, now, restaurant));
+		given(menuRepository.findById(any()))
+			.willReturn(Optional.empty());
+
+		//when
+		//then
+		assertThatThrownBy(() -> orderService.createOrder(createOrderReqDto, restaurantId))
+			.isInstanceOf(NotFoundException.class);
+
+	}
+
 }
