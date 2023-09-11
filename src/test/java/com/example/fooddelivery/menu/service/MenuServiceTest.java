@@ -154,4 +154,19 @@ class MenuServiceTest {
 
 	}
 
+	@Test
+	void 메뉴_NotFound_단일_조회_실패() {
+		//given
+		Long menuId = 1L;
+
+		given(menuRepository.findById(any()))
+			.willReturn(Optional.empty());
+
+		//when
+		//then
+		assertThatThrownBy(() -> menuService.findMenu(menuId))
+			.isInstanceOf(NotFoundException.class);
+
+	}
+
 }
