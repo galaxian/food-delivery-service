@@ -1,5 +1,6 @@
 package com.example.fooddelivery.order.service;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
@@ -14,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.example.fooddelivery.common.exception.NotFoundException;
 import com.example.fooddelivery.menu.domain.Menu;
 import com.example.fooddelivery.menu.domain.MenuStatus;
 import com.example.fooddelivery.menu.repository.MenuRepository;
@@ -70,6 +72,25 @@ class OrderServiceTest {
 		//then
 		assertDoesNotThrow(() -> orderService.createOrder(createOrderReqDto, restaurantId));
 
+	}
+
+	@Test
+	void 식당_NotFound_주문_생성_실패() {
+		//given
+		MenuQuantityReqDto menuQuantityReqDto = new MenuQuantityReqDto(1L, 1, 20000);
+		List<MenuQuantityReqDto> menuReqList = new ArrayList<>();
+		menuReqList.add(menuQuantityReqDto);
+		CreateOrderReqDto createOrderReqDto = new CreateOrderReqDto(menuReqList);
+
+		Long restaurantId = 1L;
+
+		given(restaurantRepository.findById(any()))
+			.willReturn(Optional.empty());
+
+		//when
+		//then
+		assertThatThrownBy(() -> orderService.createOrder(createOrderReqDto, restaurantId))
+			.isInstanceOf(NotFoundException.class);
 	}
 
 }
