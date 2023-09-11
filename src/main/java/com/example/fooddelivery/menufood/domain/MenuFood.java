@@ -4,6 +4,7 @@ import com.example.fooddelivery.common.TimeStamped;
 import com.example.fooddelivery.food.domain.Food;
 import com.example.fooddelivery.menu.domain.Menu;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import javax.persistence.*;
 @Table(name = "menu_food")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Entity
 public class MenuFood extends TimeStamped {
     @Id

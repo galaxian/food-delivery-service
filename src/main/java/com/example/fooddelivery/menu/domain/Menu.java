@@ -3,6 +3,7 @@ package com.example.fooddelivery.menu.domain;
 import com.example.fooddelivery.common.TimeStamped;
 import com.example.fooddelivery.restaurant.domain.Restaurant;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import javax.persistence.*;
 @Table(name = "menus")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Entity
 public class Menu extends TimeStamped {
     @Id
@@ -38,9 +40,7 @@ public class Menu extends TimeStamped {
     private Restaurant restaurant;
 
     private Menu(String name, int price, String describe, Restaurant restaurant) {
-        if (price < 0) {
-            throw new IllegalArgumentException();
-        }
+        validateMenu(price);
         this.name = name;
         this.price = price;
         this.describe = describe;
@@ -50,9 +50,7 @@ public class Menu extends TimeStamped {
     }
 
     public void updateMenu(String name, int price, String describe) {
-        if (price < 0) {
-            throw new IllegalArgumentException();
-        }
+        validateMenu(price);
         this.name = name;
         this.price = price;
         this.describe = describe;
@@ -60,5 +58,19 @@ public class Menu extends TimeStamped {
 
     public static Menu createMenu(String name, int price, String describe, Restaurant restaurant) {
         return new Menu(name, price, describe, restaurant);
+    }
+
+    private void validateMenu(int price) {
+        validateMenuPrice(price);
+    }
+
+    private void validateMenuPrice(int price) {
+        if (isNegative(price)) {
+            throw new IllegalArgumentException("메뉴 가격은 0원 보다 커야 합니다.");
+        }
+    }
+
+    private boolean isNegative(int price) {
+        return price < 0;
     }
 }

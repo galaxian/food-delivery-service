@@ -13,6 +13,14 @@ public class CreateMenuReqDto {
     private String describe;
     private List<FoodQuantityReqDto> foodReqList;
 
+    public CreateMenuReqDto(String name, int price, String describe,
+        List<FoodQuantityReqDto> foodReqList) {
+        this.name = name;
+        this.price = price;
+        this.describe = describe;
+        this.foodReqList = foodReqList;
+    }
+
     public Menu toEntity(Restaurant restaurant) {
         return Menu.createMenu(name, price, describe, restaurant);
     }
