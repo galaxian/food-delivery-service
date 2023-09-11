@@ -23,7 +23,9 @@ import com.example.fooddelivery.order.domain.Order;
 import com.example.fooddelivery.order.domain.OrderStatus;
 import com.example.fooddelivery.order.dto.CreateOrderReqDto;
 import com.example.fooddelivery.order.dto.MenuQuantityReqDto;
+import com.example.fooddelivery.order.dto.OrderDetailResDto;
 import com.example.fooddelivery.order.repository.OrderRepository;
+import com.example.fooddelivery.ordermenu.domain.OrderMenu;
 import com.example.fooddelivery.ordermenu.repository.OrderMenuRepository;
 import com.example.fooddelivery.restaurant.domain.Restaurant;
 import com.example.fooddelivery.restaurant.repository.RestaurantRepository;
@@ -115,6 +117,38 @@ class OrderServiceTest {
 		assertThatThrownBy(() -> orderService.createOrder(createOrderReqDto, restaurantId))
 			.isInstanceOf(NotFoundException.class);
 
+	}
+
+	@Test
+	void 메뉴_단일_조회_성공() {
+		//given
+		Long orderId = 1L;
+		Order order = new Order(orderId, OrderStatus.WAITING, now, restaurant);
+		Menu menu1 = new Menu(1L, "양념치킨", 20000, "비법소스로 만든 치킨"
+			, true, MenuStatus.SALE, restaurant);
+		Menu menu2 = new Menu(2L, "후라이드치킨", 15000, "잘 튀긴 치킨"
+			, true, MenuStatus.SALE, restaurant);
+
+		OrderMenu orderMenu1 = new OrderMenu(1L, 1, 20000, order, menu1);
+		OrderMenu orderMenu2 = new OrderMenu(2L, 2, 15000, order, menu2);
+		List<OrderMenu> orderMenuList = new ArrayList<>();
+		orderMenuList.add(orderMenu1);
+		orderMenuList.add(orderMenu2);
+
+		given(orderRepository.findById(any()))
+			.willReturn(Optional.of(order));
+		given(orderMenuRepository.findByOrderId(any()))
+			.willReturn(orderMenuList);
+
+		//when
+		OrderDetailResDto result = orderService.findOrder(orderId);
+
+		//then
+		assertThat(result.getId()).isEqualTo(orderId);
+		assertThat(result.getOrderTime()).isBefore(LocalDateTime.now());
+		assertThat(result.getOrderStatus()).isEqualTo(order.getOrderStatus());
+		assertThat(result.getTotalPrice()).isEqualTo(orderMenu1.getPrice() * orderMenu1.getQuantity()
+			+ orderMenu2.getPrice() * orderMenu2.getQuantity());
 	}
 
 }
