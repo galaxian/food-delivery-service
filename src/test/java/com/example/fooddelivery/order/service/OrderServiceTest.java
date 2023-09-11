@@ -207,4 +207,22 @@ class OrderServiceTest {
 		assertThat(result.size()).isEqualTo(orderList.size());
 	}
 
+	@Test
+	void 주문_NotFound_주문_수정_실패() {
+		//given
+		Long orderId = 1L;
+
+		MenuQuantityReqDto menuQuantityReqDto = new MenuQuantityReqDto(1L, 1, 20000);
+		List<MenuQuantityReqDto> menuReqList = new ArrayList<>();
+		menuReqList.add(menuQuantityReqDto);
+
+		given(orderRepository.findById(any()))
+			.willReturn(Optional.empty());
+
+		//when
+		//then
+		assertThatThrownBy(() -> orderService.updateOrder(menuReqList ,orderId))
+			.isInstanceOf(NotFoundException.class);
+	}
+
 }
