@@ -96,4 +96,30 @@ class MenuServiceTest {
 
 	}
 
+	@Test
+	void 음식_NotFound_메뉴_생성_실패() {
+		//given
+		FoodQuantityReqDto foodReq1 = new FoodQuantityReqDto(1L, 1);
+		FoodQuantityReqDto foodReq2 = new FoodQuantityReqDto(2L, 1);
+		List<FoodQuantityReqDto> foodReqList = new ArrayList<>();
+		foodReqList.add(foodReq1);
+		foodReqList.add(foodReq2);
+		CreateMenuReqDto menuReq = new CreateMenuReqDto("양념치킨", 20000, "특급소스로 만든 치킨", foodReqList);
+
+		Long restaurantId = 1L;
+
+		given(restaurantRepository.findById(any()))
+			.willReturn(Optional.of(restaurant));
+		given(menuRepository.save(any()))
+			.willReturn(new Menu(1L,menuReq.getName(), menuReq.getPrice(), menuReq.getDescribe()
+				,true, MenuStatus.SALE, restaurant));
+		given(foodRepository.findById(any()))
+			.willReturn(Optional.empty());
+
+		//when
+		//then
+		assertThatThrownBy(() -> menuService.createMenu(menuReq, restaurantId))
+			.isInstanceOf(NotFoundException.class);
+	}
+
 }
