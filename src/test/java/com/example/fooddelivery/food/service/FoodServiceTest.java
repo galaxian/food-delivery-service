@@ -106,7 +106,7 @@ class FoodServiceTest {
 	}
 
 	@Test
-	void 음식_전체_조회_성공() {
+	void 식당의_음식_목록_조회_성공() {
 		//given
 		Long foodId1 = 1L;
 		String name1 = "음식이름";
@@ -123,10 +123,10 @@ class FoodServiceTest {
 		foodList.add(new Food(foodId1, name1, price1, restaurant));
 		foodList.add(new Food(foodId2, name2, price2, restaurant));
 
-		given(foodRepository.findAll()).willReturn(foodList);
+		given(foodRepository.findAllByRestaurantId(any())).willReturn(foodList);
 
 		//when
-		List<FoodResponseDto> result = foodService.getAllFood();
+		List<FoodResponseDto> result = foodService.getAllFood(1L);
 
 		//then
 		assertThat(result.get(0).getId()).isEqualTo(foodId1);
