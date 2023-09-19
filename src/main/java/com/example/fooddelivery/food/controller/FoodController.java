@@ -25,9 +25,9 @@ public class FoodController {
         return ResponseEntity.ok().body(foodService.getFood(id));
     }
 
-    @GetMapping("/foods")
-    public ResponseEntity<List<FoodResponseDto>> getAllFood() {
-        return ResponseEntity.ok().body(foodService.getAllFood());
+    @GetMapping("/restaurants/{restaurantId}/foods")
+    public ResponseEntity<List<FoodResponseDto>> getAllFood(@PathVariable Long restaurantId) {
+        return ResponseEntity.ok().body(foodService.getAllFood(restaurantId));
     }
 
     @PostMapping("/restaurants/{restaurantId}/foods")

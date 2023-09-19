@@ -34,8 +34,8 @@ public class FoodService {
     }
 
     @Transactional
-    public List<FoodResponseDto> getAllFood() {
-        List<Food> foodList = foodRepository.findAll();
+    public List<FoodResponseDto> getAllFood(Long restaurantId) {
+        List<Food> foodList = foodRepository.findAllByRestaurantId(restaurantId);
 
         return foodList.stream().map(FoodResponseDto::new).collect(Collectors.toList());
     }
