@@ -54,8 +54,8 @@ public class MenuService {
     }
 
     @Transactional
-    public List<MenuResDto> findAllMenu() {
-        List<Menu> menuList = menuRepository.findAll();
+    public List<MenuResDto> findAllMenu(Long restaurantId) {
+        List<Menu> menuList = menuRepository.findAllByRestaurantId(restaurantId);
 
         return menuList.stream().map(MenuResDto::new).collect(Collectors.toList());
     }

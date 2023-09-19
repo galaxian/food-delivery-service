@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/api/v1")
 public class MenuController {
@@ -28,9 +30,9 @@ public class MenuController {
         return ResponseEntity.created(URI.create("/api/v1/menus/" + id)).build();
     }
 
-    @GetMapping("/menus")
-    public ResponseEntity<List<MenuResDto>> findAllMenu() {
-        return ResponseEntity.ok(menuService.findAllMenu());
+    @GetMapping("/restaurants/{restaurantsId}/menus")
+    public ResponseEntity<List<MenuResDto>> findAllMenu(@PathVariable Long restaurantsId) {
+        return ResponseEntity.ok(menuService.findAllMenu(restaurantsId));
     }
 
     @GetMapping("/menus/{id}")
@@ -39,7 +41,7 @@ public class MenuController {
     }
 
     @PutMapping("/menus/{id}")
-    public ResponseEntity<Void> updateMenu(@PathVariable Long id, @RequestBody CreateMenuReqDto reqDto) {
+    public ResponseEntity<Void> updateMenu(@PathVariable Long id, @RequestBody @Valid CreateMenuReqDto reqDto) {
         menuService.updateMenu(id, reqDto);
         return ResponseEntity.ok().build();
     }
