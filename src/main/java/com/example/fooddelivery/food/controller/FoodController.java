@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/api/v1")
 public class FoodController {
@@ -25,19 +27,19 @@ public class FoodController {
         return ResponseEntity.ok().body(foodService.getFood(id));
     }
 
-    @GetMapping("/foods")
-    public ResponseEntity<List<FoodResponseDto>> getAllFood() {
-        return ResponseEntity.ok().body(foodService.getAllFood());
+    @GetMapping("/restaurants/{restaurantId}/foods")
+    public ResponseEntity<List<FoodResponseDto>> getAllFood(@PathVariable Long restaurantId) {
+        return ResponseEntity.ok().body(foodService.getAllFood(restaurantId));
     }
 
     @PostMapping("/restaurants/{restaurantId}/foods")
-    public ResponseEntity<Void> createFood(@RequestBody FoodRequestDto requestDto, @PathVariable Long restaurantId) {
+    public ResponseEntity<Void> createFood(@RequestBody @Valid FoodRequestDto requestDto, @PathVariable Long restaurantId) {
         Long id = foodService.createFood(requestDto, restaurantId);
         return ResponseEntity.created(URI.create("/api/v1/foods/" + id)).build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateFood(@PathVariable Long id, @RequestBody FoodRequestDto requestDto) {
+    public ResponseEntity<Void> updateFood(@PathVariable Long id, @RequestBody @Valid FoodRequestDto requestDto) {
         foodService.updateFood(id, requestDto);
         return ResponseEntity.ok().build();
     }
