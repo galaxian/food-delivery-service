@@ -25,7 +25,7 @@ public class MenuController {
     }
 
     @PostMapping("/restaurants/{restaurantId}/menus")
-    public ResponseEntity<Void> createMenu(@RequestBody CreateMenuReqDto requestDto, @PathVariable Long restaurantId) {
+    public ResponseEntity<Void> createMenu(@RequestBody @Valid CreateMenuReqDto requestDto, @PathVariable Long restaurantId) {
         Long id = menuService.createMenu(requestDto, restaurantId);
         return ResponseEntity.created(URI.create("/api/v1/menus/" + id)).build();
     }
