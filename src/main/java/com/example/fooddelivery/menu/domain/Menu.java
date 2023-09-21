@@ -19,13 +19,13 @@ public class Menu extends TimeStamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", length = 50, nullable = false)
     private String name;
 
     @Column(name = "price", nullable = false)
     private int price;
 
-    @Column(name = "describes", nullable = false)
+    @Column(name = "describes", length = 200, nullable = false)
     private String describe;
 
     @Column(name = "is_display", nullable = false)
