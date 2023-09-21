@@ -36,74 +36,110 @@ public class MenuService {
 
     @Transactional
     public Long createMenu(CreateMenuReqDto requestDto, Long restaurantId) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(
-                () -> new NotFoundException("식당을 찾을 수 없습니다.")
-        );
-        Menu saveMenu = menuRepository.save(requestDto.toEntity(restaurant));
-
-        int sumFoodPrice = 0;
-        List<FoodQuantityReqDto> foodIdQuantityList = requestDto.getFoodReqList();
-        for (FoodQuantityReqDto req : foodIdQuantityList) {
-            Food food = foodRepository.findById(req.getId()).orElseThrow(
-                    () -> new NotFoundException("음식을 찾지 못했습니다.")
-            );
-
-            sumFoodPrice += food.getPrice();
-
-            MenuFood menuFood = MenuFood.createMenuFood(req.getQuantity(), saveMenu, food);
-            menuFoodRepository.save(menuFood);
-        }
-
-        if (requestDto.getPrice() > sumFoodPrice) {
-            throw new BadRequestException("메뉴 가격은 구성된 음식 가격의 합보다 같거나 작아야 합니다.");
-        }
-
+        Restaurant restaurant = findRestaurantById(restaurantId);
+        Menu menu = convertToMenu(requestDto, restaurant);
+        Menu saveMenu = menuRepository.save(menu);
+        List<MenuFood> menuFoodList = makeMenuFoodList(requestDto.getFoodReqList(), saveMenu);
+        validateMenuPrice(menuFoodList, menu);
+        menuFoodRepository.saveAll(menuFoodList);
         return saveMenu.getId();
     }
 
-    @Transactional
-    public List<MenuResDto> findAllMenu(Long restaurantId) {
-        List<Menu> menuList = menuRepository.findAllByRestaurantId(restaurantId);
-
-        return menuList.stream().map(MenuResDto::new).collect(Collectors.toList());
+    private int getFoodsPrice(List<MenuFood> menuFoodList) {
+        return menuFoodList.stream()
+            .map(MenuFood::getTimeQuantityAndPrice)
+            .reduce(0, Integer::sum);
     }
 
-    @Transactional
-    public MenuDetailResDto findMenu(Long id) {
-        Menu menu = menuRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("메뉴가 존재하지 않습니다.")
+    private void validateMenuPrice(List<MenuFood> menuFoodList, Menu menu) {
+        int sumFoodPrice = getFoodsPrice(menuFoodList);
+        if (menu.isFairPrice(sumFoodPrice)) {
+            throw new BadRequestException("메뉴 가격은 구성된 음식 가격의 합보다 같거나 작아야 합니다.");
+        }
+    }
+
+    private List<MenuFood> makeMenuFoodList(List<FoodQuantityReqDto> reqDtoList, Menu menu) {
+        return reqDtoList.stream()
+            .map((req) -> MenuFood.createMenuFood(req.getQuantity(), menu, findFoodById(req.getId())))
+            .collect(Collectors.toList());
+    }
+
+    private Food findFoodById(Long foodId) {
+        return foodRepository.findById(foodId).orElseThrow(
+            () -> new NotFoundException("음식을 찾지 못했습니다.")
         );
+    }
 
-        List<MenuFood> menuFoodList = menuFoodRepository.findByMenuId(id);
+    private Menu convertToMenu(CreateMenuReqDto requestDto, Restaurant restaurant) {
+        return Menu.createMenu(requestDto.getName(), requestDto.getPrice(),
+            requestDto.getDescribe(), restaurant);
+    }
 
-        List<MenuFoodResDto> resDtoList = menuFoodList.stream().map(MenuFoodResDto::new).collect(Collectors.toList());
+    private Restaurant findRestaurantById(Long restaurantId) {
+        return restaurantRepository.findById(restaurantId).orElseThrow(
+                () -> new NotFoundException("식당을 찾을 수 없습니다.")
+        );
+    }
 
+    @Transactional(readOnly = true)
+    public List<MenuResDto> findAllMenu(Long restaurantId) {
+        List<Menu> menuList = findRestaurants(restaurantId);
+        return makeMenuResDtoList(menuList);
+    }
+
+    private List<Menu> findRestaurants(Long restaurantId) {
+        return menuRepository.findAllByRestaurantId(restaurantId);
+    }
+
+    private List<MenuResDto> makeMenuResDtoList(List<Menu> menuList) {
+        return menuList.stream()
+            .map(MenuResDto::new)
+            .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public MenuDetailResDto findMenu(Long id) {
+        Menu menu = findMenuById(id);
+        List<MenuFood> menuFoodList = findMenuFoodById(id);
+        List<MenuFoodResDto> resDtoList = makeMenuFoodResDtoList(menuFoodList);
         return new MenuDetailResDto(menu, resDtoList);
+    }
+
+    private List<MenuFood> findMenuFoodById(Long id) {
+        return menuFoodRepository.findByMenuId(id);
+    }
+
+    private List<MenuFoodResDto> makeMenuFoodResDtoList(List<MenuFood> menuFoodList) {
+        return menuFoodList.stream()
+            .map(MenuFoodResDto::new)
+            .collect(Collectors.toList());
+    }
+
+    private Menu findMenuById(Long id) {
+        return menuRepository.findById(id).orElseThrow(
+            () -> new NotFoundException("메뉴가 존재하지 않습니다.")
+        );
     }
 
     @Transactional
     public void updateMenu(Long id, CreateMenuReqDto reqDto) {
-        Menu menu = menuRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("메뉴가 존재하지 않습니다.")
-        );
+        Menu menu = findMenuById(id);
+        updateMenu(reqDto, menu);
+        validateFoodReq(reqDto.getFoodReqList());
+        menuFoodRepository.deleteAllByMenuId(menu.getId());
+        List<MenuFood> menuFoodList = makeMenuFoodList(reqDto.getFoodReqList(), menu);
+        validateMenuPrice(menuFoodList, menu);
+        menuFoodRepository.saveAll(menuFoodList);
+    }
 
-        menu.updateMenu(reqDto.getName(), reqDto.getPrice(), reqDto.getDescribe());
-
-        if (reqDto.getFoodReqList() != null) {
-            List<FoodQuantityReqDto> foodIdQuantityList = reqDto.getFoodReqList();
-
-            menuFoodRepository.deleteAllByMenuId(menu.getId());
-
-            for (FoodQuantityReqDto req : foodIdQuantityList) {
-                Food food = foodRepository.findById(req.getId()).orElseThrow(
-                        () -> new NotFoundException("음식을 찾지 못했습니다.")
-                );
-
-                MenuFood menuFood = MenuFood.createMenuFood(req.getQuantity(), menu, food);
-                menuFoodRepository.save(menuFood);
-            }
-
+    private void validateFoodReq(List<FoodQuantityReqDto> reqDtoList) {
+        if (reqDtoList.isEmpty()) {
+            throw new BadRequestException("메뉴에 들어갈 음식 정보가 없습니다.");
         }
+    }
+
+    private void updateMenu(CreateMenuReqDto reqDto, Menu menu) {
+        menu.updateMenu(reqDto.getName(), reqDto.getPrice(), reqDto.getDescribe());
     }
 
     @Transactional

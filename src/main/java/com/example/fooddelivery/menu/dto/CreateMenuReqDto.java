@@ -35,8 +35,4 @@ public class CreateMenuReqDto {
         this.describe = describe;
         this.foodReqList = foodReqList;
     }
-
-    public Menu toEntity(Restaurant restaurant) {
-        return Menu.createMenu(name, price, describe, restaurant);
-    }
 }
