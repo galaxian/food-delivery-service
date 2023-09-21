@@ -47,12 +47,16 @@ public class RestaurantService {
         return Restaurant.createRestaurant(reqDto.getName(), reqDto.getMinPrice(), reqDto.getDeliveryFee());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public RestaurantDetailResDto findRestaurant(Long restaurantId) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(
-                () -> new NotFoundException("식당을 찾을 수 없습니다.")
-        );
+        Restaurant restaurant = findRestaurantById(restaurantId);
         return new RestaurantDetailResDto(restaurant);
+    }
+
+    private Restaurant findRestaurantById(Long restaurantId) {
+        return restaurantRepository.findById(restaurantId).orElseThrow(
+            () -> new NotFoundException("식당을 찾을 수 없습니다.")
+        );
     }
 
     @Transactional
