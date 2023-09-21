@@ -75,6 +75,6 @@ public class Menu extends TimeStamped {
     }
 
     public boolean isFairPrice(int sumFoodPrice) {
-        return this.price > sumFoodPrice;
+        return this.price >= sumFoodPrice;
     }
 }
