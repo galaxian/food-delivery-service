@@ -27,20 +27,24 @@ public class RestaurantService {
 
     @Transactional
     public Long createRestaurant(CreateRestaurantReqDto reqDto) {
-
-        if (isExistRestaurantName(reqDto.getName())) {
-            throw new DuplicateException("동일한 식당 이름이 존재합니다.");
-        }
-
-        Restaurant restaurant = reqDto.toEntity();
-
+        validateRestaurant(reqDto);
+        Restaurant restaurant = convertToRestaurant(reqDto);
         Restaurant saveRestaurant = restaurantRepository.save(restaurant);
-
         return saveRestaurant.getId();
     }
 
-    private boolean isExistRestaurantName(String name) {
+    private void validateRestaurant(CreateRestaurantReqDto reqDto) {
+        if (isDuplicateName(reqDto.getName())) {
+            throw new DuplicateException("동일한 식당 이름이 존재합니다.");
+        }
+    }
+
+    private boolean isDuplicateName(String name) {
         return restaurantRepository.findByName(name).isPresent();
+    }
+
+    private Restaurant convertToRestaurant(CreateRestaurantReqDto reqDto) {
+        return Restaurant.createRestaurant(reqDto.getName(), reqDto.getMinPrice(), reqDto.getDeliveryFee());
     }
 
     @Transactional
