@@ -37,7 +37,8 @@ public class MenuService {
     @Transactional
     public Long createMenu(CreateMenuReqDto requestDto, Long restaurantId) {
         Restaurant restaurant = findRestaurantById(restaurantId);
-        Menu saveMenu = menuRepository.save(requestDto.toEntity(restaurant));
+        Menu menu = convertToMenu(requestDto, restaurant);
+        Menu saveMenu = menuRepository.save(menu);
 
         int sumFoodPrice = 0;
         List<FoodQuantityReqDto> foodIdQuantityList = requestDto.getFoodReqList();
@@ -57,6 +58,11 @@ public class MenuService {
         }
 
         return saveMenu.getId();
+    }
+
+    private Menu convertToMenu(CreateMenuReqDto requestDto, Restaurant restaurant) {
+        return Menu.createMenu(requestDto.getName(), requestDto.getPrice(),
+            requestDto.getDescribe(), restaurant);
     }
 
     private Restaurant findRestaurantById(Long restaurantId) {
