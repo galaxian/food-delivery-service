@@ -171,7 +171,7 @@ class MenuServiceTest {
 	}
 
 	@Test
-	void 메뉴_전체_조회_성공() {
+	void 식당_메뉴_전체_조회_성공() {
 		//given
 		List<Menu> menuList = new ArrayList<>();
 
@@ -182,11 +182,11 @@ class MenuServiceTest {
 		menuList.add(menu1);
 		menuList.add(menu2);
 
-		given(menuRepository.findAll())
+		given(menuRepository.findAllByRestaurantId(any()))
 			.willReturn(menuList);
 
 		//when
-		List<MenuResDto> result = menuService.findAllMenu();
+		List<MenuResDto> result = menuService.findAllMenu(restaurant.getId());
 
 		//then
 		assertThat(result.get(0).getId()).isEqualTo(menu1.getId());
