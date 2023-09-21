@@ -51,7 +51,7 @@ public class OrderService {
                     () -> new NotFoundException("메뉴를 찾을 수 없습니다.")
             );
 
-            OrderMenu orderMenu = OrderMenu.createOrderMenu(req.getQuantity(), req.getPrice(), saveOrder, menu);
+            OrderMenu orderMenu = OrderMenu.createOrderMenu(req.getQuantity(), menu.getPrice(), saveOrder, menu);
             orderMenuRepository.save(orderMenu);
         }
 
@@ -77,8 +77,8 @@ public class OrderService {
     }
 
     @Transactional
-    public List<OrderDetailResDto> findAllOrder() {
-        List<Order> orderList = orderRepository.findAll();
+    public List<OrderDetailResDto> findAllOrder(Long restaurantId) {
+        List<Order> orderList = orderRepository.findAllByRestaurantId(restaurantId);
         List<OrderDetailResDto> resDtoList = new ArrayList<>();
 
         for (Order order: orderList) {
@@ -109,7 +109,7 @@ public class OrderService {
                         () -> new NotFoundException("메뉴를 찾을 수 없습니다.")
                 );
 
-                OrderMenu orderMenu = OrderMenu.createOrderMenu(req.getQuantity(), req.getPrice(), order, menu);
+                OrderMenu orderMenu = OrderMenu.createOrderMenu(req.getQuantity(), menu.getPrice(), order, menu);
                 orderMenuRepository.save(orderMenu);
             }
         }
