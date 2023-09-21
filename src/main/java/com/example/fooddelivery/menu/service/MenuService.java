@@ -41,23 +41,26 @@ public class MenuService {
         Menu saveMenu = menuRepository.save(menu);
 
         int sumFoodPrice = 0;
-        List<FoodQuantityReqDto> foodIdQuantityList = requestDto.getFoodReqList();
-        for (FoodQuantityReqDto req : foodIdQuantityList) {
-            Food food = foodRepository.findById(req.getId()).orElseThrow(
-                    () -> new NotFoundException("음식을 찾지 못했습니다.")
-            );
-
-            sumFoodPrice += food.getPrice();
-
-            MenuFood menuFood = MenuFood.createMenuFood(req.getQuantity(), saveMenu, food);
-            menuFoodRepository.save(menuFood);
-        }
+        List<MenuFood> menuFoodList = makeMenuFoodList(requestDto.getFoodReqList(), saveMenu);
+        menuFoodRepository.saveAll(menuFoodList);
 
         if (requestDto.getPrice() > sumFoodPrice) {
             throw new BadRequestException("메뉴 가격은 구성된 음식 가격의 합보다 같거나 작아야 합니다.");
         }
 
         return saveMenu.getId();
+    }
+
+    private List<MenuFood> makeMenuFoodList(List<FoodQuantityReqDto> reqDtoList, Menu menu) {
+        return reqDtoList.stream()
+            .map((req) -> MenuFood.createMenuFood(req.getQuantity(), menu, findFoodById(req.getId())))
+            .collect(Collectors.toList());
+    }
+
+    private Food findFoodById(Long foodId) {
+        return foodRepository.findById(foodId).orElseThrow(
+            () -> new NotFoundException("음식을 찾지 못했습니다.")
+        );
     }
 
     private Menu convertToMenu(CreateMenuReqDto requestDto, Restaurant restaurant) {
@@ -105,9 +108,7 @@ public class MenuService {
             menuFoodRepository.deleteAllByMenuId(menu.getId());
 
             for (FoodQuantityReqDto req : foodIdQuantityList) {
-                Food food = foodRepository.findById(req.getId()).orElseThrow(
-                        () -> new NotFoundException("음식을 찾지 못했습니다.")
-                );
+                Food food = findFoodById(req.getId());
 
                 MenuFood menuFood = MenuFood.createMenuFood(req.getQuantity(), menu, food);
                 menuFoodRepository.save(menuFood);
