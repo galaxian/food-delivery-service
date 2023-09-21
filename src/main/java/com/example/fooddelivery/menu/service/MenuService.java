@@ -36,9 +36,7 @@ public class MenuService {
 
     @Transactional
     public Long createMenu(CreateMenuReqDto requestDto, Long restaurantId) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(
-                () -> new NotFoundException("식당을 찾을 수 없습니다.")
-        );
+        Restaurant restaurant = findRestaurantById(restaurantId);
         Menu saveMenu = menuRepository.save(requestDto.toEntity(restaurant));
 
         int sumFoodPrice = 0;
@@ -59,6 +57,12 @@ public class MenuService {
         }
 
         return saveMenu.getId();
+    }
+
+    private Restaurant findRestaurantById(Long restaurantId) {
+        return restaurantRepository.findById(restaurantId).orElseThrow(
+                () -> new NotFoundException("식당을 찾을 수 없습니다.")
+        );
     }
 
     @Transactional
