@@ -25,12 +25,16 @@ public class FoodService {
         this.restaurantRepository = restaurantRepository;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public FoodResponseDto getFood(Long id) {
-        Food food = foodRepository.findById(id).orElseThrow(
+        Food food = findFoodById(id);
+        return new FoodResponseDto(food);
+    }
+
+    private Food findFoodById(Long id) {
+        return foodRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("음식이 존재하지 않습니다.")
         );
-        return new FoodResponseDto(food);
     }
 
     @Transactional
@@ -51,18 +55,14 @@ public class FoodService {
 
     @Transactional
     public void updateFood(Long id, FoodRequestDto requestDto) {
-        Food food = foodRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("음식이 존재하지 않습니다.")
-        );
+        Food food = findFoodById(id);
 
         food.updateFood(requestDto.getName(), requestDto.getPrice());
     }
 
     @Transactional
     public void deleteFood(Long id) {
-        Food food = foodRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("음식이 존재하지 않습니다.")
-        );
+        Food food = findFoodById(id);
 
         foodRepository.delete(food);
     }
