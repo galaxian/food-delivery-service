@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.example.fooddelivery.common.exception.BadRequestException;
 import com.example.fooddelivery.common.exception.NotFoundException;
 import com.example.fooddelivery.food.domain.Food;
 import com.example.fooddelivery.food.repository.FoodRepository;
@@ -123,6 +124,33 @@ class MenuServiceTest {
 		//then
 		assertThatThrownBy(() -> menuService.createMenu(menuReq, restaurantId))
 			.isInstanceOf(NotFoundException.class);
+	}
+
+	@Test
+	void 가격조건미달_메뉴_생성_실패() {
+		//given
+		FoodQuantityReqDto foodReq1 = new FoodQuantityReqDto(1L, 1);
+		FoodQuantityReqDto foodReq2 = new FoodQuantityReqDto(2L, 1);
+		List<FoodQuantityReqDto> foodReqList = new ArrayList<>();
+		foodReqList.add(foodReq1);
+		foodReqList.add(foodReq2);
+		CreateMenuReqDto menuReq = new CreateMenuReqDto("양념치킨", 40000, "특급소스로 만든 치킨", foodReqList);
+
+		Long restaurantId = 1L;
+
+		given(restaurantRepository.findById(any()))
+			.willReturn(Optional.of(restaurant));
+		given(menuRepository.save(any()))
+			.willReturn(new Menu(1L,menuReq.getName(), menuReq.getPrice(), menuReq.getDescribe()
+				,true, MenuStatus.SALE, restaurant));
+		given(foodRepository.findById(any()))
+			.willReturn(Optional.of(new Food(1L, "치킨", 20000, restaurant)))
+			.willReturn(Optional.of(new Food(2L, "콜라", 3300, restaurant)));
+
+		//when
+		//then
+		assertThatThrownBy(() -> menuService.createMenu(menuReq, restaurantId))
+			.isInstanceOf(BadRequestException.class);
 	}
 
 	@Test
