@@ -246,4 +246,34 @@ class MenuServiceTest {
 			.isInstanceOf(NotFoundException.class);
 	}
 
+	@Test
+	void 가격조건미달_메뉴_수정_실패() {
+		//given
+		Long menuId = 1L;
+		FoodQuantityReqDto foodReq1 = new FoodQuantityReqDto(1L, 1);
+		FoodQuantityReqDto foodReq2 = new FoodQuantityReqDto(2L, 1);
+		List<FoodQuantityReqDto> foodReqList = new ArrayList<>();
+		foodReqList.add(foodReq1);
+		foodReqList.add(foodReq2);
+		CreateMenuReqDto updateReq = new CreateMenuReqDto("양념치킨", 23300,
+			"특급소스로 만든 치킨", foodReqList);
+
+		Long restaurantId = 1L;
+
+		given(menuRepository.findById(any()))
+			.willReturn(Optional.of(
+				new Menu(1L, updateReq.getName(), updateReq.getPrice(),
+					updateReq.getDescribe(), true, MenuStatus.SALE,
+					restaurant)));
+		given(foodRepository.findById(any()))
+			.willReturn(Optional.of(new Food(1L, "치킨", 20000, restaurant)))
+			.willReturn(Optional.of(new Food(2L, "콜라", 3300, restaurant)));
+
+		//when
+		//then
+		assertThatThrownBy(() -> menuService.updateMenu(restaurantId, updateReq))
+			.isInstanceOf(BadRequestException.class);
+
+	}
+
 }
