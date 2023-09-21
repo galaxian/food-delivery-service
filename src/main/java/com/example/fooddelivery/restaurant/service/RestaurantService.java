@@ -77,9 +77,11 @@ public class RestaurantService {
 
     @Transactional
     public void updateRestaurant(UpdateRestaurantReqDto reqDto, Long restaurantId) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(
-                () -> new NotFoundException("식당이 존재하지 않습니다.")
-        );
+        Restaurant restaurant = findRestaurantById(restaurantId);
+        updateRestaurant(restaurant, reqDto);
+    }
+
+    private void updateRestaurant(Restaurant restaurant, UpdateRestaurantReqDto reqDto) {
         restaurant.update(reqDto.getName(), reqDto.getMinPrice(), reqDto.getDeliveryFee());
     }
 
