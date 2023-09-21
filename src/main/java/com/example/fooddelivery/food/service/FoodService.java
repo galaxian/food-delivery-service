@@ -56,14 +56,19 @@ public class FoodService {
     @Transactional
     public Long createFood(FoodRequestDto requestDto, Long restaurantId) {
         Restaurant restaurant = findRestaurantById(restaurantId);
-        Food food = requestDto.toEntity(restaurant);
-        return foodRepository.save(food).getId();
+        Food food = convertToFoodEntity(requestDto, restaurant);
+        Food saveFood = foodRepository.save(food);
+        return saveFood.getId();
     }
 
     private Restaurant findRestaurantById(Long restaurantId) {
         return restaurantRepository.findById(restaurantId).orElseThrow(
             () -> new NotFoundException("식당을 찾을 수 없습니다.")
         );
+    }
+
+    private Food convertToFoodEntity(FoodRequestDto requestDto, Restaurant restaurant) {
+        return Food.createFood(requestDto.getName(), requestDto.getPrice(), restaurant);
     }
 
     @Transactional
