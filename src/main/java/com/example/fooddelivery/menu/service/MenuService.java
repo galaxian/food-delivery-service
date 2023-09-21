@@ -39,16 +39,17 @@ public class MenuService {
         Restaurant restaurant = findRestaurantById(restaurantId);
         Menu menu = convertToMenu(requestDto, restaurant);
         Menu saveMenu = menuRepository.save(menu);
-
-        int sumFoodPrice = 0;
         List<MenuFood> menuFoodList = makeMenuFoodList(requestDto.getFoodReqList(), saveMenu);
+        validateMenuPrice(menuFoodList, menu);
         menuFoodRepository.saveAll(menuFoodList);
+        return saveMenu.getId();
+    }
 
-        if (requestDto.getPrice() > sumFoodPrice) {
+    private void validateMenuPrice(List<MenuFood> menuFoodList, Menu menu) {
+        int sumFoodPrice = getFoodsPrice(menuFoodList);
+        if (menu.isFairPrice(sumFoodPrice)) {
             throw new BadRequestException("메뉴 가격은 구성된 음식 가격의 합보다 같거나 작아야 합니다.");
         }
-
-        return saveMenu.getId();
     }
 
     private List<MenuFood> makeMenuFoodList(List<FoodQuantityReqDto> reqDtoList, Menu menu) {
