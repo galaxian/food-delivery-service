@@ -38,7 +38,7 @@ public class FoodController {
         return ResponseEntity.created(URI.create("/api/v1/foods/" + id)).build();
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/foods/{id}")
     public ResponseEntity<Void> updateFood(@PathVariable Long id, @RequestBody @Valid FoodRequestDto requestDto) {
         foodService.updateFood(id, requestDto);
         return ResponseEntity.ok().build();

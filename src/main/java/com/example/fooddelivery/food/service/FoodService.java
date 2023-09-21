@@ -74,7 +74,10 @@ public class FoodService {
     @Transactional
     public void updateFood(Long id, FoodRequestDto requestDto) {
         Food food = findFoodById(id);
+        updateFood(food, requestDto);
+    }
 
+    private void updateFood(Food food, FoodRequestDto requestDto) {
         food.updateFood(requestDto.getName(), requestDto.getPrice());
     }
 
