@@ -1,5 +1,6 @@
 package com.example.fooddelivery.menu.service;
 
+import com.example.fooddelivery.common.exception.BadRequestException;
 import com.example.fooddelivery.common.exception.NotFoundException;
 import com.example.fooddelivery.food.domain.Food;
 import com.example.fooddelivery.food.repository.FoodRepository;
@@ -40,14 +41,21 @@ public class MenuService {
         );
         Menu saveMenu = menuRepository.save(requestDto.toEntity(restaurant));
 
+        int sumFoodPrice = 0;
         List<FoodQuantityReqDto> foodIdQuantityList = requestDto.getFoodReqList();
         for (FoodQuantityReqDto req : foodIdQuantityList) {
             Food food = foodRepository.findById(req.getId()).orElseThrow(
                     () -> new NotFoundException("음식을 찾지 못했습니다.")
             );
 
+            sumFoodPrice += food.getPrice();
+
             MenuFood menuFood = MenuFood.createMenuFood(req.getQuantity(), saveMenu, food);
             menuFoodRepository.save(menuFood);
+        }
+
+        if (requestDto.getPrice() > sumFoodPrice) {
+            throw new BadRequestException("메뉴 가격은 구성된 음식 가격의 합보다 같거나 작아야 합니다.");
         }
 
         return saveMenu.getId();
