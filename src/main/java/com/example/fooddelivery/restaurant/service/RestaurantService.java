@@ -61,8 +61,18 @@ public class RestaurantService {
 
     @Transactional
     public List<RestaurantResDto> findAllRestaurant() {
-        List<Restaurant> restaurantList = restaurantRepository.findAll();
-        return restaurantList.stream().map(RestaurantResDto::new).collect(Collectors.toList());
+        List<Restaurant> restaurantList = findAllRestaurants();
+        return makeRestaurantResDtoList(restaurantList);
+    }
+
+    private List<Restaurant> findAllRestaurants() {
+        return restaurantRepository.findAll();
+    }
+
+    private List<RestaurantResDto> makeRestaurantResDtoList(List<Restaurant> restaurantList) {
+        return restaurantList.stream()
+            .map(RestaurantResDto::new)
+            .collect(Collectors.toList());
     }
 
     @Transactional
