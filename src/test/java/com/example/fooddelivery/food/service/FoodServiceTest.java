@@ -1,6 +1,5 @@
 package com.example.fooddelivery.food.service;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
@@ -81,7 +80,7 @@ class FoodServiceTest {
 			.willReturn(Optional.of(new Food(foodId, name, price, restaurant)));
 
 		//when
-		FoodResponseDto result = foodService.getFood(foodId);
+		FoodResponseDto result = foodService.findFood(foodId);
 
 		//then
 		assertThat(result.getId()).isEqualTo(foodId);
@@ -100,7 +99,7 @@ class FoodServiceTest {
 
 		//when
 		//then
-		assertThatThrownBy(() -> foodService.getFood(foodId))
+		assertThatThrownBy(() -> foodService.findFood(foodId))
 			.isInstanceOf(NotFoundException.class);
 
 	}
@@ -126,7 +125,7 @@ class FoodServiceTest {
 		given(foodRepository.findAllByRestaurantId(any())).willReturn(foodList);
 
 		//when
-		List<FoodResponseDto> result = foodService.getAllFood(1L);
+		List<FoodResponseDto> result = foodService.findAllFood(1L);
 
 		//then
 		assertThat(result.get(0).getId()).isEqualTo(foodId1);

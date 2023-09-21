@@ -24,12 +24,12 @@ public class FoodController {
 
     @GetMapping("/foods/{id}")
     public ResponseEntity<FoodResponseDto> getFood(@PathVariable Long id) {
-        return ResponseEntity.ok().body(foodService.getFood(id));
+        return ResponseEntity.ok().body(foodService.findFood(id));
     }
 
     @GetMapping("/restaurants/{restaurantId}/foods")
     public ResponseEntity<List<FoodResponseDto>> getAllFood(@PathVariable Long restaurantId) {
-        return ResponseEntity.ok().body(foodService.getAllFood(restaurantId));
+        return ResponseEntity.ok().body(foodService.findAllFood(restaurantId));
     }
 
     @PostMapping("/restaurants/{restaurantId}/foods")
@@ -38,7 +38,7 @@ public class FoodController {
         return ResponseEntity.created(URI.create("/api/v1/foods/" + id)).build();
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/foods/{id}")
     public ResponseEntity<Void> updateFood(@PathVariable Long id, @RequestBody @Valid FoodRequestDto requestDto) {
         foodService.updateFood(id, requestDto);
         return ResponseEntity.ok().build();

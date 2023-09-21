@@ -4,8 +4,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import com.example.fooddelivery.food.domain.Food;
-import com.example.fooddelivery.restaurant.domain.Restaurant;
 import lombok.Getter;
 
 @Getter
@@ -22,9 +20,5 @@ public class FoodRequestDto {
     public FoodRequestDto(String name, int price) {
         this.name = name;
         this.price = price;
-    }
-
-    public Food toEntity(Restaurant restaurant) {
-        return Food.createFood(name, price, restaurant);
     }
 }
