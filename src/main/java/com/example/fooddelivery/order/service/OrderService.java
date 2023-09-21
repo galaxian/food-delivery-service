@@ -77,8 +77,8 @@ public class OrderService {
     }
 
     @Transactional
-    public List<OrderDetailResDto> findAllOrder() {
-        List<Order> orderList = orderRepository.findAll();
+    public List<OrderDetailResDto> findAllOrder(Long restaurantId) {
+        List<Order> orderList = orderRepository.findAllByRestaurantId(restaurantId);
         List<OrderDetailResDto> resDtoList = new ArrayList<>();
 
         for (Order order: orderList) {

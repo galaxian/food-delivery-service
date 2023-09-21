@@ -27,9 +27,9 @@ public class OrderController {
         return ResponseEntity.ok(orderService.findOrder(id));
     }
 
-    @GetMapping("/orders")
-    public ResponseEntity<List<OrderDetailResDto>> findAllOrder() {
-        return ResponseEntity.ok(orderService.findAllOrder());
+    @GetMapping("/restaurants/{restaurantId}/orders")
+    public ResponseEntity<List<OrderDetailResDto>> findAllOrder(@PathVariable Long restaurantId) {
+        return ResponseEntity.ok(orderService.findAllOrder(restaurantId));
     }
 
     @PostMapping("/restaurants/{restaurantsId}/orders")
