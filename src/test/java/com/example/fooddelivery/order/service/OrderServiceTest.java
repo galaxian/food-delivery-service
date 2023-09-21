@@ -166,7 +166,7 @@ class OrderServiceTest {
 	}
 
 	@Test
-	void 주문_전체_조회_성공() {
+	void 식당_주문_목록_조회_성공() {
 		//given
 		Order order1 = new Order(1L, OrderStatus.WAITING, now, restaurant);
 		Menu menu1 = new Menu(1L, "양념치킨", 20000, "비법소스로 만든 치킨"
@@ -192,14 +192,14 @@ class OrderServiceTest {
 		orderMenuList2.add(orderMenu3);
 		orderMenuList2.add(orderMenu4);
 
-		given(orderRepository.findAll())
+		given(orderRepository.findAllByRestaurantId(any()))
 			.willReturn(orderList);
 		given(orderMenuRepository.findByOrderId(any()))
 			.willReturn(orderMenuList1)
 			.willReturn(orderMenuList2);
 
 		//when
-		List<OrderDetailResDto> result = orderService.findAllOrder();
+		List<OrderDetailResDto> result = orderService.findAllOrder(restaurant.getId());
 
 		//then
 		assertThat(result.get(0).getId()).isEqualTo(order1.getId());
