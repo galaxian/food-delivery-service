@@ -124,22 +124,27 @@ public class MenuService {
     @Transactional
     public void updateMenu(Long id, CreateMenuReqDto reqDto) {
         Menu menu = findMenuById(id);
+        updateMenu(reqDto, menu);
+        validateFoodReq(reqDto.getFoodReqList());
+        List<FoodQuantityReqDto> foodIdQuantityList = reqDto.getFoodReqList();
+        menuFoodRepository.deleteAllByMenuId(menu.getId());
 
-        menu.updateMenu(reqDto.getName(), reqDto.getPrice(), reqDto.getDescribe());
+        for (FoodQuantityReqDto req : foodIdQuantityList) {
+            Food food = findFoodById(req.getId());
 
-        if (reqDto.getFoodReqList() != null) {
-            List<FoodQuantityReqDto> foodIdQuantityList = reqDto.getFoodReqList();
-
-            menuFoodRepository.deleteAllByMenuId(menu.getId());
-
-            for (FoodQuantityReqDto req : foodIdQuantityList) {
-                Food food = findFoodById(req.getId());
-
-                MenuFood menuFood = MenuFood.createMenuFood(req.getQuantity(), menu, food);
-                menuFoodRepository.save(menuFood);
-            }
-
+            MenuFood menuFood = MenuFood.createMenuFood(req.getQuantity(), menu, food);
+            menuFoodRepository.save(menuFood);
         }
+    }
+
+    private void validateFoodReq(List<FoodQuantityReqDto> reqDtoList) {
+        if (reqDtoList.isEmpty()) {
+            throw new BadRequestException("메뉴에 들어갈 음식 정보가 없습니다.");
+        }
+    }
+
+    private void updateMenu(CreateMenuReqDto reqDto, Menu menu) {
+        menu.updateMenu(reqDto.getName(), reqDto.getPrice(), reqDto.getDescribe());
     }
 
     @Transactional
