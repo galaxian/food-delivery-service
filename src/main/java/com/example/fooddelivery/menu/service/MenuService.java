@@ -45,6 +45,12 @@ public class MenuService {
         return saveMenu.getId();
     }
 
+    private int getFoodsPrice(List<MenuFood> menuFoodList) {
+        return menuFoodList.stream()
+            .map(MenuFood::getTimeQuantityAndPrice)
+            .reduce(0, Integer::sum);
+    }
+
     private void validateMenuPrice(List<MenuFood> menuFoodList, Menu menu) {
         int sumFoodPrice = getFoodsPrice(menuFoodList);
         if (menu.isFairPrice(sumFoodPrice)) {

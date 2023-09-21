@@ -73,4 +73,8 @@ public class Menu extends TimeStamped {
     private boolean isNegative(int price) {
         return price < 0;
     }
+
+    public boolean isFairPrice(int sumFoodPrice) {
+        return this.price > sumFoodPrice;
+    }
 }

@@ -40,4 +40,8 @@ public class MenuFood extends TimeStamped {
     public static MenuFood createMenuFood(int quantity, Menu menu, Food food) {
         return new MenuFood(quantity, menu, food);
     }
+
+    public int getTimeQuantityAndPrice() {
+        return this.quantity * this.food.getPrice();
+    }
 }
