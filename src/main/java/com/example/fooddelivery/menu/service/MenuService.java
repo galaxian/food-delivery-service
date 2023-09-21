@@ -126,15 +126,10 @@ public class MenuService {
         Menu menu = findMenuById(id);
         updateMenu(reqDto, menu);
         validateFoodReq(reqDto.getFoodReqList());
-        List<FoodQuantityReqDto> foodIdQuantityList = reqDto.getFoodReqList();
         menuFoodRepository.deleteAllByMenuId(menu.getId());
-
-        for (FoodQuantityReqDto req : foodIdQuantityList) {
-            Food food = findFoodById(req.getId());
-
-            MenuFood menuFood = MenuFood.createMenuFood(req.getQuantity(), menu, food);
-            menuFoodRepository.save(menuFood);
-        }
+        List<MenuFood> menuFoodList = makeMenuFoodList(reqDto.getFoodReqList(), menu);
+        validateMenuPrice(menuFoodList, menu);
+        menuFoodRepository.saveAll(menuFoodList);
     }
 
     private void validateFoodReq(List<FoodQuantityReqDto> reqDtoList) {
