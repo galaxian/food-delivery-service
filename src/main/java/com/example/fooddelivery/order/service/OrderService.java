@@ -51,7 +51,7 @@ public class OrderService {
                     () -> new NotFoundException("메뉴를 찾을 수 없습니다.")
             );
 
-            OrderMenu orderMenu = OrderMenu.createOrderMenu(req.getQuantity(), req.getPrice(), saveOrder, menu);
+            OrderMenu orderMenu = OrderMenu.createOrderMenu(req.getQuantity(), menu.getPrice(), saveOrder, menu);
             orderMenuRepository.save(orderMenu);
         }
 
@@ -109,7 +109,7 @@ public class OrderService {
                         () -> new NotFoundException("메뉴를 찾을 수 없습니다.")
                 );
 
-                OrderMenu orderMenu = OrderMenu.createOrderMenu(req.getQuantity(), req.getPrice(), order, menu);
+                OrderMenu orderMenu = OrderMenu.createOrderMenu(req.getQuantity(), menu.getPrice(), order, menu);
                 orderMenuRepository.save(orderMenu);
             }
         }

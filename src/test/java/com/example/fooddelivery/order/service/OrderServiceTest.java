@@ -55,7 +55,7 @@ class OrderServiceTest {
 	@Test
 	void 주문_생성_성공() {
 		//given
-		MenuQuantityReqDto menuQuantityReqDto = new MenuQuantityReqDto(1L, 1, 20000);
+		MenuQuantityReqDto menuQuantityReqDto = new MenuQuantityReqDto(1L, 1);
 		List<MenuQuantityReqDto> menuReqList = new ArrayList<>();
 		menuReqList.add(menuQuantityReqDto);
 		CreateOrderReqDto createOrderReqDto = new CreateOrderReqDto(menuReqList);
@@ -79,7 +79,7 @@ class OrderServiceTest {
 	@Test
 	void 식당_NotFound_주문_생성_실패() {
 		//given
-		MenuQuantityReqDto menuQuantityReqDto = new MenuQuantityReqDto(1L, 1, 20000);
+		MenuQuantityReqDto menuQuantityReqDto = new MenuQuantityReqDto(1L, 1);
 		List<MenuQuantityReqDto> menuReqList = new ArrayList<>();
 		menuReqList.add(menuQuantityReqDto);
 		CreateOrderReqDto createOrderReqDto = new CreateOrderReqDto(menuReqList);
@@ -98,7 +98,7 @@ class OrderServiceTest {
 	@Test
 	void 메뉴_NotFound_주문_생성_실패() {
 		//given
-		MenuQuantityReqDto menuQuantityReqDto = new MenuQuantityReqDto(1L, 1, 20000);
+		MenuQuantityReqDto menuQuantityReqDto = new MenuQuantityReqDto(1L, 1);
 		List<MenuQuantityReqDto> menuReqList = new ArrayList<>();
 		menuReqList.add(menuQuantityReqDto);
 		CreateOrderReqDto createOrderReqDto = new CreateOrderReqDto(menuReqList);
@@ -212,7 +212,7 @@ class OrderServiceTest {
 		//given
 		Long orderId = 1L;
 
-		MenuQuantityReqDto menuQuantityReqDto = new MenuQuantityReqDto(1L, 1, 20000);
+		MenuQuantityReqDto menuQuantityReqDto = new MenuQuantityReqDto(1L, 1);
 		List<MenuQuantityReqDto> menuReqList = new ArrayList<>();
 		menuReqList.add(menuQuantityReqDto);
 
