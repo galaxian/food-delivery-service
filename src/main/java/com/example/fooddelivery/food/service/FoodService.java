@@ -37,20 +37,27 @@ public class FoodService {
         );
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<FoodResponseDto> getAllFood(Long restaurantId) {
-        List<Food> foodList = foodRepository.findAllByRestaurantId(restaurantId);
-
+        List<Food> foodList = findAllFoodsByRestaurantId(restaurantId);
         return foodList.stream().map(FoodResponseDto::new).collect(Collectors.toList());
+    }
+
+    private List<Food> findAllFoodsByRestaurantId(Long restaurantId) {
+        return foodRepository.findAllByRestaurantId(restaurantId);
     }
 
     @Transactional
     public Long createFood(FoodRequestDto requestDto, Long restaurantId) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantId).orElseThrow(
-                () -> new NotFoundException("식당을 찾을 수 없습니다.")
-        );
+        Restaurant restaurant = findRestaurantById(restaurantId);
         Food food = requestDto.toEntity(restaurant);
         return foodRepository.save(food).getId();
+    }
+
+    private Restaurant findRestaurantById(Long restaurantId) {
+        return restaurantRepository.findById(restaurantId).orElseThrow(
+            () -> new NotFoundException("식당을 찾을 수 없습니다.")
+        );
     }
 
     @Transactional
