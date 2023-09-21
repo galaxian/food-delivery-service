@@ -26,7 +26,7 @@ public class FoodService {
     }
 
     @Transactional(readOnly = true)
-    public FoodResponseDto getFood(Long id) {
+    public FoodResponseDto findFood(Long id) {
         Food food = findFoodById(id);
         return new FoodResponseDto(food);
     }
@@ -38,13 +38,19 @@ public class FoodService {
     }
 
     @Transactional(readOnly = true)
-    public List<FoodResponseDto> getAllFood(Long restaurantId) {
+    public List<FoodResponseDto> findAllFood(Long restaurantId) {
         List<Food> foodList = findAllFoodsByRestaurantId(restaurantId);
-        return foodList.stream().map(FoodResponseDto::new).collect(Collectors.toList());
+        return makeFoodResponseDtoList(foodList);
     }
 
     private List<Food> findAllFoodsByRestaurantId(Long restaurantId) {
         return foodRepository.findAllByRestaurantId(restaurantId);
+    }
+
+    private List<FoodResponseDto> makeFoodResponseDtoList(List<Food> foodList) {
+        return foodList.stream()
+            .map(FoodResponseDto::new)
+            .collect(Collectors.toList());
     }
 
     @Transactional
