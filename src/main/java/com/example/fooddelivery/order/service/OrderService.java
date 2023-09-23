@@ -1,5 +1,6 @@
 package com.example.fooddelivery.order.service;
 
+import com.example.fooddelivery.common.exception.BadRequestException;
 import com.example.fooddelivery.common.exception.NotFoundException;
 import com.example.fooddelivery.menu.domain.Menu;
 import com.example.fooddelivery.menu.repository.MenuRepository;
@@ -127,19 +128,16 @@ public class OrderService {
 
     @Transactional
     public void updateOrder(List<MenuQuantityReqDto> reqDto, Long orderId) {
+        validateMenuEmpty(reqDto);
         Order order = findOrderById(orderId);
+        orderMenuRepository.deleteAllByOrderId(orderId);
+        List<OrderMenu> orderMenuList = makeOrderMenuList(reqDto, order);
+        orderMenuRepository.saveAll(orderMenuList);
+    }
 
-        if (reqDto != null) {
-            orderMenuRepository.deleteAllByOrderId(orderId);
-
-            for (MenuQuantityReqDto req : reqDto) {
-                Menu menu = menuRepository.findById(req.getId()).orElseThrow(
-                        () -> new NotFoundException("메뉴를 찾을 수 없습니다.")
-                );
-
-                OrderMenu orderMenu = OrderMenu.createOrderMenu(req.getQuantity(), menu.getPrice(), order, menu);
-                orderMenuRepository.save(orderMenu);
-            }
+    private void validateMenuEmpty(List<MenuQuantityReqDto> reqDto) {
+        if (reqDto.isEmpty()) {
+            throw new BadRequestException("주문할 음식이 지정되지 않았습니다.");
         }
     }
 
