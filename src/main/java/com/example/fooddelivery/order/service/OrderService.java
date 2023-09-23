@@ -99,23 +99,22 @@ public class OrderService {
         );
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<OrderDetailResDto> findAllOrder(Long restaurantId) {
-        List<Order> orderList = orderRepository.findAllByRestaurantId(restaurantId);
-        List<OrderDetailResDto> resDtoList = new ArrayList<>();
+        List<Order> orderList = findOrdersByRestaurantId(restaurantId);
+        return makeOrderDetailResDto(orderList);
+    }
 
-        for (Order order: orderList) {
-            List<OrderMenu> orderMenuList = findOrderMenusByOrderId(order.getId());
+    private List<OrderDetailResDto> makeOrderDetailResDto(List<Order> orderList) {
+        return orderList.stream()
+            .map(req -> (new OrderDetailResDto(req,
+                getTotalPrice(findOrderMenusByOrderId(req.getId())),
+                makeOrderMenuResList(findOrderMenusByOrderId(req.getId())))))
+            .collect(Collectors.toList());
+    }
 
-            int totalPrice = 0;
-            for (OrderMenu orderMenu: orderMenuList) {
-                totalPrice += orderMenu.sumTotalPrice();
-            }
-
-            List<OrderMenuResDto> menuList = makeOrderMenuResList(orderMenuList);
-            resDtoList.add(new OrderDetailResDto(order, totalPrice, menuList));
-        }
-        return resDtoList;
+    private List<Order> findOrdersByRestaurantId(Long restaurantId) {
+        return orderRepository.findAllByRestaurantId(restaurantId);
     }
 
     @Transactional
