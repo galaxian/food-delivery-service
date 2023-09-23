@@ -17,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,9 +49,14 @@ public class OrderService {
 
     private List<OrderMenu> makeOrderMenuList(List<MenuQuantityReqDto> reqDtoList, Order order) {
         return reqDtoList.stream()
-            .map((req) -> (OrderMenu.createOrderMenu(req.getQuantity(),
-                findMenuById(req.getId()).getPrice(), order, findMenuById(req.getId()))))
+            .map((req) -> makeOrderMenu(req, order))
             .collect(Collectors.toList());
+    }
+
+    private OrderMenu makeOrderMenu(MenuQuantityReqDto req, Order order) {
+        Menu menu = findMenuById(req.getId());
+        return OrderMenu.createOrderMenu(req.getQuantity(),
+            menu.getPrice(), order, menu);
     }
 
     private Menu findMenuById(Long menuId) {
@@ -102,15 +105,20 @@ public class OrderService {
     @Transactional(readOnly = true)
     public List<OrderDetailResDto> findAllOrder(Long restaurantId) {
         List<Order> orderList = findOrdersByRestaurantId(restaurantId);
-        return makeOrderDetailResDto(orderList);
+        return makeOrderDetailResDtoList(orderList);
     }
 
-    private List<OrderDetailResDto> makeOrderDetailResDto(List<Order> orderList) {
+    private List<OrderDetailResDto> makeOrderDetailResDtoList(List<Order> orderList) {
         return orderList.stream()
-            .map(req -> (new OrderDetailResDto(req,
-                getTotalPrice(findOrderMenusByOrderId(req.getId())),
-                makeOrderMenuResList(findOrderMenusByOrderId(req.getId())))))
+            .map(this::makeOrderDetailResDto)
             .collect(Collectors.toList());
+    }
+
+    private OrderDetailResDto makeOrderDetailResDto(Order order) {
+        List<OrderMenu> orderMenuList = findOrderMenusByOrderId(order.getId());
+        return new OrderDetailResDto(order,
+            getTotalPrice(orderMenuList),
+            makeOrderMenuResList(orderMenuList));
     }
 
     private List<Order> findOrdersByRestaurantId(Long restaurantId) {
