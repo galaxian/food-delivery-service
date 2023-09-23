@@ -31,13 +31,13 @@ public class Order extends TimeStamped {
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
-    private Order(LocalDateTime orderTime, Restaurant restaurant) {
+    private Order(Restaurant restaurant) {
         this.orderStatus = OrderStatus.WAITING;
-        this.orderTime = orderTime;
+        this.orderTime = LocalDateTime.now();
         this.restaurant = restaurant;
     }
 
-    public static Order createOrder(LocalDateTime orderTime, Restaurant restaurant) {
-        return new Order(orderTime, restaurant);
+    public static Order createOrder(Restaurant restaurant) {
+        return new Order(restaurant);
     }
 }

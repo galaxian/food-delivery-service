@@ -1,5 +1,6 @@
 package com.example.fooddelivery.order.service;
 
+import com.example.fooddelivery.common.exception.BadRequestException;
 import com.example.fooddelivery.common.exception.NotFoundException;
 import com.example.fooddelivery.menu.domain.Menu;
 import com.example.fooddelivery.menu.repository.MenuRepository;
@@ -17,8 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,78 +39,105 @@ public class OrderService {
 
     @Transactional
     public Long createOrder(CreateOrderReqDto reqDto, Long restaurantsId) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantsId).orElseThrow(
-                () -> new NotFoundException("식당을 찾을 수 없습니다.")
-        );
-        Order saveOrder = orderRepository.save(Order.createOrder(LocalDateTime.now(), restaurant));
+        Restaurant restaurant = findRestaurantById(restaurantsId);
+        Order order = Order.createOrder(restaurant);
+        Order saveOrder = orderRepository.save(order);
 
-        List<MenuQuantityReqDto> menuQuantityDtoList = reqDto.getMenuReqList();
-        for (MenuQuantityReqDto req : menuQuantityDtoList) {
-            Menu menu = menuRepository.findById(req.getId()).orElseThrow(
-                    () -> new NotFoundException("메뉴를 찾을 수 없습니다.")
-            );
-
-            OrderMenu orderMenu = OrderMenu.createOrderMenu(req.getQuantity(), menu.getPrice(), saveOrder, menu);
-            orderMenuRepository.save(orderMenu);
-        }
-
+        List<OrderMenu> orderMenuList = makeOrderMenuList(reqDto.getMenuReqList(), saveOrder);
+        orderMenuRepository.saveAll(orderMenuList);
         return saveOrder.getId();
     }
 
-    @Transactional
-    public OrderDetailResDto findOrder(Long id) {
-        Order order = orderRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("주문을 찾을 수 없습니다.")
+    private List<OrderMenu> makeOrderMenuList(List<MenuQuantityReqDto> reqDtoList, Order order) {
+        return reqDtoList.stream()
+            .map((req) -> makeOrderMenu(req, order))
+            .collect(Collectors.toList());
+    }
+
+    private OrderMenu makeOrderMenu(MenuQuantityReqDto req, Order order) {
+        Menu menu = findMenuById(req.getId());
+        return OrderMenu.createOrderMenu(req.getQuantity(),
+            menu.getPrice(), order, menu);
+    }
+
+    private Menu findMenuById(Long menuId) {
+        return menuRepository.findById(menuId).orElseThrow(
+            () -> new NotFoundException("메뉴를 찾을 수 없습니다.")
         );
+    }
 
-        List<OrderMenu> orderMenuList = orderMenuRepository.findByOrderId(id);
+    private Restaurant findRestaurantById(Long restaurantsId) {
+        return restaurantRepository.findById(restaurantsId).orElseThrow(
+            () -> new NotFoundException("식당을 찾을 수 없습니다.")
+        );
+    }
 
-        int totalPrice = 0;
-        for (OrderMenu orderMenu: orderMenuList) {
-            totalPrice += orderMenu.sumTotalPrice();
-        }
-
-        List<OrderMenuResDto> resDtoList = orderMenuList.stream().map(OrderMenuResDto::new).collect(Collectors.toList());
-
+    @Transactional(readOnly = true)
+    public OrderDetailResDto findOrder(Long id) {
+        Order order = findOrderById(id);
+        List<OrderMenu> orderMenuList = findOrderMenusByOrderId(id);
+        int totalPrice = getTotalPrice(orderMenuList);
+        List<OrderMenuResDto> resDtoList = makeOrderMenuResList(orderMenuList);
         return new OrderDetailResDto(order, totalPrice, resDtoList);
     }
 
-    @Transactional
+    private int getTotalPrice(List<OrderMenu> orderMenuList) {
+        return orderMenuList.stream()
+            .map(OrderMenu::getTimesQuantityAndPrice)
+            .reduce(0, Integer::sum);
+    }
+
+    private List<OrderMenuResDto> makeOrderMenuResList(List<OrderMenu> orderMenuList) {
+        return orderMenuList.stream()
+            .map(OrderMenuResDto::new)
+            .collect(Collectors.toList());
+    }
+
+    private List<OrderMenu> findOrderMenusByOrderId(Long id) {
+        return orderMenuRepository.findByOrderId(id);
+    }
+
+    private Order findOrderById(Long id) {
+        return orderRepository.findById(id).orElseThrow(
+            () -> new NotFoundException("주문을 찾을 수 없습니다.")
+        );
+    }
+
+    @Transactional(readOnly = true)
     public List<OrderDetailResDto> findAllOrder(Long restaurantId) {
-        List<Order> orderList = orderRepository.findAllByRestaurantId(restaurantId);
-        List<OrderDetailResDto> resDtoList = new ArrayList<>();
+        List<Order> orderList = findOrdersByRestaurantId(restaurantId);
+        return makeOrderDetailResDtoList(orderList);
+    }
 
-        for (Order order: orderList) {
-            List<OrderMenu> orderMenuList = orderMenuRepository.findByOrderId(order.getId());
+    private List<OrderDetailResDto> makeOrderDetailResDtoList(List<Order> orderList) {
+        return orderList.stream()
+            .map(this::makeOrderDetailResDto)
+            .collect(Collectors.toList());
+    }
 
-            int totalPrice = 0;
-            for (OrderMenu orderMenu: orderMenuList) {
-                totalPrice += orderMenu.sumTotalPrice();
-            }
+    private OrderDetailResDto makeOrderDetailResDto(Order order) {
+        List<OrderMenu> orderMenuList = findOrderMenusByOrderId(order.getId());
+        return new OrderDetailResDto(order,
+            getTotalPrice(orderMenuList),
+            makeOrderMenuResList(orderMenuList));
+    }
 
-            List<OrderMenuResDto> menuList = orderMenuList.stream().map(OrderMenuResDto::new).collect(Collectors.toList());
-            resDtoList.add(new OrderDetailResDto(order, totalPrice, menuList));
-        }
-        return resDtoList;
+    private List<Order> findOrdersByRestaurantId(Long restaurantId) {
+        return orderRepository.findAllByRestaurantId(restaurantId);
     }
 
     @Transactional
     public void updateOrder(List<MenuQuantityReqDto> reqDto, Long orderId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(
-                () -> new NotFoundException("주문을 찾을 수 없습니다.")
-        );
+        validateMenuEmpty(reqDto);
+        Order order = findOrderById(orderId);
+        orderMenuRepository.deleteAllByOrderId(orderId);
+        List<OrderMenu> orderMenuList = makeOrderMenuList(reqDto, order);
+        orderMenuRepository.saveAll(orderMenuList);
+    }
 
-        if (reqDto != null) {
-            orderMenuRepository.deleteAllByOrderId(orderId);
-
-            for (MenuQuantityReqDto req : reqDto) {
-                Menu menu = menuRepository.findById(req.getId()).orElseThrow(
-                        () -> new NotFoundException("메뉴를 찾을 수 없습니다.")
-                );
-
-                OrderMenu orderMenu = OrderMenu.createOrderMenu(req.getQuantity(), menu.getPrice(), order, menu);
-                orderMenuRepository.save(orderMenu);
-            }
+    private void validateMenuEmpty(List<MenuQuantityReqDto> reqDto) {
+        if (reqDto.isEmpty()) {
+            throw new BadRequestException("주문할 음식이 지정되지 않았습니다.");
         }
     }
 
