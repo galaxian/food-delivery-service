@@ -41,7 +41,7 @@ public class OrderService {
     @Transactional
     public Long createOrder(CreateOrderReqDto reqDto, Long restaurantsId) {
         Restaurant restaurant = findRestaurantById(restaurantsId);
-        Order order = Order.createOrder(LocalDateTime.now(), restaurant);
+        Order order = Order.createOrder(restaurant);
         Order saveOrder = orderRepository.save(order);
 
         List<OrderMenu> orderMenuList = makeOrderMenuList(reqDto.getMenuReqList(), saveOrder);
