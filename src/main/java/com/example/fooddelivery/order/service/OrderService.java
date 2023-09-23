@@ -40,22 +40,32 @@ public class OrderService {
 
     @Transactional
     public Long createOrder(CreateOrderReqDto reqDto, Long restaurantsId) {
-        Restaurant restaurant = restaurantRepository.findById(restaurantsId).orElseThrow(
-                () -> new NotFoundException("식당을 찾을 수 없습니다.")
-        );
-        Order saveOrder = orderRepository.save(Order.createOrder(LocalDateTime.now(), restaurant));
+        Restaurant restaurant = findRestaurantById(restaurantsId);
+        Order order = Order.createOrder(LocalDateTime.now(), restaurant);
+        Order saveOrder = orderRepository.save(order);
 
         List<MenuQuantityReqDto> menuQuantityDtoList = reqDto.getMenuReqList();
         for (MenuQuantityReqDto req : menuQuantityDtoList) {
-            Menu menu = menuRepository.findById(req.getId()).orElseThrow(
-                    () -> new NotFoundException("메뉴를 찾을 수 없습니다.")
-            );
+            Menu menu = findMenuById(req.getId());
 
             OrderMenu orderMenu = OrderMenu.createOrderMenu(req.getQuantity(), menu.getPrice(), saveOrder, menu);
             orderMenuRepository.save(orderMenu);
         }
-
         return saveOrder.getId();
+    }
+
+
+
+    private Menu findMenuById(Long menuId) {
+        return menuRepository.findById(menuId).orElseThrow(
+            () -> new NotFoundException("메뉴를 찾을 수 없습니다.")
+        );
+    }
+
+    private Restaurant findRestaurantById(Long restaurantsId) {
+        return restaurantRepository.findById(restaurantsId).orElseThrow(
+            () -> new NotFoundException("식당을 찾을 수 없습니다.")
+        );
     }
 
     @Transactional
