@@ -48,4 +48,8 @@ public class OrderMenu extends TimeStamped {
     public static OrderMenu createOrderMenu(int quantity, int price, Order order, Menu menu) {
         return new OrderMenu(quantity, price, order, menu);
     }
+
+    public int getTimesQuantityAndPrice() {
+        return this.quantity * this.price;
+    }
 }

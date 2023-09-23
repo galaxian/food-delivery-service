@@ -72,14 +72,15 @@ public class OrderService {
     public OrderDetailResDto findOrder(Long id) {
         Order order = findOrderById(id);
         List<OrderMenu> orderMenuList = findOrderMenusByOrderId(id);
-
-        int totalPrice = 0;
-        for (OrderMenu orderMenu: orderMenuList) {
-            totalPrice += orderMenu.sumTotalPrice();
-        }
-
+        int totalPrice = getTotalPrice(orderMenuList);
         List<OrderMenuResDto> resDtoList = makeOrderMenuResList(orderMenuList);
         return new OrderDetailResDto(order, totalPrice, resDtoList);
+    }
+
+    private int getTotalPrice(List<OrderMenu> orderMenuList) {
+        return orderMenuList.stream()
+            .map(OrderMenu::getTimesQuantityAndPrice)
+            .reduce(0, Integer::sum);
     }
 
     private List<OrderMenuResDto> makeOrderMenuResList(List<OrderMenu> orderMenuList) {
