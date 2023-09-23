@@ -44,17 +44,17 @@ public class OrderService {
         Order order = Order.createOrder(LocalDateTime.now(), restaurant);
         Order saveOrder = orderRepository.save(order);
 
-        List<MenuQuantityReqDto> menuQuantityDtoList = reqDto.getMenuReqList();
-        for (MenuQuantityReqDto req : menuQuantityDtoList) {
-            Menu menu = findMenuById(req.getId());
-
-            OrderMenu orderMenu = OrderMenu.createOrderMenu(req.getQuantity(), menu.getPrice(), saveOrder, menu);
-            orderMenuRepository.save(orderMenu);
-        }
+        List<OrderMenu> orderMenuList = makeOrderMenuList(reqDto.getMenuReqList(), saveOrder);
+        orderMenuRepository.saveAll(orderMenuList);
         return saveOrder.getId();
     }
 
-
+    private List<OrderMenu> makeOrderMenuList(List<MenuQuantityReqDto> reqDtoList, Order order) {
+        return reqDtoList.stream()
+            .map((req) -> (OrderMenu.createOrderMenu(req.getQuantity(),
+                findMenuById(req.getId()).getPrice(), order, findMenuById(req.getId()))))
+            .collect(Collectors.toList());
+    }
 
     private Menu findMenuById(Long menuId) {
         return menuRepository.findById(menuId).orElseThrow(
