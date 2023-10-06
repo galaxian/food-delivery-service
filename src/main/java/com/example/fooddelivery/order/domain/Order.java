@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 
 @Table(name = "orders")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Order extends TimeStamped {
     @Id
@@ -27,17 +27,21 @@ public class Order extends TimeStamped {
     @Column(name = "order_time")
     private LocalDateTime orderTime;
 
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
-    private Order(Restaurant restaurant) {
+    private Order(Restaurant restaurant, String phoneNumber) {
         this.orderStatus = OrderStatus.WAITING;
         this.orderTime = LocalDateTime.now();
         this.restaurant = restaurant;
+        this.phoneNumber = phoneNumber;
     }
 
-    public static Order createOrder(Restaurant restaurant) {
-        return new Order(restaurant);
+    public static Order createOrder(Restaurant restaurant, String phoneNumber) {
+        return new Order(restaurant, phoneNumber);
     }
 }
