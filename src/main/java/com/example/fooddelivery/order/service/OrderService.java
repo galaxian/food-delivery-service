@@ -128,6 +128,14 @@ public class OrderService {
         return orderRepository.findAllByRestaurantId(restaurantId);
     }
 
+    @Transactional(readOnly = true)
+    public List<OrderDetailResDto> findAllOrderByPhoneNumber(GetAllOrderByPhoneReqDto reqDto) {
+        String phoneNumber = deleteDashPhoneNumber(reqDto.getPhoneNumber());
+        System.out.println(phoneNumber);
+        List<Order> orderList = orderRepository.findAllByPhoneNumber(phoneNumber);
+        return makeOrderDetailResDtoList(orderList);
+    }
+
     private String deleteDashPhoneNumber(String phoneNumber) {
         return phoneNumber.replaceAll("-", "");
     }
