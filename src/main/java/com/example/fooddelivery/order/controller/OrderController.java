@@ -1,6 +1,7 @@
 package com.example.fooddelivery.order.controller;
 
 import com.example.fooddelivery.order.dto.CreateOrderReqDto;
+import com.example.fooddelivery.order.dto.GetAllOrderByPhoneReqDto;
 import com.example.fooddelivery.order.dto.MenuQuantityReqDto;
 import com.example.fooddelivery.order.dto.OrderDetailResDto;
 import com.example.fooddelivery.order.service.OrderService;
@@ -32,6 +33,11 @@ public class OrderController {
     @GetMapping("/restaurants/{restaurantId}/orders")
     public ResponseEntity<List<OrderDetailResDto>> findAllOrder(@PathVariable Long restaurantId) {
         return ResponseEntity.ok(orderService.findAllOrder(restaurantId));
+    }
+
+    @GetMapping("/orders/phone")
+    public ResponseEntity<List<OrderDetailResDto>> findAllOrderByPhoneNumber(@RequestBody @Valid GetAllOrderByPhoneReqDto reqDto) {
+        return ResponseEntity.ok(orderService.findAllOrderByPhoneNumber(reqDto));
     }
 
     @PostMapping("/restaurants/{restaurantsId}/orders")

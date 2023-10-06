@@ -22,6 +22,7 @@ import com.example.fooddelivery.menu.repository.MenuRepository;
 import com.example.fooddelivery.order.domain.Order;
 import com.example.fooddelivery.order.domain.OrderStatus;
 import com.example.fooddelivery.order.dto.CreateOrderReqDto;
+import com.example.fooddelivery.order.dto.GetAllOrderByPhoneReqDto;
 import com.example.fooddelivery.order.dto.MenuQuantityReqDto;
 import com.example.fooddelivery.order.dto.OrderDetailResDto;
 import com.example.fooddelivery.order.repository.OrderRepository;
@@ -55,17 +56,18 @@ class OrderServiceTest {
 	@Test
 	void 주문_생성_성공() {
 		//given
+		String phoneNumber = "010-1234-5678";
 		MenuQuantityReqDto menuQuantityReqDto = new MenuQuantityReqDto(1L, 1);
 		List<MenuQuantityReqDto> menuReqList = new ArrayList<>();
 		menuReqList.add(menuQuantityReqDto);
-		CreateOrderReqDto createOrderReqDto = new CreateOrderReqDto(menuReqList);
+		CreateOrderReqDto createOrderReqDto = new CreateOrderReqDto(phoneNumber, menuReqList);
 
 		Long restaurantId = 1L;
 
 		given(restaurantRepository.findById(any()))
 			.willReturn(Optional.of(restaurant));
 		given(orderRepository.save(any()))
-			.willReturn(new Order(1L, OrderStatus.WAITING, now, restaurant));
+			.willReturn(new Order(1L, OrderStatus.WAITING, now, phoneNumber, restaurant));
 		given(menuRepository.findById(any()))
 			.willReturn(Optional.of(new Menu(1L, "양념치킨", 20000, "비법소스로 만든 치킨"
 				, true, MenuStatus.SALE, restaurant)));
@@ -79,10 +81,11 @@ class OrderServiceTest {
 	@Test
 	void 식당_NotFound_주문_생성_실패() {
 		//given
+		String phoneNumber = "010-1234-5678";
 		MenuQuantityReqDto menuQuantityReqDto = new MenuQuantityReqDto(1L, 1);
 		List<MenuQuantityReqDto> menuReqList = new ArrayList<>();
 		menuReqList.add(menuQuantityReqDto);
-		CreateOrderReqDto createOrderReqDto = new CreateOrderReqDto(menuReqList);
+		CreateOrderReqDto createOrderReqDto = new CreateOrderReqDto(phoneNumber, menuReqList);
 
 		Long restaurantId = 1L;
 
@@ -98,17 +101,18 @@ class OrderServiceTest {
 	@Test
 	void 메뉴_NotFound_주문_생성_실패() {
 		//given
+		String phoneNumber = "010-1234-5678";
 		MenuQuantityReqDto menuQuantityReqDto = new MenuQuantityReqDto(1L, 1);
 		List<MenuQuantityReqDto> menuReqList = new ArrayList<>();
 		menuReqList.add(menuQuantityReqDto);
-		CreateOrderReqDto createOrderReqDto = new CreateOrderReqDto(menuReqList);
+		CreateOrderReqDto createOrderReqDto = new CreateOrderReqDto(phoneNumber, menuReqList);
 
 		Long restaurantId = 1L;
 
 		given(restaurantRepository.findById(any()))
 			.willReturn(Optional.of(restaurant));
 		given(orderRepository.save(any()))
-			.willReturn(new Order(1L, OrderStatus.WAITING, now, restaurant));
+			.willReturn(new Order(1L, OrderStatus.WAITING, now, phoneNumber, restaurant));
 		given(menuRepository.findById(any()))
 			.willReturn(Optional.empty());
 
@@ -123,7 +127,8 @@ class OrderServiceTest {
 	void 메뉴_단일_조회_성공() {
 		//given
 		Long orderId = 1L;
-		Order order = new Order(orderId, OrderStatus.WAITING, now, restaurant);
+		String phoneNumber = "010-1234-5678";
+		Order order = new Order(orderId, OrderStatus.WAITING, now, phoneNumber, restaurant);
 		Menu menu1 = new Menu(1L, "양념치킨", 20000, "비법소스로 만든 치킨"
 			, true, MenuStatus.SALE, restaurant);
 		Menu menu2 = new Menu(2L, "후라이드치킨", 15000, "잘 튀긴 치킨"
@@ -168,13 +173,14 @@ class OrderServiceTest {
 	@Test
 	void 식당_주문_목록_조회_성공() {
 		//given
-		Order order1 = new Order(1L, OrderStatus.WAITING, now, restaurant);
+		String phoneNumber = "010-1234-5678";
+		Order order1 = new Order(1L, OrderStatus.WAITING, now, phoneNumber, restaurant);
 		Menu menu1 = new Menu(1L, "양념치킨", 20000, "비법소스로 만든 치킨"
 			, true, MenuStatus.SALE, restaurant);
 		Menu menu2 = new Menu(2L, "후라이드치킨", 15000, "잘 튀긴 치킨"
 			, true, MenuStatus.SALE, restaurant);
 
-		Order order2 = new Order(2L, OrderStatus.WAITING, now, restaurant);
+		Order order2 = new Order(2L, OrderStatus.WAITING, now, phoneNumber, restaurant);
 
 		List<Order> orderList = new ArrayList<>();
 		orderList.add(order1);
@@ -200,6 +206,51 @@ class OrderServiceTest {
 
 		//when
 		List<OrderDetailResDto> result = orderService.findAllOrder(restaurant.getId());
+
+		//then
+		assertThat(result.get(0).getId()).isEqualTo(order1.getId());
+		assertThat(result.get(1).getId()).isEqualTo(order2.getId());
+		assertThat(result.size()).isEqualTo(orderList.size());
+	}
+
+	@Test
+	void 주문_목록_조회_성공byPhoneNuber() {
+		//given
+		String phoneNumber = "010-1234-5678";
+		Order order1 = new Order(1L, OrderStatus.WAITING, now, phoneNumber, restaurant);
+		Menu menu1 = new Menu(1L, "양념치킨", 20000, "비법소스로 만든 치킨"
+			, true, MenuStatus.SALE, restaurant);
+		Menu menu2 = new Menu(2L, "후라이드치킨", 15000, "잘 튀긴 치킨"
+			, true, MenuStatus.SALE, restaurant);
+
+		Order order2 = new Order(2L, OrderStatus.WAITING, now, phoneNumber, restaurant);
+
+		List<Order> orderList = new ArrayList<>();
+		orderList.add(order1);
+		orderList.add(order2);
+
+		OrderMenu orderMenu1 = new OrderMenu(1L, 1, 20000, order1, menu1);
+		OrderMenu orderMenu2 = new OrderMenu(2L, 2, 15000, order1, menu2);
+		List<OrderMenu> orderMenuList1 = new ArrayList<>();
+		orderMenuList1.add(orderMenu1);
+		orderMenuList1.add(orderMenu2);
+
+		OrderMenu orderMenu3 = new OrderMenu(3L, 2, 20000, order1, menu1);
+		OrderMenu orderMenu4 = new OrderMenu(4L, 1, 15000, order1, menu2);
+		List<OrderMenu> orderMenuList2 = new ArrayList<>();
+		orderMenuList2.add(orderMenu3);
+		orderMenuList2.add(orderMenu4);
+
+		given(orderRepository.findAllByPhoneNumber(any()))
+			.willReturn(orderList);
+		given(orderMenuRepository.findByOrderId(any()))
+			.willReturn(orderMenuList1)
+			.willReturn(orderMenuList2);
+
+		//when
+		List<OrderDetailResDto> result = orderService.findAllOrderByPhoneNumber(
+			new GetAllOrderByPhoneReqDto(phoneNumber)
+		);
 
 		//then
 		assertThat(result.get(0).getId()).isEqualTo(order1.getId());
