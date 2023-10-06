@@ -6,6 +6,7 @@ import com.example.fooddelivery.menu.domain.Menu;
 import com.example.fooddelivery.menu.repository.MenuRepository;
 import com.example.fooddelivery.order.domain.Order;
 import com.example.fooddelivery.order.dto.CreateOrderReqDto;
+import com.example.fooddelivery.order.dto.GetAllOrderByPhoneReqDto;
 import com.example.fooddelivery.order.dto.MenuQuantityReqDto;
 import com.example.fooddelivery.order.dto.OrderDetailResDto;
 import com.example.fooddelivery.order.dto.OrderMenuResDto;
@@ -40,7 +41,8 @@ public class OrderService {
     @Transactional
     public Long createOrder(CreateOrderReqDto reqDto, Long restaurantsId) {
         Restaurant restaurant = findRestaurantById(restaurantsId);
-        Order order = Order.createOrder(restaurant);
+        String phoneNumber = deleteDashPhoneNumber(reqDto.getPhoneNumber());
+        Order order = Order.createOrder(restaurant, phoneNumber);
         Order saveOrder = orderRepository.save(order);
 
         List<OrderMenu> orderMenuList = makeOrderMenuList(reqDto.getMenuReqList(), saveOrder);
@@ -124,6 +126,10 @@ public class OrderService {
 
     private List<Order> findOrdersByRestaurantId(Long restaurantId) {
         return orderRepository.findAllByRestaurantId(restaurantId);
+    }
+
+    private String deleteDashPhoneNumber(String phoneNumber) {
+        return phoneNumber.replaceAll("-", "");
     }
 
     @Transactional
