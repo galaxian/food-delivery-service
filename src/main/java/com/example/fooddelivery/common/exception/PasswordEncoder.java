@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PasswordEncoder {
 
-	private static final String ALGORITHM = "SAH-256";
+	private static final String ALGORITHM = "SHA-256";
 
 	public String generateSalt(String password) {
 		SecureRandom secureRandom = new SecureRandom();
