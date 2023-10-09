@@ -1,9 +1,13 @@
 package com.example.fooddelivery.auth.service;
 
+import java.util.HashMap;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.fooddelivery.auth.dto.LoginReqDto;
+import com.example.fooddelivery.auth.dto.LoginResDto;
+import com.example.fooddelivery.common.JwtProvider;
 import com.example.fooddelivery.common.exception.UnauthorizedException;
 import com.example.fooddelivery.common.PasswordEncoder;
 import com.example.fooddelivery.owner.domain.Owner;
@@ -14,20 +18,26 @@ public class AuthService {
 
 	private final OwnerRepository ownerRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final JwtProvider jwtProvider;
 
 	public AuthService(OwnerRepository ownerRepository,
-		PasswordEncoder passwordEncoder) {
+		PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
 		this.ownerRepository = ownerRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.jwtProvider = jwtProvider;
 	}
 
-	@Transactional
-	public void login(LoginReqDto reqDto) {
+	@Transactional(readOnly = true)
+	public LoginResDto login(LoginReqDto reqDto) {
 		Owner owner = findOwnerByIdentifier(reqDto.getIdentifier());
-		String salt = passwordEncoder.generateSalt(reqDto.getPassword());
-		String encryptPassword = passwordEncoder.encrypt(reqDto.getPassword(), salt);
 		validPassword(owner, reqDto.getPassword());
-		owner.isMissMatchPassword(encryptPassword);
+		return makeLoginResDto(owner);
+	}
+
+	private LoginResDto makeLoginResDto(Owner owner) {
+		String accessToken = jwtProvider.createAccessToken(
+			owner.getIdentifier(), new HashMap<>());
+		return new LoginResDto(accessToken);
 	}
 
 	private void validPassword(Owner owner, String password) {
