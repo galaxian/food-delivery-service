@@ -29,4 +29,9 @@ public class Owner extends TimeStamped {
 
 	@Column(name = "password", nullable = false)
 	private String encryptPassword;
+
+	public Owner(String identifier, String encryptPassword) {
+		this.identifier = identifier;
+		this.encryptPassword = encryptPassword;
+	}
 }
