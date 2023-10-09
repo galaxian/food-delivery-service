@@ -1,4 +1,4 @@
-package com.example.fooddelivery.common.exception;
+package com.example.fooddelivery.common;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -6,6 +6,8 @@ import java.security.SecureRandom;
 import java.util.Base64;
 
 import org.springframework.stereotype.Component;
+
+import com.example.fooddelivery.common.exception.NotFoundException;
 
 @Component
 public class PasswordEncoder {

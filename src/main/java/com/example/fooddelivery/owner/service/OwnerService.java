@@ -3,7 +3,7 @@ package com.example.fooddelivery.owner.service;
 import org.springframework.stereotype.Service;
 
 import com.example.fooddelivery.common.exception.DuplicateException;
-import com.example.fooddelivery.common.exception.PasswordEncoder;
+import com.example.fooddelivery.common.PasswordEncoder;
 import com.example.fooddelivery.owner.domain.Owner;
 import com.example.fooddelivery.owner.dto.OwnerJoinReqDto;
 import com.example.fooddelivery.owner.repository.OwnerRepository;
