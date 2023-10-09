@@ -17,6 +17,7 @@ import com.example.fooddelivery.auth.dto.LoginReqDto;
 import com.example.fooddelivery.auth.dto.LoginResDto;
 import com.example.fooddelivery.common.JwtProvider;
 import com.example.fooddelivery.common.PasswordEncoder;
+import com.example.fooddelivery.common.exception.UnauthorizedException;
 import com.example.fooddelivery.owner.domain.Owner;
 import com.example.fooddelivery.owner.repository.OwnerRepository;
 
@@ -58,6 +59,22 @@ class AuthServiceTest {
 
 		//then
 		assertThat(result.getAccessToken()).isEqualTo(accessToken);
+
+	}
+
+	@Test
+	@DisplayName("존재하지 않는 아이디로 로그인 실패")
+	void loginNotFoundIdentifier() {
+		//given
+		LoginReqDto reqDto = new LoginReqDto("wrongId", "xcvi0987");
+
+		given(ownerRepository.findByIdentifier(any()))
+			.willReturn(Optional.empty());
+
+		//when
+		//then
+		assertThatThrownBy(() -> authService.login(reqDto))
+			.isInstanceOf(UnauthorizedException.class);
 
 	}
 }
