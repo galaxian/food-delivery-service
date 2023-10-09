@@ -36,6 +36,6 @@ public class Owner extends TimeStamped {
 	}
 
 	public boolean isMissMatchPassword(String password) {
-		return this.encryptPassword.equals(password);
+		return !this.encryptPassword.equals(password);
 	}
 }
