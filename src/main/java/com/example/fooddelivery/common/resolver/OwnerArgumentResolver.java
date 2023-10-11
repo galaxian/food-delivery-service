@@ -32,10 +32,14 @@ public class OwnerArgumentResolver implements HandlerMethodArgumentResolver {
 	public String resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
 		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
 		String authorizationHeader = webRequest.getHeader(HttpHeaders.AUTHORIZATION);
+		checkHeader(authorizationHeader);
+		String token = authorizationHeader.substring(BEARER.length());
+		return authService.findIdentifierByToken(token);
+	}
+
+	private void checkHeader(String authorizationHeader) {
 		if (authorizationHeader == null || !authorizationHeader.startsWith(BEARER)) {
 			throw new UnauthorizedException("인증 헤더가 유효하지 않습니다.");
 		}
-		String token = authorizationHeader.substring(BEARER.length());
-		return authService.findIdentifierByToken(token);
 	}
 }
