@@ -1,4 +1,4 @@
-package com.example.fooddelivery.common;
+package com.example.fooddelivery.common.interceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

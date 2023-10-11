@@ -1,4 +1,4 @@
-package com.example.fooddelivery.common;
+package com.example.fooddelivery.common.interceptor;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
