@@ -12,7 +12,9 @@ import org.springframework.stereotype.Component;
 
 import com.example.fooddelivery.common.exception.UnauthorizedException;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -60,11 +62,7 @@ public class JwtProvider {
 
 	public boolean isValidToken(String token) {
 		try {
-			SecretKey signKey = createKey();
-			Jwts.parserBuilder()
-				.setSigningKey(signKey)
-				.build()
-				.parseClaimsJws(token);
+			parseClaimsJws(token);
 		} catch (ExpiredJwtException expiredJwtException) {
 			throw new UnauthorizedException("만료된 토큰입니다.");
 		} catch (JwtException jwtException) {
@@ -73,12 +71,16 @@ public class JwtProvider {
 		return true;
 	}
 
-	public String findSubject(String token) {
+	private Jws<Claims> parseClaimsJws(String token) {
 		SecretKey signKey = createKey();
 		return Jwts.parserBuilder()
-			.setSigningKey(signKey)
-			.build()
-			.parseClaimsJws(token)
+				.setSigningKey(signKey)
+				.build()
+				.parseClaimsJws(token);
+	}
+
+	public String findSubject(String token) {
+		return parseClaimsJws(token)
 			.getBody()
 			.getSubject();
 	}
