@@ -25,7 +25,7 @@ public class OwnerService {
 		String salt = passwordEncoder.generateSalt(reqDto.getPassword());
 		String encryptPassword = passwordEncoder.encrypt(reqDto.getPassword(), salt);
 
-		Owner owner = new Owner(reqDto.getIdentifier(), encryptPassword);
+		Owner owner = new Owner(reqDto.getIdentifier(), encryptPassword, salt);
 		Owner saveOwner = ownerRepository.save(owner);
 		return saveOwner.getId();
 	}

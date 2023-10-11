@@ -41,13 +41,12 @@ public class AuthService {
 	}
 
 	private void validPassword(Owner owner, String password) {
-		if (owner.isMissMatchPassword(encryptPassword(password))) {
+		if (owner.isMissMatchPassword(encryptPassword(password, owner.getSalt()))) {
 			throw new UnauthorizedException("비밀번호가 일치하지 않습니다.");
 		}
 	}
 
-	private String encryptPassword(String password) {
-		String salt = passwordEncoder.generateSalt(password);
+	private String encryptPassword(String password, String salt) {;
 		return passwordEncoder.encrypt(password, salt);
 	}
 
