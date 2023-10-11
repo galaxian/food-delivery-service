@@ -72,4 +72,14 @@ public class JwtProvider {
 		}
 		return true;
 	}
+
+	public String findSubject(String token) {
+		SecretKey signKey = createKey();
+		return Jwts.parserBuilder()
+			.setSigningKey(signKey)
+			.build()
+			.parseClaimsJws(token)
+			.getBody()
+			.getSubject();
+	}
 }
