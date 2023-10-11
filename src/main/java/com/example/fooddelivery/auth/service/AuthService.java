@@ -58,4 +58,8 @@ public class AuthService {
 	public boolean isVerifyToken(String token) {
 		return jwtProvider.isValidToken(token);
 	}
+
+	public String findIdentifierByToken(String token) {
+		return jwtProvider.findSubject(token);
+	}
 }

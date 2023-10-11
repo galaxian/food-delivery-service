@@ -32,14 +32,22 @@ public class AuthInterceptor implements HandlerInterceptor {
 		HandlerMethod handlerMethod = (HandlerMethod) handler;
 		if (handlerMethod.hasMethodAnnotation(Authenticated.class)) {
 			String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-			if (authorizationHeader == null || !authorizationHeader.startsWith(BEARER)) {
-				throw new UnauthorizedException("인증 헤더가 적절하지 않습니다.");
-			}
+			checkHeader(authorizationHeader);
 			String token = authorizationHeader.substring(BEARER.length());
-			if (!authService.isVerifyToken(token)) {
-				throw new UnauthorizedException("토큰이 유효하지 않습니다.");
-			}
+			verifyToken(token);
 		}
 		return true;
+	}
+
+	private void checkHeader(String authorizationHeader) {
+		if (authorizationHeader == null || !authorizationHeader.startsWith(BEARER)) {
+			throw new UnauthorizedException("인증 헤더가 적절하지 않습니다.");
+		}
+	}
+
+	private void verifyToken(String token) {
+		if (!authService.isVerifyToken(token)) {
+			throw new UnauthorizedException("토큰이 유효하지 않습니다.");
+		}
 	}
 }
