@@ -40,8 +40,7 @@ class OwnerServiceTest {
 		given(ownerRepository.findByIdentifier(any()))
 			.willReturn(Optional.empty());
 		given(ownerRepository.save(any()))
-			.willReturn(new Owner(1L, reqDto.getIdentifier(), "encrypt-password"
-				+ ""));
+			.willReturn(new Owner(1L, reqDto.getIdentifier(), "encrypt-password", "salt"));
 		given(passwordEncoder.generateSalt(any()))
 			.willReturn("salt");
 		given(passwordEncoder.encrypt(any(), any()))
@@ -60,7 +59,7 @@ class OwnerServiceTest {
 		OwnerJoinReqDto reqDto = new OwnerJoinReqDto("abed1234", "xcvi0987");
 
 		given(ownerRepository.findByIdentifier(any()))
-			.willReturn(Optional.of(new Owner(1L, "abed1234", "encrypt-password")));
+			.willReturn(Optional.of(new Owner(1L, "abed1234", "encrypt-password", "salt")));
 
 		//when
 		//then

@@ -30,9 +30,13 @@ public class Owner extends TimeStamped {
 	@Column(name = "password", nullable = false)
 	private String encryptPassword;
 
-	public Owner(String identifier, String encryptPassword) {
+	@Column(name = "salts", nullable = false)
+	private String salt;
+
+	public Owner(String identifier, String encryptPassword, String salt) {
 		this.identifier = identifier;
 		this.encryptPassword = encryptPassword;
+		this.salt = salt;
 	}
 
 	public boolean isMissMatchPassword(String password) {

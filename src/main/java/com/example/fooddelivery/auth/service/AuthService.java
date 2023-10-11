@@ -41,18 +41,21 @@ public class AuthService {
 	}
 
 	private void validPassword(Owner owner, String password) {
-		if (owner.isMissMatchPassword(encryptPassword(password))) {
+		if (owner.isMissMatchPassword(encryptPassword(password, owner.getSalt()))) {
 			throw new UnauthorizedException("비밀번호가 일치하지 않습니다.");
 		}
 	}
 
-	private String encryptPassword(String password) {
-		String salt = passwordEncoder.generateSalt(password);
+	private String encryptPassword(String password, String salt) {;
 		return passwordEncoder.encrypt(password, salt);
 	}
 
 	private Owner findOwnerByIdentifier(String identifier) {
 		return ownerRepository.findByIdentifier(identifier)
 			.orElseThrow(() -> new UnauthorizedException("존재하지 않는 아이디입니다."));
+	}
+
+	public boolean isVerifyToken(String token) {
+		return jwtProvider.isValidToken(token);
 	}
 }

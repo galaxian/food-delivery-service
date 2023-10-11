@@ -24,7 +24,7 @@ import com.example.fooddelivery.owner.repository.OwnerRepository;
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 
-	private static Owner owner = new Owner("abed1234", "encrypt");
+	private static Owner owner = new Owner("abed1234", "encrypt", "salt");
 
 	@Mock
 	private OwnerRepository ownerRepository;
@@ -47,8 +47,6 @@ class AuthServiceTest {
 
 		given(ownerRepository.findByIdentifier(any()))
 			.willReturn(Optional.of(owner));
-		given(passwordEncoder.generateSalt(any()))
-			.willReturn("salt");
 		given(passwordEncoder.encrypt(any(), any()))
 			.willReturn("encrypt");
 		given(jwtProvider.createAccessToken(any(), any()))
@@ -86,8 +84,6 @@ class AuthServiceTest {
 
 		given(ownerRepository.findByIdentifier(any()))
 			.willReturn(Optional.of(owner));
-		given(passwordEncoder.generateSalt(any()))
-			.willReturn("salt");
 		given(passwordEncoder.encrypt(any(), any()))
 			.willReturn("wrong-encrypt");
 

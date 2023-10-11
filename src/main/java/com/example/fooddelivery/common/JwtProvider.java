@@ -10,6 +10,10 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.example.fooddelivery.common.exception.UnauthorizedException;
+
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
@@ -52,5 +56,20 @@ public class JwtProvider {
 	private SecretKey createKey() {
 		byte[] secretKeyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
 		return Keys.hmacShaKeyFor(secretKeyBytes);
+	}
+
+	public boolean isValidToken(String token) {
+		try {
+			SecretKey signKey = createKey();
+			Jwts.parserBuilder()
+				.setSigningKey(signKey)
+				.build()
+				.parseClaimsJws(token);
+		} catch (ExpiredJwtException expiredJwtException) {
+			throw new UnauthorizedException("만료된 토큰입니다.");
+		} catch (JwtException jwtException) {
+			throw new UnauthorizedException("적절하지 않은 형식의 토큰입니다.");
+		}
+		return true;
 	}
 }
