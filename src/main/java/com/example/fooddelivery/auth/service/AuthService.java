@@ -55,4 +55,8 @@ public class AuthService {
 		return ownerRepository.findByIdentifier(identifier)
 			.orElseThrow(() -> new UnauthorizedException("존재하지 않는 아이디입니다."));
 	}
+
+	public boolean isVerifyToken(String token) {
+		return jwtProvider.isValidToken(token);
+	}
 }
