@@ -130,8 +130,10 @@ public class MenuService {
     }
 
     @Transactional
-    public void updateMenu(Long id, CreateMenuReqDto reqDto) {
-        Menu menu = findMenuById(id);
+    public void updateMenu(String identifier, Long restaurantsId, Long menuId, CreateMenuReqDto reqDto) {
+        Restaurant restaurant = findRestaurantById(restaurantsId);
+        validateOwner(identifier, restaurant);
+        Menu menu = findMenuById(menuId);
         updateMenu(reqDto, menu);
         validateFoodReq(reqDto.getFoodReqList());
         menuFoodRepository.deleteAllByMenuId(menu.getId());
@@ -151,7 +153,9 @@ public class MenuService {
     }
 
     @Transactional
-    public void deleteMenu(Long id) {
+    public void deleteMenu(String identifier, Long restaurantsId, Long id) {
+        Restaurant restaurant = findRestaurantById(restaurantsId);
+        validateOwner(identifier, restaurant);
         menuFoodRepository.deleteAllByMenuId(id);
         menuRepository.deleteById(id);
     }
