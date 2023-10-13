@@ -4,6 +4,8 @@ import com.example.fooddelivery.common.TimeStamped;
 import com.example.fooddelivery.food.domain.Food;
 import com.example.fooddelivery.menu.domain.Menu;
 import com.example.fooddelivery.order.domain.Order;
+import com.example.fooddelivery.owner.domain.Owner;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,6 +34,10 @@ public class Restaurant extends TimeStamped {
     @Column(name = "delivery_fee")
     private int deliveryFee;
 
+    @ManyToOne()
+    @JoinColumn(name = "owner_id")
+    private Owner owner;
+
     @OneToMany(mappedBy = "restaurant")
     private List<Order> orders = new ArrayList<>();
 
@@ -47,13 +53,10 @@ public class Restaurant extends TimeStamped {
         this.deliveryFee = deliveryFee;
     }
 
-    private Restaurant(String name, int minPrice, int deliveryFee) {
+    public Restaurant(String name, int minPrice, int deliveryFee, Owner owner) {
         this.name = name;
         this.minPrice = minPrice;
         this.deliveryFee = deliveryFee;
-    }
-
-    public static Restaurant createRestaurant(String name, int minPrice, int deliveryFee) {
-        return new Restaurant(name, minPrice, deliveryFee);
+        this.owner = owner;
     }
 }
