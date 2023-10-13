@@ -115,6 +115,7 @@ public class MenuService {
 
     private List<MenuResDto> makeMenuResDtoList(List<Menu> menuList) {
         return menuList.stream()
+            .filter(Menu::isDisplay)
             .map(MenuResDto::new)
             .collect(Collectors.toList());
     }
