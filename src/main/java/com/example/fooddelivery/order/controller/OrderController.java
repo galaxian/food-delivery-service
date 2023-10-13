@@ -32,9 +32,11 @@ public class OrderController {
         return ResponseEntity.ok(orderService.findOrder(id));
     }
 
+    @Authenticated
     @GetMapping("/restaurants/{restaurantId}/orders")
-    public ResponseEntity<List<OrderDetailResDto>> findAllOrder(@PathVariable Long restaurantId) {
-        return ResponseEntity.ok(orderService.findAllOrder(restaurantId));
+    public ResponseEntity<List<OrderDetailResDto>> findAllOrder(@OwnerIdentifier String identifier,
+        @PathVariable Long restaurantId) {
+        return ResponseEntity.ok(orderService.findAllOrder(identifier, restaurantId));
     }
 
     @GetMapping("/orders/phone")
