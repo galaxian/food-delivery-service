@@ -149,10 +149,11 @@ class FoodServiceTest {
 		FoodRequestDto requestDto = new FoodRequestDto("음식이름", 1000);
 
 		given(foodRepository.findById(foodId)).willReturn(Optional.empty());
+		given(restaurantRepository.findById(any())).willReturn(Optional.of(RESTAURANT));
 
 		//when
 		//then
-		assertThatThrownBy(() -> foodService.updateFood(foodId, requestDto))
+		assertThatThrownBy(() -> foodService.updateFood("주인", foodId, foodId, requestDto))
 			.isInstanceOf(NotFoundException.class);
 
 	}
