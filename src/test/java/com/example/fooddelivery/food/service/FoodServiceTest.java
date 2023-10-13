@@ -128,9 +128,10 @@ class FoodServiceTest {
 		foodList.add(new Food(foodId2, name2, price2, RESTAURANT));
 
 		given(foodRepository.findAllByRestaurantId(any())).willReturn(foodList);
+		given(restaurantRepository.findById(any())).willReturn(Optional.of(RESTAURANT));
 
 		//when
-		List<FoodResponseDto> result = foodService.findAllFood(1L);
+		List<FoodResponseDto> result = foodService.findAllFood("주인", 1L);
 
 		//then
 		assertThat(result.get(0).getId()).isEqualTo(foodId1);
