@@ -27,8 +27,10 @@ public class FoodService {
     }
 
     @Transactional(readOnly = true)
-    public FoodResponseDto findFood(Long id) {
-        Food food = findFoodById(id);
+    public FoodResponseDto findFood(String identifier, Long restaurantId, Long foodId) {
+        Restaurant restaurant = findRestaurantById(restaurantId);
+        validateOwner(identifier, restaurant);
+        Food food = findFoodById(foodId);
         return new FoodResponseDto(food);
     }
 
