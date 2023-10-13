@@ -114,7 +114,9 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public List<OrderDetailResDto> findAllOrder(Long restaurantId) {
+    public List<OrderDetailResDto> findAllOrder(String identifier, Long restaurantId) {
+        Restaurant restaurant = findRestaurantById(restaurantId);
+        validateOwner(identifier, restaurant);
         List<Order> orderList = findOrdersByRestaurantId(restaurantId);
         return makeOrderDetailResDtoList(orderList);
     }

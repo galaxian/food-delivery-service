@@ -207,9 +207,11 @@ class OrderServiceTest {
 		given(orderMenuRepository.findByOrderId(any()))
 			.willReturn(orderMenuList1)
 			.willReturn(orderMenuList2);
+		given(restaurantRepository.findById(any()))
+			.willReturn(Optional.of(RESTAURANT));
 
 		//when
-		List<OrderDetailResDto> result = orderService.findAllOrder(RESTAURANT.getId());
+		List<OrderDetailResDto> result = orderService.findAllOrder("주인", RESTAURANT.getId());
 
 		//then
 		assertThat(result.get(0).getId()).isEqualTo(order1.getId());
