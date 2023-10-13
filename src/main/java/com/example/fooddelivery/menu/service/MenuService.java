@@ -120,11 +120,11 @@ public class MenuService {
     }
 
     @Transactional(readOnly = true)
-    public MenuDetailResDto findMenu(Long id) {
+    public AdminMenuDetailResDto adminFindMenu(Long id) {
         Menu menu = findMenuById(id);
         List<MenuFood> menuFoodList = findMenuFoodById(id);
         List<MenuFoodResDto> resDtoList = makeMenuFoodResDtoList(menuFoodList);
-        return new MenuDetailResDto(menu, resDtoList);
+        return new AdminMenuDetailResDto(menu, resDtoList);
     }
 
     private List<MenuFood> findMenuFoodById(Long id) {

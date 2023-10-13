@@ -7,7 +7,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class MenuDetailResDto {
+public class AdminMenuDetailResDto {
     private Long id;
     private String name;
     private int price;
@@ -17,7 +17,7 @@ public class MenuDetailResDto {
 
     private List<MenuFoodResDto> menuFoodList;
 
-    public MenuDetailResDto(Menu menu, List<MenuFoodResDto> menuFoodList) {
+    public AdminMenuDetailResDto(Menu menu, List<MenuFoodResDto> menuFoodList) {
         this.id = menu.getId();
         this.name = menu.getName();
         this.price = menu.getPrice();

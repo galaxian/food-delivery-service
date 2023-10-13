@@ -22,7 +22,7 @@ import com.example.fooddelivery.menu.domain.Menu;
 import com.example.fooddelivery.menu.domain.MenuStatus;
 import com.example.fooddelivery.menu.dto.CreateMenuReqDto;
 import com.example.fooddelivery.menu.dto.FoodQuantityReqDto;
-import com.example.fooddelivery.menu.dto.MenuDetailResDto;
+import com.example.fooddelivery.menu.dto.AdminMenuDetailResDto;
 import com.example.fooddelivery.menu.dto.AdminMenuResDto;
 import com.example.fooddelivery.menu.repository.MenuRepository;
 import com.example.fooddelivery.menufood.domain.MenuFood;
@@ -183,7 +183,7 @@ class MenuServiceTest {
 			.willReturn(menuFoodList);
 
 		//when
-		MenuDetailResDto result = menuService.findMenu(menuId);
+		AdminMenuDetailResDto result = menuService.adminFindMenu(menuId);
 
 		//then
 		assertThat(result.getId()).isEqualTo(menuId);
@@ -203,7 +203,7 @@ class MenuServiceTest {
 
 		//when
 		//then
-		assertThatThrownBy(() -> menuService.findMenu(menuId))
+		assertThatThrownBy(() -> menuService.adminFindMenu(menuId))
 			.isInstanceOf(NotFoundException.class);
 
 	}

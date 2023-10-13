@@ -3,7 +3,7 @@ package com.example.fooddelivery.menu.controller;
 import com.example.fooddelivery.common.interceptor.Authenticated;
 import com.example.fooddelivery.common.resolver.OwnerIdentifier;
 import com.example.fooddelivery.menu.dto.CreateMenuReqDto;
-import com.example.fooddelivery.menu.dto.MenuDetailResDto;
+import com.example.fooddelivery.menu.dto.AdminMenuDetailResDto;
 import com.example.fooddelivery.menu.dto.AdminMenuResDto;
 import com.example.fooddelivery.menu.dto.MenuResDto;
 import com.example.fooddelivery.menu.service.MenuService;
@@ -48,9 +48,9 @@ public class MenuController {
         return ResponseEntity.ok(menuService.findAllMenu(restaurantId));
     }
 
-    @GetMapping("/menus/{id}")
-    public ResponseEntity<MenuDetailResDto> findMenu(@PathVariable Long id) {
-        return ResponseEntity.ok(menuService.findMenu(id));
+    @GetMapping("/menus/{id}/admin")
+    public ResponseEntity<AdminMenuDetailResDto> adminFindMenu(@PathVariable Long id) {
+        return ResponseEntity.ok(menuService.adminFindMenu(id));
     }
 
     @Authenticated
