@@ -1,6 +1,7 @@
 package com.example.fooddelivery.food.service;
 
 import com.example.fooddelivery.common.exception.NotFoundException;
+import com.example.fooddelivery.common.exception.UnauthorizedException;
 import com.example.fooddelivery.food.dto.FoodRequestDto;
 import com.example.fooddelivery.food.repository.FoodRepository;
 import com.example.fooddelivery.food.domain.Food;
@@ -54,11 +55,18 @@ public class FoodService {
     }
 
     @Transactional
-    public Long createFood(FoodRequestDto requestDto, Long restaurantId) {
+    public Long createFood(String identifier, FoodRequestDto requestDto, Long restaurantId) {
         Restaurant restaurant = findRestaurantById(restaurantId);
+        validateOwner(identifier, restaurant);
         Food food = convertToFoodEntity(requestDto, restaurant);
         Food saveFood = foodRepository.save(food);
         return saveFood.getId();
+    }
+
+    private void validateOwner(String identifier, Restaurant restaurant) {
+        if (!restaurant.isOwner(identifier)) {
+            throw new UnauthorizedException("식당 주인만 사용할 수 있는 기능입니다.");
+        }
     }
 
     private Restaurant findRestaurantById(Long restaurantId) {
