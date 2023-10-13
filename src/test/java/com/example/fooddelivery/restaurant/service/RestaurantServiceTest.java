@@ -2,6 +2,7 @@ package com.example.fooddelivery.restaurant.service;
 
 import com.example.fooddelivery.common.exception.DuplicateException;
 import com.example.fooddelivery.common.exception.NotFoundException;
+import com.example.fooddelivery.common.exception.UnauthorizedException;
 import com.example.fooddelivery.owner.domain.Owner;
 import com.example.fooddelivery.owner.repository.OwnerRepository;
 import com.example.fooddelivery.restaurant.domain.Restaurant;
@@ -155,8 +156,7 @@ class RestaurantServiceTest {
 
         //when
         //then
-        assertThatThrownBy(() -> restaurantService.updateRestaurant(reqDto, restaurantId))
+        assertThatThrownBy(() -> restaurantService.updateRestaurant("주인", reqDto, restaurantId))
             .isInstanceOf(NotFoundException.class);
     }
-
 }
