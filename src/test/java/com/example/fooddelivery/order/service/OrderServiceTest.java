@@ -28,14 +28,16 @@ import com.example.fooddelivery.order.dto.OrderDetailResDto;
 import com.example.fooddelivery.order.repository.OrderRepository;
 import com.example.fooddelivery.ordermenu.domain.OrderMenu;
 import com.example.fooddelivery.ordermenu.repository.OrderMenuRepository;
+import com.example.fooddelivery.owner.domain.Owner;
 import com.example.fooddelivery.restaurant.domain.Restaurant;
 import com.example.fooddelivery.restaurant.repository.RestaurantRepository;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
 
-	private static final Restaurant restaurant = new Restaurant(1L, "치킨집", 10000,
-		3000, null, null, null, null);
+	private static final Owner OWNER = new Owner(1L, "주인", "비밀번호", "salt");
+	private static final Restaurant RESTAURANT = new Restaurant(1L, "치킨집", 10000,
+		3000, OWNER, null, null, null);
 	private final LocalDateTime now = LocalDateTime.now();
 
 	@Mock
@@ -65,16 +67,16 @@ class OrderServiceTest {
 		Long restaurantId = 1L;
 
 		given(restaurantRepository.findById(any()))
-			.willReturn(Optional.of(restaurant));
+			.willReturn(Optional.of(RESTAURANT));
 		given(orderRepository.save(any()))
-			.willReturn(new Order(1L, OrderStatus.WAITING, now, phoneNumber, restaurant));
+			.willReturn(new Order(1L, OrderStatus.WAITING, now, phoneNumber, RESTAURANT));
 		given(menuRepository.findById(any()))
 			.willReturn(Optional.of(new Menu(1L, "양념치킨", 20000, "비법소스로 만든 치킨"
-				, true, MenuStatus.SALE, restaurant)));
+				, true, MenuStatus.SALE, RESTAURANT)));
 
 		//when
 		//then
-		assertDoesNotThrow(() -> orderService.createOrder(createOrderReqDto, restaurantId));
+		assertDoesNotThrow(() -> orderService.createOrder("주인", createOrderReqDto, restaurantId));
 
 	}
 
@@ -91,10 +93,12 @@ class OrderServiceTest {
 
 		given(restaurantRepository.findById(any()))
 			.willReturn(Optional.empty());
+		given(restaurantRepository.findById(any()))
+			.willReturn(Optional.of(RESTAURANT));
 
 		//when
 		//then
-		assertThatThrownBy(() -> orderService.createOrder(createOrderReqDto, restaurantId))
+		assertThatThrownBy(() -> orderService.createOrder("주인", createOrderReqDto, restaurantId))
 			.isInstanceOf(NotFoundException.class);
 	}
 
@@ -110,15 +114,15 @@ class OrderServiceTest {
 		Long restaurantId = 1L;
 
 		given(restaurantRepository.findById(any()))
-			.willReturn(Optional.of(restaurant));
+			.willReturn(Optional.of(RESTAURANT));
 		given(orderRepository.save(any()))
-			.willReturn(new Order(1L, OrderStatus.WAITING, now, phoneNumber, restaurant));
+			.willReturn(new Order(1L, OrderStatus.WAITING, now, phoneNumber, RESTAURANT));
 		given(menuRepository.findById(any()))
 			.willReturn(Optional.empty());
 
 		//when
 		//then
-		assertThatThrownBy(() -> orderService.createOrder(createOrderReqDto, restaurantId))
+		assertThatThrownBy(() -> orderService.createOrder("주인", createOrderReqDto, restaurantId))
 			.isInstanceOf(NotFoundException.class);
 
 	}
@@ -128,11 +132,11 @@ class OrderServiceTest {
 		//given
 		Long orderId = 1L;
 		String phoneNumber = "010-1234-5678";
-		Order order = new Order(orderId, OrderStatus.WAITING, now, phoneNumber, restaurant);
+		Order order = new Order(orderId, OrderStatus.WAITING, now, phoneNumber, RESTAURANT);
 		Menu menu1 = new Menu(1L, "양념치킨", 20000, "비법소스로 만든 치킨"
-			, true, MenuStatus.SALE, restaurant);
+			, true, MenuStatus.SALE, RESTAURANT);
 		Menu menu2 = new Menu(2L, "후라이드치킨", 15000, "잘 튀긴 치킨"
-			, true, MenuStatus.SALE, restaurant);
+			, true, MenuStatus.SALE, RESTAURANT);
 
 		OrderMenu orderMenu1 = new OrderMenu(1L, 1, 20000, order, menu1);
 		OrderMenu orderMenu2 = new OrderMenu(2L, 2, 15000, order, menu2);
@@ -174,13 +178,13 @@ class OrderServiceTest {
 	void 식당_주문_목록_조회_성공() {
 		//given
 		String phoneNumber = "010-1234-5678";
-		Order order1 = new Order(1L, OrderStatus.WAITING, now, phoneNumber, restaurant);
+		Order order1 = new Order(1L, OrderStatus.WAITING, now, phoneNumber, RESTAURANT);
 		Menu menu1 = new Menu(1L, "양념치킨", 20000, "비법소스로 만든 치킨"
-			, true, MenuStatus.SALE, restaurant);
+			, true, MenuStatus.SALE, RESTAURANT);
 		Menu menu2 = new Menu(2L, "후라이드치킨", 15000, "잘 튀긴 치킨"
-			, true, MenuStatus.SALE, restaurant);
+			, true, MenuStatus.SALE, RESTAURANT);
 
-		Order order2 = new Order(2L, OrderStatus.WAITING, now, phoneNumber, restaurant);
+		Order order2 = new Order(2L, OrderStatus.WAITING, now, phoneNumber, RESTAURANT);
 
 		List<Order> orderList = new ArrayList<>();
 		orderList.add(order1);
@@ -205,7 +209,7 @@ class OrderServiceTest {
 			.willReturn(orderMenuList2);
 
 		//when
-		List<OrderDetailResDto> result = orderService.findAllOrder(restaurant.getId());
+		List<OrderDetailResDto> result = orderService.findAllOrder(RESTAURANT.getId());
 
 		//then
 		assertThat(result.get(0).getId()).isEqualTo(order1.getId());
@@ -217,13 +221,13 @@ class OrderServiceTest {
 	void 주문_목록_조회_성공byPhoneNuber() {
 		//given
 		String phoneNumber = "010-1234-5678";
-		Order order1 = new Order(1L, OrderStatus.WAITING, now, phoneNumber, restaurant);
+		Order order1 = new Order(1L, OrderStatus.WAITING, now, phoneNumber, RESTAURANT);
 		Menu menu1 = new Menu(1L, "양념치킨", 20000, "비법소스로 만든 치킨"
-			, true, MenuStatus.SALE, restaurant);
+			, true, MenuStatus.SALE, RESTAURANT);
 		Menu menu2 = new Menu(2L, "후라이드치킨", 15000, "잘 튀긴 치킨"
-			, true, MenuStatus.SALE, restaurant);
+			, true, MenuStatus.SALE, RESTAURANT);
 
-		Order order2 = new Order(2L, OrderStatus.WAITING, now, phoneNumber, restaurant);
+		Order order2 = new Order(2L, OrderStatus.WAITING, now, phoneNumber, RESTAURANT);
 
 		List<Order> orderList = new ArrayList<>();
 		orderList.add(order1);
@@ -262,17 +266,20 @@ class OrderServiceTest {
 	void 주문_NotFound_주문_수정_실패() {
 		//given
 		Long orderId = 1L;
+		Long restaurantId = 1L;
 
 		MenuQuantityReqDto menuQuantityReqDto = new MenuQuantityReqDto(1L, 1);
 		List<MenuQuantityReqDto> menuReqList = new ArrayList<>();
 		menuReqList.add(menuQuantityReqDto);
 
+		given(restaurantRepository.findById(any()))
+			.willReturn(Optional.of(RESTAURANT));
 		given(orderRepository.findById(any()))
 			.willReturn(Optional.empty());
 
 		//when
 		//then
-		assertThatThrownBy(() -> orderService.updateOrder(menuReqList ,orderId))
+		assertThatThrownBy(() -> orderService.updateOrder("주인", restaurantId, menuReqList ,orderId))
 			.isInstanceOf(NotFoundException.class);
 	}
 
