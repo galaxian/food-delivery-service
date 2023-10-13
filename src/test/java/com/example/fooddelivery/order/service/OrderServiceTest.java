@@ -35,7 +35,7 @@ import com.example.fooddelivery.restaurant.repository.RestaurantRepository;
 class OrderServiceTest {
 
 	private static final Restaurant restaurant = new Restaurant(1L, "치킨집", 10000,
-		3000, null, null, null);
+		3000, null, null, null, null);
 	private final LocalDateTime now = LocalDateTime.now();
 
 	@Mock
