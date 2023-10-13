@@ -40,7 +40,7 @@ class FoodServiceTest {
 		Long restaurantId = 1L;
 
 		given(restaurantRepository.findById(any())).willReturn(Optional.of(new Restaurant(restaurantId, null,
-			0, 0, null, null, null)));
+			0, 0, null, null, null, null)));
 		given(foodRepository.save(any())).willReturn(new Food(1L, requestDto.getName(),
 			requestDto.getPrice(), null));
 
@@ -74,7 +74,7 @@ class FoodServiceTest {
 		int price = 1000;
 
 		Restaurant restaurant = new Restaurant(1L, "식당이름", 10000
-			, 1000, null,null, null);
+			, 1000, null, null,null, null);
 
 		given(foodRepository.findById(any()))
 			.willReturn(Optional.of(new Food(foodId, name, price, restaurant)));
@@ -116,7 +116,7 @@ class FoodServiceTest {
 		int price2 = 2000;
 
 		Restaurant restaurant = new Restaurant(1L, "식당이름", 10000
-			, 1000, null,null, null);
+			, 1000, null, null,null, null);
 
 		List<Food> foodList = new ArrayList<>();
 		foodList.add(new Food(foodId1, name1, price1, restaurant));
