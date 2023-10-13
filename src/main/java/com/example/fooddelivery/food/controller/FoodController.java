@@ -58,9 +58,12 @@ public class FoodController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("foods/{id}")
-    public ResponseEntity<Void> deleteFood(@PathVariable Long id) {
-        foodService.deleteFood(id);
+    @Authenticated
+    @DeleteMapping("/restaurants/{restaurantId}/foods/{foodId}")
+    public ResponseEntity<Void> deleteFood(@OwnerIdentifier String identifier,
+        @PathVariable Long restaurantId,
+        @PathVariable Long foodId) {
+        foodService.deleteFood(identifier, restaurantId, foodId);
         return ResponseEntity.ok().build();
     }
 }
