@@ -74,15 +74,18 @@ class FoodServiceTest {
 	@Test
 	void 음식_단일_조회_성공() {
 		//given
+		Long restaurantId = 1L;
 		Long foodId = 1L;
 		String name = "음식이름";
 		int price = 1000;
 
 		given(foodRepository.findById(any()))
 			.willReturn(Optional.of(new Food(foodId, name, price, RESTAURANT)));
+		given(restaurantRepository.findById(any()))
+			.willReturn(Optional.of(RESTAURANT));
 
 		//when
-		FoodResponseDto result = foodService.findFood(foodId);
+		FoodResponseDto result = foodService.findFood("주인", restaurantId, foodId);
 
 		//then
 		assertThat(result.getId()).isEqualTo(foodId);
@@ -95,13 +98,16 @@ class FoodServiceTest {
 	void 음식_NotFound_단일_조회_실패() {
 		//given
 		Long foodId = 1L;
+		Long restaurantId = 1L;
 
 		given(foodRepository.findById(any()))
 			.willReturn(Optional.empty());
+		given(restaurantRepository.findById(any()))
+			.willReturn(Optional.of(RESTAURANT));
 
 		//when
 		//then
-		assertThatThrownBy(() -> foodService.findFood(foodId))
+		assertThatThrownBy(() -> foodService.findFood("주인", restaurantId, foodId))
 			.isInstanceOf(NotFoundException.class);
 
 	}
