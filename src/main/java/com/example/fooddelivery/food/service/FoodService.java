@@ -96,9 +96,10 @@ public class FoodService {
     }
 
     @Transactional
-    public void deleteFood(Long id) {
-        Food food = findFoodById(id);
-
+    public void deleteFood(String identifier, Long restaurantId, Long foodId) {
+        Restaurant restaurant = findRestaurantById(restaurantId);
+        validateOwner(identifier, restaurant);
+        Food food = findFoodById(foodId);
         foodRepository.delete(food);
     }
 }
