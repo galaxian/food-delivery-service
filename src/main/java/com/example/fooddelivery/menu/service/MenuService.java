@@ -145,6 +145,14 @@ public class MenuService {
         );
     }
 
+    @Transactional(readOnly = true)
+    public MenuDetailResDto findMenu(Long menuId) {
+        Menu menu = findMenuById(menuId);
+        List<MenuFood> menuFoodList = findMenuFoodById(menuId);
+        List<MenuFoodResDto> resDtoList = makeMenuFoodResDtoList(menuFoodList);
+        return new MenuDetailResDto(menu, resDtoList);
+    }
+
     @Transactional
     public void updateMenu(String identifier, Long restaurantsId, Long menuId, CreateMenuReqDto reqDto) {
         Restaurant restaurant = findRestaurantById(restaurantsId);
