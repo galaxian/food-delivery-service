@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Table(name = "restaurants")
 @Getter
@@ -58,5 +59,9 @@ public class Restaurant extends TimeStamped {
         this.minPrice = minPrice;
         this.deliveryFee = deliveryFee;
         this.owner = owner;
+    }
+
+    public boolean isOwner(String identifier) {
+        return Objects.equals(this.owner.getIdentifier(), identifier);
     }
 }
