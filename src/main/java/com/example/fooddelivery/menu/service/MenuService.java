@@ -90,18 +90,18 @@ public class MenuService {
     }
 
     @Transactional(readOnly = true)
-    public List<AdminMenuResDto> findAllMenu(String identifier, Long restaurantId) {
+    public List<AdminMenuResDto> adminFindAllMenu(String identifier, Long restaurantId) {
         Restaurant restaurant = findRestaurantById(restaurantId);
         validateOwner(identifier, restaurant);
         List<Menu> menuList = findMenusByRestaurantId(restaurantId);
-        return makeMenuResDtoList(menuList);
+        return makeAdminMenuResDtoList(menuList);
     }
 
     private List<Menu> findMenusByRestaurantId(Long restaurantId) {
         return menuRepository.findAllByRestaurantId(restaurantId);
     }
 
-    private List<AdminMenuResDto> makeMenuResDtoList(List<Menu> menuList) {
+    private List<AdminMenuResDto> makeAdminMenuResDtoList(List<Menu> menuList) {
         return menuList.stream()
             .map(AdminMenuResDto::new)
             .collect(Collectors.toList());

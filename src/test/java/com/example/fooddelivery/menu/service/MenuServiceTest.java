@@ -226,7 +226,7 @@ class MenuServiceTest {
 			.willReturn(Optional.of(RESTAURANT));
 
 		//when
-		List<AdminMenuResDto> result = menuService.findAllMenu("주인", RESTAURANT.getId());
+		List<AdminMenuResDto> result = menuService.adminFindAllMenu("주인", RESTAURANT.getId());
 
 		//then
 		assertThat(result.get(0).getId()).isEqualTo(menu1.getId());

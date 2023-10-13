@@ -36,10 +36,10 @@ public class MenuController {
     }
 
     @Authenticated
-    @GetMapping("/restaurants/{restaurantsId}/menus")
-    public ResponseEntity<List<AdminMenuResDto>> findAllMenu(@OwnerIdentifier String identifier,
-        @PathVariable Long restaurantsId) {
-        return ResponseEntity.ok(menuService.findAllMenu(identifier, restaurantsId));
+    @GetMapping("/restaurants/{restaurantId}/menus/admin")
+    public ResponseEntity<List<AdminMenuResDto>> adminFindAllMenu(@OwnerIdentifier String identifier,
+        @PathVariable Long restaurantId) {
+        return ResponseEntity.ok(menuService.adminFindAllMenu(identifier, restaurantId));
     }
 
     @GetMapping("/menus/{id}")
