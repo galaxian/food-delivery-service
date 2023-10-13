@@ -24,9 +24,11 @@ public class FoodController {
         this.foodService = foodService;
     }
 
-    @GetMapping("/foods/{id}")
-    public ResponseEntity<FoodResponseDto> getFood(@PathVariable Long id) {
-        return ResponseEntity.ok().body(foodService.findFood(id));
+    @Authenticated
+    @GetMapping("/restaurants/{restaurantId}/foods/{foodId}")
+    public ResponseEntity<FoodResponseDto> getFood(@OwnerIdentifier String identifier,
+        @PathVariable Long restaurantId, @PathVariable Long foodId) {
+        return ResponseEntity.ok().body(foodService.findFood(identifier, restaurantId, foodId));
     }
 
     @GetMapping("/restaurants/{restaurantId}/foods")
