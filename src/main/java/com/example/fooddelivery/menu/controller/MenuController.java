@@ -45,15 +45,22 @@ public class MenuController {
         return ResponseEntity.ok(menuService.findMenu(id));
     }
 
-    @PutMapping("/menus/{id}")
-    public ResponseEntity<Void> updateMenu(@PathVariable Long id, @RequestBody @Valid CreateMenuReqDto reqDto) {
-        menuService.updateMenu(id, reqDto);
+    @Authenticated
+    @PutMapping("/restaurants/{restaurantsId}/menus/{menuId}")
+    public ResponseEntity<Void> updateMenu(@OwnerIdentifier String identifier,
+        @PathVariable Long restaurantsId,
+        @PathVariable Long menuId,
+        @RequestBody @Valid CreateMenuReqDto reqDto) {
+        menuService.updateMenu(identifier, restaurantsId, menuId, reqDto);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/menus/{id}")
-    public ResponseEntity<Void> deleteMenu(@PathVariable Long id) {
-        menuService.deleteMenu(id);
+    @Authenticated
+    @DeleteMapping("/restaurants/{restaurantsId}/menus/{menuId}")
+    public ResponseEntity<Void> deleteMenu(@OwnerIdentifier String identifier,
+        @PathVariable Long restaurantsId,
+        @PathVariable Long menuId) {
+        menuService.deleteMenu(identifier, restaurantsId, menuId);
         return ResponseEntity.ok().build();
     }
 }
