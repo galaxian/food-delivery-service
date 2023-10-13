@@ -18,11 +18,17 @@ import com.example.fooddelivery.food.domain.Food;
 import com.example.fooddelivery.food.dto.FoodRequestDto;
 import com.example.fooddelivery.food.dto.FoodResponseDto;
 import com.example.fooddelivery.food.repository.FoodRepository;
+import com.example.fooddelivery.owner.domain.Owner;
 import com.example.fooddelivery.restaurant.domain.Restaurant;
 import com.example.fooddelivery.restaurant.repository.RestaurantRepository;
 
 @ExtendWith(MockitoExtension.class)
 class FoodServiceTest {
+
+	private static final Owner OWNER = new Owner(1L, "주인", "비밀번호", "salt");
+	private static final Restaurant RESTAURANT = new Restaurant(1L, "식당이름",
+		10000, 3000, OWNER, null, null, null);
+
 
 	@Mock
 	private FoodRepository foodRepository;
@@ -39,13 +45,12 @@ class FoodServiceTest {
 		FoodRequestDto requestDto = new FoodRequestDto("음식이름", 10000);
 		Long restaurantId = 1L;
 
-		given(restaurantRepository.findById(any())).willReturn(Optional.of(new Restaurant(restaurantId, null,
-			0, 0, null, null, null, null)));
+		given(restaurantRepository.findById(any())).willReturn(Optional.of(RESTAURANT));
 		given(foodRepository.save(any())).willReturn(new Food(1L, requestDto.getName(),
 			requestDto.getPrice(), null));
 
 		//when
-		Long result = foodService.createFood(requestDto, restaurantId);
+		Long result = foodService.createFood("주인", requestDto, restaurantId);
 
 		//then
 		assertThat(result).isEqualTo(1L);
@@ -61,7 +66,7 @@ class FoodServiceTest {
 
 		//when
 		//then
-		assertThatThrownBy(() -> foodService.createFood(requestDto, restaurantId))
+		assertThatThrownBy(() -> foodService.createFood("주인", requestDto, restaurantId))
 			.isInstanceOf(NotFoundException.class);
 
 	}
@@ -73,11 +78,8 @@ class FoodServiceTest {
 		String name = "음식이름";
 		int price = 1000;
 
-		Restaurant restaurant = new Restaurant(1L, "식당이름", 10000
-			, 1000, null, null,null, null);
-
 		given(foodRepository.findById(any()))
-			.willReturn(Optional.of(new Food(foodId, name, price, restaurant)));
+			.willReturn(Optional.of(new Food(foodId, name, price, RESTAURANT)));
 
 		//when
 		FoodResponseDto result = foodService.findFood(foodId);
@@ -115,12 +117,9 @@ class FoodServiceTest {
 		String name2 = "음식2";
 		int price2 = 2000;
 
-		Restaurant restaurant = new Restaurant(1L, "식당이름", 10000
-			, 1000, null, null,null, null);
-
 		List<Food> foodList = new ArrayList<>();
-		foodList.add(new Food(foodId1, name1, price1, restaurant));
-		foodList.add(new Food(foodId2, name2, price2, restaurant));
+		foodList.add(new Food(foodId1, name1, price1, RESTAURANT));
+		foodList.add(new Food(foodId2, name2, price2, RESTAURANT));
 
 		given(foodRepository.findAllByRestaurantId(any())).willReturn(foodList);
 
