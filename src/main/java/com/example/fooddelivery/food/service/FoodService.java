@@ -41,7 +41,9 @@ public class FoodService {
     }
 
     @Transactional(readOnly = true)
-    public List<FoodResponseDto> findAllFood(Long restaurantId) {
+    public List<FoodResponseDto> findAllFood(String identifier, Long restaurantId) {
+        Restaurant restaurant = findRestaurantById(restaurantId);
+        validateOwner(identifier, restaurant);
         List<Food> foodList = findAllFoodsByRestaurantId(restaurantId);
         return makeFoodResponseDtoList(foodList);
     }
