@@ -9,7 +9,6 @@ public class AdminMenuResDto {
     private Long id;
     private String name;
     private int price;
-    private String describe;
     private boolean isDisplay;
     private MenuStatus status;
 
@@ -17,7 +16,6 @@ public class AdminMenuResDto {
         this.id = menu.getId();
         this.name = menu.getName();
         this.price = menu.getPrice();
-        this.describe = menu.getDescribe();
         this.isDisplay = menu.isDisplay();
         this.status = menu.getMenuStatus();
     }

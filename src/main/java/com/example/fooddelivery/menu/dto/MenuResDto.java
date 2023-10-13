@@ -10,14 +10,12 @@ public class MenuResDto {
 	private Long id;
 	private String name;
 	private int price;
-	private String describe;
 	private MenuStatus status;
 
 	public MenuResDto(Menu menu) {
 		this.id = menu.getId();
 		this.name = menu.getName();
 		this.price = menu.getPrice();
-		this.describe = menu.getDescribe();
 		this.status = menu.getMenuStatus();
 	}
 }
