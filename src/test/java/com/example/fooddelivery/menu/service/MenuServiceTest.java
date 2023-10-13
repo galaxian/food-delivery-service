@@ -23,7 +23,7 @@ import com.example.fooddelivery.menu.domain.MenuStatus;
 import com.example.fooddelivery.menu.dto.CreateMenuReqDto;
 import com.example.fooddelivery.menu.dto.FoodQuantityReqDto;
 import com.example.fooddelivery.menu.dto.MenuDetailResDto;
-import com.example.fooddelivery.menu.dto.MenuResDto;
+import com.example.fooddelivery.menu.dto.AdminMenuResDto;
 import com.example.fooddelivery.menu.repository.MenuRepository;
 import com.example.fooddelivery.menufood.domain.MenuFood;
 import com.example.fooddelivery.menufood.repository.MenuFoodRepository;
@@ -222,9 +222,11 @@ class MenuServiceTest {
 
 		given(menuRepository.findAllByRestaurantId(any()))
 			.willReturn(menuList);
+		given(restaurantRepository.findById(any()))
+			.willReturn(Optional.of(RESTAURANT));
 
 		//when
-		List<MenuResDto> result = menuService.findAllMenu(RESTAURANT.getId());
+		List<AdminMenuResDto> result = menuService.findAllMenu("주인", RESTAURANT.getId());
 
 		//then
 		assertThat(result.get(0).getId()).isEqualTo(menu1.getId());
