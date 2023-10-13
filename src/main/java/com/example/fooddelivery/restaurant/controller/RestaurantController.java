@@ -43,9 +43,12 @@ public class RestaurantController {
         return ResponseEntity.created(URI.create("/api/v1/restaurants" + id)).build();
     }
 
+    @Authenticated
     @PutMapping("/{restaurantId}")
-    public ResponseEntity<Void> updateRestaurant(@RequestBody UpdateRestaurantReqDto reqDto, @PathVariable Long restaurantId)     {
-        restaurantService.updateRestaurant(reqDto, restaurantId);
+    public ResponseEntity<Void> updateRestaurant(@OwnerIdentifier String identifier,
+        @RequestBody UpdateRestaurantReqDto reqDto,
+        @PathVariable Long restaurantId)     {
+        restaurantService.updateRestaurant(identifier, reqDto, restaurantId);
         return ResponseEntity.ok().build();
     }
 
