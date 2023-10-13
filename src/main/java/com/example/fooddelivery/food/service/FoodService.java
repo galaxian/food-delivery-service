@@ -84,8 +84,10 @@ public class FoodService {
     }
 
     @Transactional
-    public void updateFood(Long id, FoodRequestDto requestDto) {
-        Food food = findFoodById(id);
+    public void updateFood(String identifier, Long restaurantId, Long foodId, FoodRequestDto requestDto) {
+        Restaurant restaurant = findRestaurantById(restaurantId);
+        validateOwner(identifier, restaurant);
+        Food food = findFoodById(foodId);
         updateFood(food, requestDto);
     }
 
