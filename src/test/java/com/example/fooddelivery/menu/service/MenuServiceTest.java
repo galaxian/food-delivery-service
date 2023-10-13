@@ -249,10 +249,12 @@ class MenuServiceTest {
 
 		given(menuRepository.findById(any()))
 			.willReturn(Optional.empty());
+		given(restaurantRepository.findById(any()))
+			.willReturn(Optional.of(RESTAURANT));
 
 		//when
 		//then
-		assertThatThrownBy(() -> menuService.updateMenu(menuId, updateReq))
+		assertThatThrownBy(() -> menuService.updateMenu("주인", restaurantId, menuId, updateReq))
 			.isInstanceOf(NotFoundException.class);
 	}
 
@@ -278,10 +280,12 @@ class MenuServiceTest {
 		given(foodRepository.findById(any()))
 			.willReturn(Optional.of(new Food(1L, "치킨", 20000, RESTAURANT)))
 			.willReturn(Optional.of(new Food(2L, "콜라", 3300, RESTAURANT)));
+		given(restaurantRepository.findById(any()))
+			.willReturn(Optional.of(RESTAURANT));
 
 		//when
 		//then
-		assertThatThrownBy(() -> menuService.updateMenu(restaurantId, updateReq))
+		assertThatThrownBy(() -> menuService.updateMenu("주인", restaurantId, menuId, updateReq))
 			.isInstanceOf(BadRequestException.class);
 
 	}
