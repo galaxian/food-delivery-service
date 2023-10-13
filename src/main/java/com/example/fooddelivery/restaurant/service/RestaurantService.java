@@ -2,6 +2,8 @@ package com.example.fooddelivery.restaurant.service;
 
 import com.example.fooddelivery.common.exception.DuplicateException;
 import com.example.fooddelivery.common.exception.NotFoundException;
+import com.example.fooddelivery.owner.domain.Owner;
+import com.example.fooddelivery.owner.repository.OwnerRepository;
 import com.example.fooddelivery.restaurant.domain.Restaurant;
 import com.example.fooddelivery.restaurant.dto.CreateRestaurantReqDto;
 import com.example.fooddelivery.restaurant.dto.RestaurantDetailResDto;
@@ -19,16 +21,20 @@ import java.util.stream.Collectors;
 public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
+    private final OwnerRepository ownerRepository;
 
     @Autowired
-    public RestaurantService(RestaurantRepository restaurantRepository) {
+    public RestaurantService(RestaurantRepository restaurantRepository,
+        OwnerRepository ownerRepository) {
         this.restaurantRepository = restaurantRepository;
+        this.ownerRepository = ownerRepository;
     }
 
     @Transactional
-    public Long createRestaurant(CreateRestaurantReqDto reqDto) {
+    public Long createRestaurant(String identifier, CreateRestaurantReqDto reqDto) {
+        Owner owner = findOwnerByIdentifier(identifier);
         validateRestaurant(reqDto);
-        Restaurant restaurant = convertToRestaurant(reqDto);
+        Restaurant restaurant = convertToRestaurant(reqDto, owner);
         Restaurant saveRestaurant = restaurantRepository.save(restaurant);
         return saveRestaurant.getId();
     }
@@ -43,8 +49,14 @@ public class RestaurantService {
         return restaurantRepository.findByName(name).isPresent();
     }
 
-    private Restaurant convertToRestaurant(CreateRestaurantReqDto reqDto) {
-        return Restaurant.createRestaurant(reqDto.getName(), reqDto.getMinPrice(), reqDto.getDeliveryFee());
+    private Restaurant convertToRestaurant(CreateRestaurantReqDto reqDto, Owner owner) {
+        return new Restaurant(reqDto.getName(), reqDto.getMinPrice(), reqDto.getDeliveryFee(), owner);
+    }
+
+    private Owner findOwnerByIdentifier(String identifier) {
+        return ownerRepository.findByIdentifier(identifier).orElseThrow(
+            () -> new NotFoundException("사용자를 찾을 수 없습니다.")
+        );
     }
 
     @Transactional(readOnly = true)
