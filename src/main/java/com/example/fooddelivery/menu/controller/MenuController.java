@@ -5,6 +5,7 @@ import com.example.fooddelivery.common.resolver.OwnerIdentifier;
 import com.example.fooddelivery.menu.dto.CreateMenuReqDto;
 import com.example.fooddelivery.menu.dto.MenuDetailResDto;
 import com.example.fooddelivery.menu.dto.AdminMenuResDto;
+import com.example.fooddelivery.menu.dto.MenuResDto;
 import com.example.fooddelivery.menu.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +41,11 @@ public class MenuController {
     public ResponseEntity<List<AdminMenuResDto>> adminFindAllMenu(@OwnerIdentifier String identifier,
         @PathVariable Long restaurantId) {
         return ResponseEntity.ok(menuService.adminFindAllMenu(identifier, restaurantId));
+    }
+
+    @GetMapping("/restaurants/{restaurantId}/menus")
+    public ResponseEntity<List<MenuResDto>> findAllMenu(@PathVariable Long restaurantId) {
+        return ResponseEntity.ok(menuService.findAllMenu(restaurantId));
     }
 
     @GetMapping("/menus/{id}")

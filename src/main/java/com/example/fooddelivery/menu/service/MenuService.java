@@ -108,6 +108,18 @@ public class MenuService {
     }
 
     @Transactional(readOnly = true)
+    public List<MenuResDto> findAllMenu(Long restaurantId) {
+        List<Menu> menuList = findMenusByRestaurantId(restaurantId);
+        return makeMenuResDtoList(menuList);
+    }
+
+    private List<MenuResDto> makeMenuResDtoList(List<Menu> menuList) {
+        return menuList.stream()
+            .map(MenuResDto::new)
+            .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public MenuDetailResDto findMenu(Long id) {
         Menu menu = findMenuById(id);
         List<MenuFood> menuFoodList = findMenuFoodById(id);
