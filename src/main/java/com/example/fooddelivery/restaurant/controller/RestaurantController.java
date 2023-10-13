@@ -52,9 +52,11 @@ public class RestaurantController {
         return ResponseEntity.ok().build();
     }
 
+    @Authenticated
     @DeleteMapping("/{restaurantId}")
-    public ResponseEntity<Void> deleteRestaurant(@PathVariable Long restaurantId) {
-        restaurantService.deleteRestaurant(restaurantId);
+    public ResponseEntity<Void> deleteRestaurant(@OwnerIdentifier String identifier,
+        @PathVariable Long restaurantId) {
+        restaurantService.deleteRestaurant(identifier, restaurantId);
         return ResponseEntity.ok().build();
     }
 }

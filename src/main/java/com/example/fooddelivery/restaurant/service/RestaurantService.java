@@ -106,7 +106,9 @@ public class RestaurantService {
     }
 
     @Transactional
-    public void deleteRestaurant(Long restaurantId) {
+    public void deleteRestaurant(String identifier, Long restaurantId) {
+        Restaurant restaurant = findRestaurantById(restaurantId);
+        validateOwner(identifier, restaurant);
         restaurantRepository.deleteById(restaurantId);
     }
 }
