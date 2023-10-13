@@ -2,6 +2,7 @@ package com.example.fooddelivery.restaurant.service;
 
 import com.example.fooddelivery.common.exception.DuplicateException;
 import com.example.fooddelivery.common.exception.NotFoundException;
+import com.example.fooddelivery.common.exception.UnauthorizedException;
 import com.example.fooddelivery.owner.domain.Owner;
 import com.example.fooddelivery.owner.repository.OwnerRepository;
 import com.example.fooddelivery.restaurant.domain.Restaurant;
@@ -88,9 +89,16 @@ public class RestaurantService {
     }
 
     @Transactional
-    public void updateRestaurant(UpdateRestaurantReqDto reqDto, Long restaurantId) {
+    public void updateRestaurant(String identifier, UpdateRestaurantReqDto reqDto, Long restaurantId) {
         Restaurant restaurant = findRestaurantById(restaurantId);
+        validateOwner(identifier, restaurant);
         updateRestaurant(restaurant, reqDto);
+    }
+
+    private void validateOwner(String identifier, Restaurant restaurant) {
+        if(!restaurant.isOwner(identifier)) {
+            throw new UnauthorizedException("식당 계정만 사용할 수 있는 기능입니다.");
+        }
     }
 
     private void updateRestaurant(Restaurant restaurant, UpdateRestaurantReqDto reqDto) {
