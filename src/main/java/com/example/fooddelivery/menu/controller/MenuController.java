@@ -48,9 +48,12 @@ public class MenuController {
         return ResponseEntity.ok(menuService.findAllMenu(restaurantId));
     }
 
-    @GetMapping("/menus/{id}/admin")
-    public ResponseEntity<AdminMenuDetailResDto> adminFindMenu(@PathVariable Long id) {
-        return ResponseEntity.ok(menuService.adminFindMenu(id));
+    @Authenticated
+    @GetMapping("/restaurants/{restaurantId}/menus/{menuId}/admin")
+    public ResponseEntity<AdminMenuDetailResDto> adminFindMenu(@OwnerIdentifier String identifier,
+        @PathVariable Long restaurantId,
+        @PathVariable Long menuId) {
+        return ResponseEntity.ok(menuService.adminFindMenu(identifier, restaurantId, menuId));
     }
 
     @Authenticated

@@ -167,6 +167,7 @@ class MenuServiceTest {
 	void 메뉴_단일_조회_성공() {
 		//given
 		Long menuId = 1L;
+		Long restaurantId = 1L;
 
 		Menu menu = new Menu(menuId, "양념치킨", 20000,
 			"특급소스로 만든 치킨", true, MenuStatus.SALE, RESTAURANT);
@@ -181,9 +182,11 @@ class MenuServiceTest {
 			.willReturn(Optional.of(menu));
 		given(menuFoodRepository.findByMenuId(any()))
 			.willReturn(menuFoodList);
+		given(restaurantRepository.findById(any()))
+			.willReturn(Optional.of(RESTAURANT));
 
 		//when
-		AdminMenuDetailResDto result = menuService.adminFindMenu(menuId);
+		AdminMenuDetailResDto result = menuService.adminFindMenu("주인", restaurantId, menuId);
 
 		//then
 		assertThat(result.getId()).isEqualTo(menuId);
@@ -197,13 +200,16 @@ class MenuServiceTest {
 	void 메뉴_NotFound_단일_조회_실패() {
 		//given
 		Long menuId = 1L;
+		Long restaurantId = 1L;
 
 		given(menuRepository.findById(any()))
 			.willReturn(Optional.empty());
+		given(restaurantRepository.findById(any()))
+			.willReturn(Optional.of(RESTAURANT));
 
 		//when
 		//then
-		assertThatThrownBy(() -> menuService.adminFindMenu(menuId))
+		assertThatThrownBy(() -> menuService.adminFindMenu("주인", restaurantId, menuId))
 			.isInstanceOf(NotFoundException.class);
 
 	}
