@@ -1,6 +1,7 @@
 package com.example.fooddelivery.food.service;
 
 import com.example.fooddelivery.common.exception.NotFoundException;
+import com.example.fooddelivery.common.exception.UnauthorizedException;
 import com.example.fooddelivery.food.dto.FoodRequestDto;
 import com.example.fooddelivery.food.repository.FoodRepository;
 import com.example.fooddelivery.food.domain.Food;
@@ -26,8 +27,10 @@ public class FoodService {
     }
 
     @Transactional(readOnly = true)
-    public FoodResponseDto findFood(Long id) {
-        Food food = findFoodById(id);
+    public FoodResponseDto findFood(String identifier, Long restaurantId, Long foodId) {
+        Restaurant restaurant = findRestaurantById(restaurantId);
+        validateOwner(identifier, restaurant);
+        Food food = findFoodById(foodId);
         return new FoodResponseDto(food);
     }
 
@@ -38,7 +41,9 @@ public class FoodService {
     }
 
     @Transactional(readOnly = true)
-    public List<FoodResponseDto> findAllFood(Long restaurantId) {
+    public List<FoodResponseDto> findAllFood(String identifier, Long restaurantId) {
+        Restaurant restaurant = findRestaurantById(restaurantId);
+        validateOwner(identifier, restaurant);
         List<Food> foodList = findAllFoodsByRestaurantId(restaurantId);
         return makeFoodResponseDtoList(foodList);
     }
@@ -54,11 +59,18 @@ public class FoodService {
     }
 
     @Transactional
-    public Long createFood(FoodRequestDto requestDto, Long restaurantId) {
+    public Long createFood(String identifier, FoodRequestDto requestDto, Long restaurantId) {
         Restaurant restaurant = findRestaurantById(restaurantId);
+        validateOwner(identifier, restaurant);
         Food food = convertToFoodEntity(requestDto, restaurant);
         Food saveFood = foodRepository.save(food);
         return saveFood.getId();
+    }
+
+    private void validateOwner(String identifier, Restaurant restaurant) {
+        if (!restaurant.isOwner(identifier)) {
+            throw new UnauthorizedException("식당 주인만 사용할 수 있는 기능입니다.");
+        }
     }
 
     private Restaurant findRestaurantById(Long restaurantId) {
@@ -72,8 +84,10 @@ public class FoodService {
     }
 
     @Transactional
-    public void updateFood(Long id, FoodRequestDto requestDto) {
-        Food food = findFoodById(id);
+    public void updateFood(String identifier, Long restaurantId, Long foodId, FoodRequestDto requestDto) {
+        Restaurant restaurant = findRestaurantById(restaurantId);
+        validateOwner(identifier, restaurant);
+        Food food = findFoodById(foodId);
         updateFood(food, requestDto);
     }
 
@@ -82,9 +96,10 @@ public class FoodService {
     }
 
     @Transactional
-    public void deleteFood(Long id) {
-        Food food = findFoodById(id);
-
+    public void deleteFood(String identifier, Long restaurantId, Long foodId) {
+        Restaurant restaurant = findRestaurantById(restaurantId);
+        validateOwner(identifier, restaurant);
+        Food food = findFoodById(foodId);
         foodRepository.delete(food);
     }
 }

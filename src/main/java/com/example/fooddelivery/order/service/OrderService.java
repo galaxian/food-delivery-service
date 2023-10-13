@@ -2,6 +2,7 @@ package com.example.fooddelivery.order.service;
 
 import com.example.fooddelivery.common.exception.BadRequestException;
 import com.example.fooddelivery.common.exception.NotFoundException;
+import com.example.fooddelivery.common.exception.UnauthorizedException;
 import com.example.fooddelivery.menu.domain.Menu;
 import com.example.fooddelivery.menu.repository.MenuRepository;
 import com.example.fooddelivery.order.domain.Order;
@@ -39,8 +40,9 @@ public class OrderService {
     }
 
     @Transactional
-    public Long createOrder(CreateOrderReqDto reqDto, Long restaurantsId) {
+    public Long createOrder(String identifier, CreateOrderReqDto reqDto, Long restaurantsId) {
         Restaurant restaurant = findRestaurantById(restaurantsId);
+        validateOwner(identifier, restaurant);
         String phoneNumber = deleteDashPhoneNumber(reqDto.getPhoneNumber());
         Order order = Order.createOrder(restaurant, phoneNumber);
         Order saveOrder = orderRepository.save(order);
@@ -48,6 +50,12 @@ public class OrderService {
         List<OrderMenu> orderMenuList = makeOrderMenuList(reqDto.getMenuReqList(), saveOrder);
         orderMenuRepository.saveAll(orderMenuList);
         return saveOrder.getId();
+    }
+
+    private void validateOwner(String identifier, Restaurant restaurant) {
+        if (!restaurant.isOwner(identifier)) {
+            throw new UnauthorizedException("식당 주인만 사용할 수 있는 기능입니다.");
+        }
     }
 
     private List<OrderMenu> makeOrderMenuList(List<MenuQuantityReqDto> reqDtoList, Order order) {
@@ -141,7 +149,10 @@ public class OrderService {
     }
 
     @Transactional
-    public void updateOrder(List<MenuQuantityReqDto> reqDto, Long orderId) {
+    public void updateOrder(String identifier, Long restaurantsId, List<MenuQuantityReqDto> reqDto,
+        Long orderId) {
+        Restaurant restaurant = findRestaurantById(restaurantsId);
+        validateOwner(identifier, restaurant);
         validateMenuEmpty(reqDto);
         Order order = findOrderById(orderId);
         orderMenuRepository.deleteAllByOrderId(orderId);
@@ -156,7 +167,9 @@ public class OrderService {
     }
 
     @Transactional
-    public void deleteOrder(Long orderId) {
+    public void deleteOrder(String identifier, Long restaurantsId, Long orderId) {
+        Restaurant restaurant = findRestaurantById(restaurantsId);
+        validateOwner(identifier, restaurant);
         orderRepository.deleteById(orderId);
     }
 }

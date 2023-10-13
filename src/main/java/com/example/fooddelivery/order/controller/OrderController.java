@@ -1,5 +1,7 @@
 package com.example.fooddelivery.order.controller;
 
+import com.example.fooddelivery.common.interceptor.Authenticated;
+import com.example.fooddelivery.common.resolver.OwnerIdentifier;
 import com.example.fooddelivery.order.dto.CreateOrderReqDto;
 import com.example.fooddelivery.order.dto.GetAllOrderByPhoneReqDto;
 import com.example.fooddelivery.order.dto.MenuQuantityReqDto;
@@ -40,21 +42,31 @@ public class OrderController {
         return ResponseEntity.ok(orderService.findAllOrderByPhoneNumber(reqDto));
     }
 
+    @Authenticated
     @PostMapping("/restaurants/{restaurantsId}/orders")
-    public ResponseEntity<Void> createOrder(@RequestBody @Valid CreateOrderReqDto reqDto, @PathVariable Long restaurantsId) {
-        Long id = orderService.createOrder(reqDto, restaurantsId);
+    public ResponseEntity<Void> createOrder(@OwnerIdentifier String identifier,
+        @RequestBody @Valid CreateOrderReqDto reqDto,
+        @PathVariable Long restaurantsId) {
+        Long id = orderService.createOrder(identifier, reqDto, restaurantsId);
         return ResponseEntity.created(URI.create("/api/v1/orders/" + id)).build();
     }
 
-    @PutMapping("/orders/{orderId}")
-    public ResponseEntity<Void> updateOrder(@RequestBody @Valid List<MenuQuantityReqDto> reqDto, @PathVariable Long orderId) {
-        orderService.updateOrder(reqDto, orderId);
+    @Authenticated
+    @PutMapping("/restaurants/{restaurantsId}/orders/{orderId}")
+    public ResponseEntity<Void> updateOrder(@OwnerIdentifier String identifier,
+        @PathVariable Long restaurantsId,
+        @RequestBody @Valid List<MenuQuantityReqDto> reqDto,
+        @PathVariable Long orderId) {
+        orderService.updateOrder(identifier, restaurantsId, reqDto, orderId);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/orders/{orderId}")
-    public ResponseEntity<Void> deleteOrder(@PathVariable Long orderId) {
-        orderService.deleteOrder(orderId);
+    @Authenticated
+    @DeleteMapping("/restaurants/{restaurantsId}/orders/{orderId}")
+    public ResponseEntity<Void> deleteOrder(@OwnerIdentifier String identifier,
+        @PathVariable Long restaurantsId,
+        @PathVariable Long orderId) {
+        orderService.deleteOrder(identifier, restaurantsId, orderId);
         return ResponseEntity.ok().build();
     }
 }

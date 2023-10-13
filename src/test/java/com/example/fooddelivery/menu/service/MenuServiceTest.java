@@ -27,14 +27,16 @@ import com.example.fooddelivery.menu.dto.MenuResDto;
 import com.example.fooddelivery.menu.repository.MenuRepository;
 import com.example.fooddelivery.menufood.domain.MenuFood;
 import com.example.fooddelivery.menufood.repository.MenuFoodRepository;
+import com.example.fooddelivery.owner.domain.Owner;
 import com.example.fooddelivery.restaurant.domain.Restaurant;
 import com.example.fooddelivery.restaurant.repository.RestaurantRepository;
 
 @ExtendWith(MockitoExtension.class)
 class MenuServiceTest {
 
-	private static final Restaurant restaurant = new Restaurant(1L, "치킨집", 10000,
-		3000, null, null, null, null);
+	private static final Owner OWNER = new Owner(1L, "주인", "비밀번호", "salt");
+	private static final Restaurant RESTAURANT = new Restaurant(1L, "치킨집", 10000,
+		3000, OWNER, null, null, null);
 
 	@Mock
 	private MenuRepository menuRepository;
@@ -64,17 +66,19 @@ class MenuServiceTest {
 		Long restaurantId = 1L;
 
 		given(restaurantRepository.findById(any()))
-			.willReturn(Optional.of(restaurant));
+			.willReturn(Optional.of(RESTAURANT));
 		given(menuRepository.save(any()))
 			.willReturn(new Menu(1L,menuReq.getName(), menuReq.getPrice(), menuReq.getDescribe()
-				,true, MenuStatus.SALE, restaurant));
+				,true, MenuStatus.SALE, RESTAURANT));
 		given(foodRepository.findById(any()))
-			.willReturn(Optional.of(new Food(1L, "치킨", 20000, restaurant)))
-			.willReturn(Optional.of(new Food(2L, "콜라", 3300, restaurant)));
+			.willReturn(Optional.of(new Food(1L, "치킨", 20000, RESTAURANT)))
+			.willReturn(Optional.of(new Food(2L, "콜라", 3300, RESTAURANT)));
+		given(restaurantRepository.findById(any()))
+			.willReturn(Optional.of(RESTAURANT));
 
 		//when
 		//then
-		assertDoesNotThrow(() -> menuService.createMenu(menuReq, restaurantId));
+		assertDoesNotThrow(() -> menuService.createMenu("주인", menuReq, restaurantId));
 
 	}
 
@@ -92,10 +96,12 @@ class MenuServiceTest {
 
 		given(restaurantRepository.findById(any()))
 			.willReturn(Optional.empty());
+		given(restaurantRepository.findById(any()))
+			.willReturn(Optional.of(RESTAURANT));
 
 		//when
 		//then
-		assertThatThrownBy(() -> menuService.createMenu(menuReq, restaurantId))
+		assertThatThrownBy(() -> menuService.createMenu("주인", menuReq, restaurantId))
 			.isInstanceOf(NotFoundException.class);
 
 	}
@@ -113,16 +119,18 @@ class MenuServiceTest {
 		Long restaurantId = 1L;
 
 		given(restaurantRepository.findById(any()))
-			.willReturn(Optional.of(restaurant));
+			.willReturn(Optional.of(RESTAURANT));
 		given(menuRepository.save(any()))
 			.willReturn(new Menu(1L,menuReq.getName(), menuReq.getPrice(), menuReq.getDescribe()
-				,true, MenuStatus.SALE, restaurant));
+				,true, MenuStatus.SALE, RESTAURANT));
 		given(foodRepository.findById(any()))
 			.willReturn(Optional.empty());
+		given(restaurantRepository.findById(any()))
+			.willReturn(Optional.of(RESTAURANT));
 
 		//when
 		//then
-		assertThatThrownBy(() -> menuService.createMenu(menuReq, restaurantId))
+		assertThatThrownBy(() -> menuService.createMenu("주인", menuReq, restaurantId))
 			.isInstanceOf(NotFoundException.class);
 	}
 
@@ -139,17 +147,19 @@ class MenuServiceTest {
 		Long restaurantId = 1L;
 
 		given(restaurantRepository.findById(any()))
-			.willReturn(Optional.of(restaurant));
+			.willReturn(Optional.of(RESTAURANT));
 		given(menuRepository.save(any()))
 			.willReturn(new Menu(1L,menuReq.getName(), menuReq.getPrice(), menuReq.getDescribe()
-				,true, MenuStatus.SALE, restaurant));
+				,true, MenuStatus.SALE, RESTAURANT));
 		given(foodRepository.findById(any()))
-			.willReturn(Optional.of(new Food(1L, "치킨", 20000, restaurant)))
-			.willReturn(Optional.of(new Food(2L, "콜라", 3300, restaurant)));
+			.willReturn(Optional.of(new Food(1L, "치킨", 20000, RESTAURANT)))
+			.willReturn(Optional.of(new Food(2L, "콜라", 3300, RESTAURANT)));
+		given(restaurantRepository.findById(any()))
+			.willReturn(Optional.of(RESTAURANT));
 
 		//when
 		//then
-		assertThatThrownBy(() -> menuService.createMenu(menuReq, restaurantId))
+		assertThatThrownBy(() -> menuService.createMenu("주인", menuReq, restaurantId))
 			.isInstanceOf(BadRequestException.class);
 	}
 
@@ -159,9 +169,9 @@ class MenuServiceTest {
 		Long menuId = 1L;
 
 		Menu menu = new Menu(menuId, "양념치킨", 20000,
-			"특급소스로 만든 치킨", true, MenuStatus.SALE, restaurant);
-		Food food1 = new Food(1L, "치킨", 20000, restaurant);
-		Food food2 = new Food(2L, "콜라", 3000, restaurant);
+			"특급소스로 만든 치킨", true, MenuStatus.SALE, RESTAURANT);
+		Food food1 = new Food(1L, "치킨", 20000, RESTAURANT);
+		Food food2 = new Food(2L, "콜라", 3000, RESTAURANT);
 
 		List<MenuFood> menuFoodList = new ArrayList<>();
 		menuFoodList.add(new MenuFood(1L,1, menu, food1));
@@ -204,9 +214,9 @@ class MenuServiceTest {
 		List<Menu> menuList = new ArrayList<>();
 
 		Menu menu1 = new Menu(1L, "양념치킨", 20000,
-			"특급소스로 만든 치킨", true, MenuStatus.SALE, restaurant);
+			"특급소스로 만든 치킨", true, MenuStatus.SALE, RESTAURANT);
 		Menu menu2 = new Menu(2L, "간장치킨", 20000,
-			"특급소스로 만든 치킨", true, MenuStatus.SALE, restaurant);
+			"특급소스로 만든 치킨", true, MenuStatus.SALE, RESTAURANT);
 		menuList.add(menu1);
 		menuList.add(menu2);
 
@@ -214,7 +224,7 @@ class MenuServiceTest {
 			.willReturn(menuList);
 
 		//when
-		List<MenuResDto> result = menuService.findAllMenu(restaurant.getId());
+		List<MenuResDto> result = menuService.findAllMenu(RESTAURANT.getId());
 
 		//then
 		assertThat(result.get(0).getId()).isEqualTo(menu1.getId());
@@ -239,10 +249,12 @@ class MenuServiceTest {
 
 		given(menuRepository.findById(any()))
 			.willReturn(Optional.empty());
+		given(restaurantRepository.findById(any()))
+			.willReturn(Optional.of(RESTAURANT));
 
 		//when
 		//then
-		assertThatThrownBy(() -> menuService.updateMenu(menuId, updateReq))
+		assertThatThrownBy(() -> menuService.updateMenu("주인", restaurantId, menuId, updateReq))
 			.isInstanceOf(NotFoundException.class);
 	}
 
@@ -264,14 +276,16 @@ class MenuServiceTest {
 			.willReturn(Optional.of(
 				new Menu(1L, updateReq.getName(), updateReq.getPrice(),
 					updateReq.getDescribe(), true, MenuStatus.SALE,
-					restaurant)));
+					RESTAURANT)));
 		given(foodRepository.findById(any()))
-			.willReturn(Optional.of(new Food(1L, "치킨", 20000, restaurant)))
-			.willReturn(Optional.of(new Food(2L, "콜라", 3300, restaurant)));
+			.willReturn(Optional.of(new Food(1L, "치킨", 20000, RESTAURANT)))
+			.willReturn(Optional.of(new Food(2L, "콜라", 3300, RESTAURANT)));
+		given(restaurantRepository.findById(any()))
+			.willReturn(Optional.of(RESTAURANT));
 
 		//when
 		//then
-		assertThatThrownBy(() -> menuService.updateMenu(restaurantId, updateReq))
+		assertThatThrownBy(() -> menuService.updateMenu("주인", restaurantId, menuId, updateReq))
 			.isInstanceOf(BadRequestException.class);
 
 	}
