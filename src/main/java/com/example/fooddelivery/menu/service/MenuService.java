@@ -2,6 +2,7 @@ package com.example.fooddelivery.menu.service;
 
 import com.example.fooddelivery.common.exception.BadRequestException;
 import com.example.fooddelivery.common.exception.NotFoundException;
+import com.example.fooddelivery.common.exception.UnauthorizedException;
 import com.example.fooddelivery.food.domain.Food;
 import com.example.fooddelivery.food.repository.FoodRepository;
 import com.example.fooddelivery.menu.domain.Menu;
@@ -35,14 +36,21 @@ public class MenuService {
     }
 
     @Transactional
-    public Long createMenu(CreateMenuReqDto requestDto, Long restaurantId) {
+    public Long createMenu(String identifier, CreateMenuReqDto requestDto, Long restaurantId) {
         Restaurant restaurant = findRestaurantById(restaurantId);
+        validateOwner(identifier, restaurant);
         Menu menu = convertToMenu(requestDto, restaurant);
         Menu saveMenu = menuRepository.save(menu);
         List<MenuFood> menuFoodList = makeMenuFoodList(requestDto.getFoodReqList(), saveMenu);
         validateMenuPrice(menuFoodList, menu);
         menuFoodRepository.saveAll(menuFoodList);
         return saveMenu.getId();
+    }
+
+    private void validateOwner(String identifier, Restaurant restaurant) {
+        if (!restaurant.isOwner(identifier)) {
+            throw new UnauthorizedException("식당 주인만 사용할 수 있는 기능입니다.");
+        }
     }
 
     private int getFoodsPrice(List<MenuFood> menuFoodList) {
