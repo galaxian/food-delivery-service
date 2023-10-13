@@ -1,5 +1,7 @@
 package com.example.fooddelivery.food.controller;
 
+import com.example.fooddelivery.common.interceptor.Authenticated;
+import com.example.fooddelivery.common.resolver.OwnerIdentifier;
 import com.example.fooddelivery.food.dto.FoodRequestDto;
 import com.example.fooddelivery.food.service.FoodService;
 import com.example.fooddelivery.food.dto.FoodResponseDto;
@@ -32,9 +34,13 @@ public class FoodController {
         return ResponseEntity.ok().body(foodService.findAllFood(restaurantId));
     }
 
+    @Authenticated
     @PostMapping("/restaurants/{restaurantId}/foods")
-    public ResponseEntity<Void> createFood(@RequestBody @Valid FoodRequestDto requestDto, @PathVariable Long restaurantId) {
-        Long id = foodService.createFood(requestDto, restaurantId);
+    public ResponseEntity<Void> createFood(@OwnerIdentifier String identifier,
+        @RequestBody @Valid FoodRequestDto requestDto,
+        @PathVariable Long restaurantId)
+    {
+        Long id = foodService.createFood(identifier, requestDto, restaurantId);
         return ResponseEntity.created(URI.create("/api/v1/foods/" + id)).build();
     }
 
