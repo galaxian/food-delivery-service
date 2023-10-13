@@ -3,6 +3,8 @@ package com.example.fooddelivery.menu.controller;
 import com.example.fooddelivery.common.interceptor.Authenticated;
 import com.example.fooddelivery.common.resolver.OwnerIdentifier;
 import com.example.fooddelivery.menu.dto.CreateMenuReqDto;
+import com.example.fooddelivery.menu.dto.AdminMenuDetailResDto;
+import com.example.fooddelivery.menu.dto.AdminMenuResDto;
 import com.example.fooddelivery.menu.dto.MenuDetailResDto;
 import com.example.fooddelivery.menu.dto.MenuResDto;
 import com.example.fooddelivery.menu.service.MenuService;
@@ -35,14 +37,29 @@ public class MenuController {
         return ResponseEntity.created(URI.create("/api/v1/menus/" + id)).build();
     }
 
-    @GetMapping("/restaurants/{restaurantsId}/menus")
-    public ResponseEntity<List<MenuResDto>> findAllMenu(@PathVariable Long restaurantsId) {
-        return ResponseEntity.ok(menuService.findAllMenu(restaurantsId));
+    @Authenticated
+    @GetMapping("/restaurants/{restaurantId}/menus/admin")
+    public ResponseEntity<List<AdminMenuResDto>> adminFindAllMenu(@OwnerIdentifier String identifier,
+        @PathVariable Long restaurantId) {
+        return ResponseEntity.ok(menuService.adminFindAllMenu(identifier, restaurantId));
     }
 
-    @GetMapping("/menus/{id}")
-    public ResponseEntity<MenuDetailResDto> findMenu(@PathVariable Long id) {
-        return ResponseEntity.ok(menuService.findMenu(id));
+    @GetMapping("/restaurants/{restaurantId}/menus")
+    public ResponseEntity<List<MenuResDto>> findAllMenu(@PathVariable Long restaurantId) {
+        return ResponseEntity.ok(menuService.findAllMenu(restaurantId));
+    }
+
+    @Authenticated
+    @GetMapping("/restaurants/{restaurantId}/menus/{menuId}/admin")
+    public ResponseEntity<AdminMenuDetailResDto> adminFindMenu(@OwnerIdentifier String identifier,
+        @PathVariable Long restaurantId,
+        @PathVariable Long menuId) {
+        return ResponseEntity.ok(menuService.adminFindMenu(identifier, restaurantId, menuId));
+    }
+
+    @GetMapping("/menus/{menuId}")
+    public ResponseEntity<MenuDetailResDto> findMenu(@PathVariable Long menuId) {
+        return ResponseEntity.ok(menuService.findMenu(menuId));
     }
 
     @Authenticated

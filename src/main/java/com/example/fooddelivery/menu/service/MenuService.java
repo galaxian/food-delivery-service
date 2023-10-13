@@ -90,27 +90,44 @@ public class MenuService {
     }
 
     @Transactional(readOnly = true)
-    public List<MenuResDto> findAllMenu(Long restaurantId) {
-        List<Menu> menuList = findRestaurants(restaurantId);
-        return makeMenuResDtoList(menuList);
+    public List<AdminMenuResDto> adminFindAllMenu(String identifier, Long restaurantId) {
+        Restaurant restaurant = findRestaurantById(restaurantId);
+        validateOwner(identifier, restaurant);
+        List<Menu> menuList = findMenusByRestaurantId(restaurantId);
+        return makeAdminMenuResDtoList(menuList);
     }
 
-    private List<Menu> findRestaurants(Long restaurantId) {
+    private List<Menu> findMenusByRestaurantId(Long restaurantId) {
         return menuRepository.findAllByRestaurantId(restaurantId);
+    }
+
+    private List<AdminMenuResDto> makeAdminMenuResDtoList(List<Menu> menuList) {
+        return menuList.stream()
+            .map(AdminMenuResDto::new)
+            .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<MenuResDto> findAllMenu(Long restaurantId) {
+        List<Menu> menuList = findMenusByRestaurantId(restaurantId);
+        return makeMenuResDtoList(menuList);
     }
 
     private List<MenuResDto> makeMenuResDtoList(List<Menu> menuList) {
         return menuList.stream()
+            .filter(Menu::isDisplay)
             .map(MenuResDto::new)
             .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public MenuDetailResDto findMenu(Long id) {
-        Menu menu = findMenuById(id);
-        List<MenuFood> menuFoodList = findMenuFoodById(id);
+    public AdminMenuDetailResDto adminFindMenu(String identifier, Long restaurantId, Long menuId) {
+        Restaurant restaurant = findRestaurantById(restaurantId);
+        validateOwner(identifier, restaurant);
+        Menu menu = findMenuById(menuId);
+        List<MenuFood> menuFoodList = findMenuFoodById(menuId);
         List<MenuFoodResDto> resDtoList = makeMenuFoodResDtoList(menuFoodList);
-        return new MenuDetailResDto(menu, resDtoList);
+        return new AdminMenuDetailResDto(menu, resDtoList);
     }
 
     private List<MenuFood> findMenuFoodById(Long id) {
@@ -127,6 +144,14 @@ public class MenuService {
         return menuRepository.findById(id).orElseThrow(
             () -> new NotFoundException("메뉴가 존재하지 않습니다.")
         );
+    }
+
+    @Transactional(readOnly = true)
+    public MenuDetailResDto findMenu(Long menuId) {
+        Menu menu = findMenuById(menuId);
+        List<MenuFood> menuFoodList = findMenuFoodById(menuId);
+        List<MenuFoodResDto> resDtoList = makeMenuFoodResDtoList(menuFoodList);
+        return new MenuDetailResDto(menu, resDtoList);
     }
 
     @Transactional

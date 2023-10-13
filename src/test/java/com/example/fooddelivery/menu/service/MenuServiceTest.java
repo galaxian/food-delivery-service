@@ -22,7 +22,8 @@ import com.example.fooddelivery.menu.domain.Menu;
 import com.example.fooddelivery.menu.domain.MenuStatus;
 import com.example.fooddelivery.menu.dto.CreateMenuReqDto;
 import com.example.fooddelivery.menu.dto.FoodQuantityReqDto;
-import com.example.fooddelivery.menu.dto.MenuDetailResDto;
+import com.example.fooddelivery.menu.dto.AdminMenuDetailResDto;
+import com.example.fooddelivery.menu.dto.AdminMenuResDto;
 import com.example.fooddelivery.menu.dto.MenuResDto;
 import com.example.fooddelivery.menu.repository.MenuRepository;
 import com.example.fooddelivery.menufood.domain.MenuFood;
@@ -167,6 +168,7 @@ class MenuServiceTest {
 	void 메뉴_단일_조회_성공() {
 		//given
 		Long menuId = 1L;
+		Long restaurantId = 1L;
 
 		Menu menu = new Menu(menuId, "양념치킨", 20000,
 			"특급소스로 만든 치킨", true, MenuStatus.SALE, RESTAURANT);
@@ -181,9 +183,11 @@ class MenuServiceTest {
 			.willReturn(Optional.of(menu));
 		given(menuFoodRepository.findByMenuId(any()))
 			.willReturn(menuFoodList);
+		given(restaurantRepository.findById(any()))
+			.willReturn(Optional.of(RESTAURANT));
 
 		//when
-		MenuDetailResDto result = menuService.findMenu(menuId);
+		AdminMenuDetailResDto result = menuService.adminFindMenu("주인", restaurantId, menuId);
 
 		//then
 		assertThat(result.getId()).isEqualTo(menuId);
@@ -197,13 +201,16 @@ class MenuServiceTest {
 	void 메뉴_NotFound_단일_조회_실패() {
 		//given
 		Long menuId = 1L;
+		Long restaurantId = 1L;
 
 		given(menuRepository.findById(any()))
 			.willReturn(Optional.empty());
+		given(restaurantRepository.findById(any()))
+			.willReturn(Optional.of(RESTAURANT));
 
 		//when
 		//then
-		assertThatThrownBy(() -> menuService.findMenu(menuId))
+		assertThatThrownBy(() -> menuService.adminFindMenu("주인", restaurantId, menuId))
 			.isInstanceOf(NotFoundException.class);
 
 	}
@@ -222,14 +229,39 @@ class MenuServiceTest {
 
 		given(menuRepository.findAllByRestaurantId(any()))
 			.willReturn(menuList);
+		given(restaurantRepository.findById(any()))
+			.willReturn(Optional.of(RESTAURANT));
 
 		//when
-		List<MenuResDto> result = menuService.findAllMenu(RESTAURANT.getId());
+		List<AdminMenuResDto> result = menuService.adminFindAllMenu("주인", RESTAURANT.getId());
 
 		//then
 		assertThat(result.get(0).getId()).isEqualTo(menu1.getId());
 		assertThat(result.get(1).getId()).isEqualTo(menu2.getId());
 		assertThat(result.size()).isEqualTo(menuList.size());
+
+	}
+
+	@Test
+	void 메뉴_목록_조회_isDisplayFalse_제외() {
+		//given
+		List<Menu> menuList = new ArrayList<>();
+
+		Menu menu1 = new Menu(1L, "양념치킨", 20000,
+			"특급소스로 만든 치킨", true, MenuStatus.SALE, RESTAURANT);
+		Menu menu2 = new Menu(2L, "간장치킨", 20000,
+			"특급소스로 만든 치킨", false, MenuStatus.SALE, RESTAURANT);
+		menuList.add(menu1);
+		menuList.add(menu2);
+
+		given(menuRepository.findAllByRestaurantId(any()))
+			.willReturn(menuList);
+
+		//when
+		List<MenuResDto> result = menuService.findAllMenu(RESTAURANT.getId());
+
+		//then
+		assertThat(result.size()).isEqualTo(1);
 
 	}
 
