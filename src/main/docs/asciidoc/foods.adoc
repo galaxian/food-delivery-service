@@ -1,0 +1,11 @@
+[[Food]]
+== 음식 API
+
+=== 음식 등록 성공
+
+==== 요청
+operation::food-controller-test/success-create-food[snippets='http-request']
+operation::food-controller-test/success-create-food[snippets='request-fields']
+
+==== 응답
+operation::food-controller-test/success-create-food[snippets='http-response']
