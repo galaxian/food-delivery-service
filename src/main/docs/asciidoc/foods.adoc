@@ -17,3 +17,11 @@ operation::food-controller-test/fail-create-food[snippets='http-request']
 
 ==== 응답
 operation::food-controller-test/fail-create-food[snippets='http-response']
+
+=== 음식 등록 실패(UnAuth)
+
+==== 요청
+operation::food-controller-test/fail-create-food-by-un-auth-owner[snippets='http-request']
+
+==== 응답
+operation::food-controller-test/fail-create-food-by-un-auth-owner[snippets='http-response']
