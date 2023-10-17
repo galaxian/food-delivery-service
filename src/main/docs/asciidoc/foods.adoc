@@ -91,3 +91,12 @@ operation::food-controller-test/fail-find-food-by-not-found-food[snippets='http-
 
 ==== 응답
 operation::food-controller-test/fail-find-food-by-not-found-food[snippets='http-response']
+
+=== 음식 수정 성공
+
+==== 요청
+operation::food-controller-test/success-update-food[snippets='http-request']
+operation::food-controller-test/success-update-food[snippets='request-fields']
+
+==== 응답
+operation::food-controller-test/success-update-food[snippets='http-response']
