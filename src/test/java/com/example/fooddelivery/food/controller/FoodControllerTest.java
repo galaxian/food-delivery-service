@@ -305,6 +305,35 @@ class FoodControllerTest extends AbstractRestDocsTest {
 			.andExpect(jsonPath("$.message").value("음식이 존재하지 않습니다."));
 	}
 
+	@Test
+	@DisplayName("음식 정보 수정 성공")
+	void successUpdateFood() throws Exception {
+		//given
+		FoodRequestDto requestDto = new FoodRequestDto("햄버거", 5000);
+		Long restaurantId = 1L;
+		Long foodId = 1L;
+		doNothing().when(foodService).updateFood(anyString(), anyLong(), anyLong(), any(FoodRequestDto.class));
+
+		//when
+		ResultActions resultActions = updateFood(requestDto, restaurantId, foodId);
+
+		//then
+		resultActions
+			.andExpect(status().isOk())
+			.andDo(
+				restDocs.document(
+					requestFields(
+						fieldWithPath("name")
+							.type(JsonFieldType.STRING)
+							.description("음식 이름"),
+						fieldWithPath("price")
+							.type(JsonFieldType.NUMBER)
+							.description("음식 가격")
+					)
+				)
+			);
+	}
+
 	private ResultActions createFood(FoodRequestDto requestDto) throws Exception {
 		return mockMvc.perform(post("/api/v1/restaurants/1/foods")
 			.header(AUTHORIZATION, TOKEN_DTO.getAccessToken())
@@ -323,6 +352,14 @@ class FoodControllerTest extends AbstractRestDocsTest {
 			.header(AUTHORIZATION, TOKEN_DTO.getAccessToken())
 			.contentType(APPLICATION_JSON));
 	}
+
+	private ResultActions updateFood(FoodRequestDto requestDto, Long restaurantId, Long foodId) throws Exception {
+		return mockMvc.perform(put("/api/v1/restaurants/{restaurantId}/foods/{foodId}", restaurantId, foodId)
+			.header(AUTHORIZATION, TOKEN_DTO.getAccessToken())
+			.contentType(APPLICATION_JSON)
+			.content(objectMapper.writeValueAsString(requestDto)));
+	}
+
 
 	private List<FoodResponseDto> makeFoodResList() {
 		List<FoodResponseDto> foodResponseDtoList = new ArrayList<>();
