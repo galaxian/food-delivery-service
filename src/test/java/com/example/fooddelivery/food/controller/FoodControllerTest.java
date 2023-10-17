@@ -200,6 +200,40 @@ class FoodControllerTest extends AbstractRestDocsTest {
 
 	}
 
+	@Test
+	@DisplayName("음식 조회 성공")
+	void successFindFood() throws Exception {
+		//given
+		Long restaurantId = 1L;
+		Long foodId = 1L;
+		given(foodService.findFood(anyString(), anyLong(), anyLong()))
+			.willReturn(new FoodResponseDto(foodId, "치킨", 10000));
+
+		//when
+		ResultActions resultActions = findFood(restaurantId, foodId);
+
+		//then
+		resultActions
+			.andExpect(status().isOk())
+			.andDo(
+				restDocs.document(
+					responseFields(
+						fieldWithPath("id")
+							.type(JsonFieldType.NUMBER)
+							.description("식별자"),
+						fieldWithPath("name")
+							.type(JsonFieldType.STRING)
+							.description("음식 이름"),
+						fieldWithPath("price")
+							.type(JsonFieldType.NUMBER)
+							.description("음식 가격")
+					)
+				)
+			)
+			.andReturn();
+
+	}
+
 	private ResultActions createFood(FoodRequestDto requestDto) throws Exception {
 		return mockMvc.perform(post("/api/v1/restaurants/1/foods")
 			.header(AUTHORIZATION, TOKEN_DTO.getAccessToken())
@@ -209,6 +243,12 @@ class FoodControllerTest extends AbstractRestDocsTest {
 
 	private ResultActions findFoods(Long restaurantId) throws Exception {
 		return mockMvc.perform(get("/api/v1/restaurants/{restaurantId}/foods", restaurantId)
+			.header(AUTHORIZATION, TOKEN_DTO.getAccessToken())
+			.contentType(APPLICATION_JSON));
+	}
+
+	private ResultActions findFood(Long restaurantId, Long foodId) throws Exception {
+		return mockMvc.perform(get("/api/v1/restaurants/{restaurantId}/foods/{foodId}", restaurantId, foodId)
 			.header(AUTHORIZATION, TOKEN_DTO.getAccessToken())
 			.contentType(APPLICATION_JSON));
 	}
