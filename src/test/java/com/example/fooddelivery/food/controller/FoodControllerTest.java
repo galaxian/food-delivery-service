@@ -1,6 +1,7 @@
 package com.example.fooddelivery.food.controller;
 
 import static com.example.fooddelivery.common.RestDocsConfiguration.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.http.HttpHeaders.*;
@@ -20,6 +21,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.example.fooddelivery.auth.dto.LoginResDto;
@@ -30,6 +32,7 @@ import com.example.fooddelivery.common.exception.UnauthorizedException;
 import com.example.fooddelivery.food.dto.FoodRequestDto;
 import com.example.fooddelivery.food.dto.FoodResponseDto;
 import com.example.fooddelivery.food.service.FoodService;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 @WebMvcTest(FoodController.class)
 @MockBean(JpaMetamodelMappingContext.class)
@@ -179,7 +182,7 @@ class FoodControllerTest extends AbstractRestDocsTest {
 		ResultActions resultActions = findFoods(restaurantId);
 
 		//then
-		resultActions
+		MvcResult mvcResult = resultActions
 			.andExpect(status().isOk())
 			.andDo(
 				restDocs.document(
@@ -198,6 +201,13 @@ class FoodControllerTest extends AbstractRestDocsTest {
 			)
 			.andReturn();
 
+		List<FoodResponseDto> foodResponseDtoList = objectMapper.readValue(
+			mvcResult.getResponse().getContentAsString(),
+			new TypeReference<List<FoodResponseDto>>() {
+			}
+		);
+		assertThat(foodResponseDtoList.get(0).getId()).isEqualTo(1L);
+		assertThat(foodResponseDtoList.get(1).getId()).isEqualTo(2L);
 	}
 
 	@Test
@@ -213,7 +223,7 @@ class FoodControllerTest extends AbstractRestDocsTest {
 		ResultActions resultActions = findFood(restaurantId, foodId);
 
 		//then
-		resultActions
+		MvcResult mvcResult = resultActions
 			.andExpect(status().isOk())
 			.andDo(
 				restDocs.document(
@@ -232,6 +242,13 @@ class FoodControllerTest extends AbstractRestDocsTest {
 			)
 			.andReturn();
 
+		FoodResponseDto foodResDto = objectMapper.readValue(
+			mvcResult.getResponse().getContentAsString(),
+			FoodResponseDto.class
+		);
+		assertThat(foodResDto.getId()).isEqualTo(foodId);
+		assertThat(foodResDto.getName()).isEqualTo("치킨");
+		assertThat(foodResDto.getPrice()).isEqualTo(10000);
 	}
 
 	@Test
