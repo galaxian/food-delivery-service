@@ -234,6 +234,24 @@ class FoodControllerTest extends AbstractRestDocsTest {
 
 	}
 
+	@Test
+	@DisplayName("음식 조회 시 음식점이 없는 경우 실패")
+	void failFindFoodByNotFoundRestaurant() throws Exception {
+		//given
+		Long restaurantId = 1L;
+		Long foodId = 1L;
+		given(foodService.findFood(anyString(), anyLong(), anyLong()))
+			.willThrow(new NotFoundException("식당을 찾을 수 없습니다."));
+
+		//when
+		ResultActions resultActions = findFood(restaurantId, foodId);
+
+		//then
+		resultActions
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.message").value("식당을 찾을 수 없습니다."));
+	}
+
 	private ResultActions createFood(FoodRequestDto requestDto) throws Exception {
 		return mockMvc.perform(post("/api/v1/restaurants/1/foods")
 			.header(AUTHORIZATION, TOKEN_DTO.getAccessToken())
