@@ -25,3 +25,11 @@ operation::food-controller-test/fail-create-food-by-un-auth-owner[snippets='http
 
 ==== 응답
 operation::food-controller-test/fail-create-food-by-un-auth-owner[snippets='http-response']
+
+=== 음식 등록 실패(음식 이름 미입력)
+
+==== 요청
+operation::food-controller-test/fail-create-food-by-null-food-name[snippets='http-request']
+
+==== 응답
+operation::food-controller-test/fail-create-food-by-null-food-name[snippets='http-response']
