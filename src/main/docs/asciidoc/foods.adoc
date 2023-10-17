@@ -67,3 +67,11 @@ operation::food-controller-test/success-find-food[snippets='http-request']
 ==== 응답
 operation::food-controller-test/success-find-food[snippets='http-response']
 operation::food-controller-test/success-find-food[snippets='response-fields']
+
+=== 음식 조회 실패(식당 Notfound)
+
+==== 요청
+operation::food-controller-test/fail-find-food-by-not-found-restaurant[snippets='http-request']
+
+==== 응답
+operation::food-controller-test/fail-find-food-by-not-found-restaurant[snippets='http-response']
