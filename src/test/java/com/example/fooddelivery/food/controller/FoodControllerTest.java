@@ -126,6 +126,24 @@ class FoodControllerTest extends AbstractRestDocsTest {
 
 	}
 
+	@Test
+	@DisplayName("음식 등록 음식 가격 미입력시 실패")
+	void failCreateFoodByNullFoodPrice() throws Exception {
+		//given
+		FoodRequestDto foodRequestDto = new FoodRequestDto("치킨", null);
+		given(foodService.createFood(anyString(), any(FoodRequestDto.class), anyLong()))
+			.willThrow(new BadRequestException("음식 가격을 입력해주세요"));
+
+		//when
+		ResultActions resultActions = createFood(foodRequestDto);
+
+		//then
+		resultActions
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.message").value("음식 가격을 입력해주세요"));
+
+	}
+
 	private ResultActions createFood(FoodRequestDto requestDto) throws Exception {
 		return mockMvc.perform(post("/api/v1/restaurants/1/foods")
 			.header(AUTHORIZATION, TOKEN_DTO.getAccessToken())
