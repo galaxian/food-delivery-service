@@ -75,3 +75,11 @@ operation::food-controller-test/fail-find-food-by-not-found-restaurant[snippets=
 
 ==== 응답
 operation::food-controller-test/fail-find-food-by-not-found-restaurant[snippets='http-response']
+
+=== 음식 조회 실패(UnAuth)
+
+==== 요청
+operation::food-controller-test/fail-find-food-by-un-auth[snippets='http-request']
+
+==== 응답
+operation::food-controller-test/fail-find-food-by-un-auth[snippets='http-response']
