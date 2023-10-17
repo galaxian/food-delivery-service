@@ -14,4 +14,10 @@ public class FoodResponseDto {
         this.name = entity.getName();
         this.price = entity.getPrice();
     }
+
+    public FoodResponseDto(Long id, String name, int price) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+    }
 }
