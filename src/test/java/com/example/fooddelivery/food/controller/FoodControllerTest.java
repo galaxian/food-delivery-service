@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.example.fooddelivery.auth.dto.LoginResDto;
 import com.example.fooddelivery.common.AbstractRestDocsTest;
+import com.example.fooddelivery.common.exception.BadRequestException;
 import com.example.fooddelivery.common.exception.NotFoundException;
 import com.example.fooddelivery.common.exception.UnauthorizedException;
 import com.example.fooddelivery.food.dto.FoodRequestDto;
@@ -104,6 +105,24 @@ class FoodControllerTest extends AbstractRestDocsTest {
 		resultActions
 			.andExpect(status().isUnauthorized())
 			.andExpect(jsonPath("$.message").value("식당 주인만 사용할 수 있는 기능입니다."));
+
+	}
+
+	@Test
+	@DisplayName("음식 등록 음식 이름 미입력시 실패")
+	void failCreateFoodByNullFoodName() throws Exception {
+		//given
+		FoodRequestDto foodRequestDto = new FoodRequestDto(null, 10000);
+		given(foodService.createFood(anyString(), any(FoodRequestDto.class), anyLong()))
+			.willThrow(new BadRequestException("음식 이름을 입력해주세요"));
+
+		//when
+		ResultActions resultActions = createFood(foodRequestDto);
+
+		//then
+		resultActions
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.message").value("음식 이름을 입력해주세요"));
 
 	}
 
