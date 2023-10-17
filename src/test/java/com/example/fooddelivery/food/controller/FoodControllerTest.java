@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.example.fooddelivery.auth.dto.LoginResDto;
 import com.example.fooddelivery.common.AbstractRestDocsTest;
+import com.example.fooddelivery.common.exception.NotFoundException;
 import com.example.fooddelivery.food.dto.FoodRequestDto;
 import com.example.fooddelivery.food.service.FoodService;
 
@@ -66,6 +67,24 @@ class FoodControllerTest extends AbstractRestDocsTest {
 					)
 				)
 			);
+
+	}
+
+	@Test
+	@DisplayName("음식 등록 시 존재하지 않는 식당이면 실패")
+	void failCreateFoodByNotFoundRestaurant() throws Exception {
+		//given
+		FoodRequestDto foodRequestDto = new FoodRequestDto("치킨", 10000);
+		given(foodService.createFood(anyString(), any(FoodRequestDto.class), anyLong()))
+			.willThrow(new NotFoundException("식당을 찾을 수 없습니다."));
+
+		//when
+		ResultActions resultActions = createFood(foodRequestDto);
+
+		//then
+		resultActions
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.message").value("식당을 찾을 수 없습니다."));
 
 	}
 
