@@ -9,3 +9,11 @@ operation::food-controller-test/success-create-food[snippets='request-fields']
 
 ==== 응답
 operation::food-controller-test/success-create-food[snippets='http-response']
+
+=== 음식 등록 실패(식당 NotFound)
+
+==== 요청
+operation::food-controller-test/fail-create-food[snippets='http-request']
+
+==== 응답
+operation::food-controller-test/fail-create-food[snippets='http-response']
