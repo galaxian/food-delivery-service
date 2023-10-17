@@ -58,3 +58,12 @@ operation::food-controller-test/success-find-foods[snippets='http-request']
 ==== 응답
 operation::food-controller-test/success-find-foods[snippets='http-response']
 operation::food-controller-test/success-find-foods[snippets='response-fields']
+
+=== 음식 조회 성공
+
+==== 요청
+operation::food-controller-test/success-find-food[snippets='http-request']
+
+==== 응답
+operation::food-controller-test/success-find-food[snippets='http-response']
+operation::food-controller-test/success-find-food[snippets='response-fields']
