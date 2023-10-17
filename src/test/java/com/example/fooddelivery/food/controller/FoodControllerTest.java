@@ -269,6 +269,24 @@ class FoodControllerTest extends AbstractRestDocsTest {
 			.andExpect(jsonPath("$.message").value("식당을 찾을 수 없습니다."));
 	}
 
+	@Test
+	@DisplayName("음식 조회 시 주인이 아닌 경우 실패")
+	void failFindFoodByUnAuth() throws Exception {
+		//given
+		Long restaurantId = 1L;
+		Long foodId = 1L;
+		given(foodService.findFood(anyString(), anyLong(), anyLong()))
+			.willThrow(new UnauthorizedException("식당 주인만 사용할 수 있는 기능입니다."));
+
+		//when
+		ResultActions resultActions = findFood(restaurantId, foodId);
+
+		//then
+		resultActions
+			.andExpect(status().isUnauthorized())
+			.andExpect(jsonPath("$.message").value("식당 주인만 사용할 수 있는 기능입니다."));
+	}
+
 	private ResultActions createFood(FoodRequestDto requestDto) throws Exception {
 		return mockMvc.perform(post("/api/v1/restaurants/1/foods")
 			.header(AUTHORIZATION, TOKEN_DTO.getAccessToken())
