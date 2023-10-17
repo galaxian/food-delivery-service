@@ -13,4 +13,22 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ErrorResponse(e.getErrorCode(), e.getMessage()),
                 HttpStatus.valueOf(e.getErrorCode().getStatus()));
     }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException e) {
+        return new ResponseEntity<>(new ErrorResponse(e.getErrorCode(), e.getMessage()),
+            HttpStatus.valueOf(e.getErrorCode().getStatus()));
+    }
+
+    @ExceptionHandler(DuplicateException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateException(DuplicateException e) {
+        return new ResponseEntity<>(new ErrorResponse(e.getErrorCode(), e.getMessage()),
+            HttpStatus.valueOf(e.getErrorCode().getStatus()));
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException e) {
+        return new ResponseEntity<>(new ErrorResponse(e.getErrorCode(), e.getMessage()),
+            HttpStatus.valueOf(e.getErrorCode().getStatus()));
+    }
 }
