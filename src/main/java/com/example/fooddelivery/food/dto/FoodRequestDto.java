@@ -17,7 +17,7 @@ public class FoodRequestDto {
     @Min(value = 0, message = "음식 가격은 최소 0원 부터 입력가능합니다.")
     private Integer price;
 
-    public FoodRequestDto(String name, int price) {
+    public FoodRequestDto(String name, Integer price) {
         this.name = name;
         this.price = price;
     }
