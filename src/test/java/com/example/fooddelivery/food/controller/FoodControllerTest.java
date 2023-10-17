@@ -10,6 +10,9 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -25,6 +28,7 @@ import com.example.fooddelivery.common.exception.BadRequestException;
 import com.example.fooddelivery.common.exception.NotFoundException;
 import com.example.fooddelivery.common.exception.UnauthorizedException;
 import com.example.fooddelivery.food.dto.FoodRequestDto;
+import com.example.fooddelivery.food.dto.FoodResponseDto;
 import com.example.fooddelivery.food.service.FoodService;
 
 @WebMvcTest(FoodController.class)
@@ -162,11 +166,58 @@ class FoodControllerTest extends AbstractRestDocsTest {
 
 	}
 
+	@Test
+	@DisplayName("음식 목록 조회 성공")
+	void successFindFoods() throws Exception {
+		//given
+		Long restaurantId = 1L;
+		List<FoodResponseDto> expect = makeFoodResList();
+		given(foodService.findAllFood(anyString(), anyLong()))
+			.willReturn(expect);
+
+		//when
+		ResultActions resultActions = findFoods(restaurantId);
+
+		//then
+		resultActions
+			.andExpect(status().isOk())
+			.andDo(
+				restDocs.document(
+					responseFields(
+						fieldWithPath("[].id")
+							.type(JsonFieldType.NUMBER)
+							.description("식별자"),
+						fieldWithPath("[].name")
+							.type(JsonFieldType.STRING)
+							.description("음식 이름"),
+						fieldWithPath("[].price")
+							.type(JsonFieldType.NUMBER)
+							.description("음식 가격")
+					)
+				)
+			)
+			.andReturn();
+
+	}
+
 	private ResultActions createFood(FoodRequestDto requestDto) throws Exception {
 		return mockMvc.perform(post("/api/v1/restaurants/1/foods")
 			.header(AUTHORIZATION, TOKEN_DTO.getAccessToken())
 			.contentType(APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(requestDto)));
+	}
+
+	private ResultActions findFoods(Long restaurantId) throws Exception {
+		return mockMvc.perform(get("/api/v1/restaurants/{restaurantId}/foods", restaurantId)
+			.header(AUTHORIZATION, TOKEN_DTO.getAccessToken())
+			.contentType(APPLICATION_JSON));
+	}
+
+	private List<FoodResponseDto> makeFoodResList() {
+		List<FoodResponseDto> foodResponseDtoList = new ArrayList<>();
+		foodResponseDtoList.add(new FoodResponseDto(1L, "치킨", 10000));
+		foodResponseDtoList.add(new FoodResponseDto(2L, "햄버거", 5000));
+		return foodResponseDtoList;
 	}
 
 }
