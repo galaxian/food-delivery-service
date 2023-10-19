@@ -182,6 +182,24 @@ class RestaurantControllerTest extends AbstractRestDocsTest {
 
 	}
 
+	@Test
+	@DisplayName("식당이 존재하지 않는 경우 식당 조회 실패")
+	void failFindRestaurantByNotFoundRestaurant() throws Exception {
+		//given
+		Long restaurantId = 1L;
+		given(restaurantService.findRestaurant(anyLong()))
+			.willThrow(new NotFoundException("식당을 찾을 수 없습니다."));
+
+		//when
+		ResultActions resultActions = findRestaurant(restaurantId);
+
+		//then
+		resultActions
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.message").value("식당을 찾을 수 없습니다."));
+
+	}
+
 	private ResultActions createRestaurant(CreateRestaurantReqDto reqDto) throws Exception {
 		return mockMvc.perform(post("/api/v1/restaurants")
 			.header(AUTHORIZATION, TOKEN_DTO.getAccessToken())
