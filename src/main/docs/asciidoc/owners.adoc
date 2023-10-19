@@ -1,0 +1,11 @@
+[[Owner]]
+== 식당 주인 API
+
+=== 회원가입 성공
+
+==== 요청
+operation::owner-controller-test/success-join[snippets='http-request']
+operation::owner-controller-test/success-join[snippets='request-fields']
+
+==== 응답
+operation::owner-controller-test/success-join[snippets='http-response']
