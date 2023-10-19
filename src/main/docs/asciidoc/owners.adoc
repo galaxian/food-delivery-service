@@ -33,3 +33,11 @@ operation::owner-controller-test/fail-join-by-valid-password[snippets='http-requ
 
 ==== 응답
 operation::owner-controller-test/fail-join-by-valid-password[snippets='http-response']
+
+=== 회원가입 실패(아이디 미입력)
+
+==== 요청
+operation::owner-controller-test/fail-join-by-empty-identifier[snippets='http-request']
+
+==== 응답
+operation::owner-controller-test/fail-join-by-empty-identifier[snippets='http-response']
