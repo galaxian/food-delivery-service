@@ -25,3 +25,11 @@ operation::owner-controller-test/fail-join-by-valid-identifier[snippets='http-re
 
 ==== 응답
 operation::owner-controller-test/fail-join-by-valid-identifier[snippets='http-response']
+
+=== 회원가입 실패(비밀번호 형식)
+
+==== 요청
+operation::owner-controller-test/fail-join-by-valid-password[snippets='http-request']
+
+==== 응답
+operation::owner-controller-test/fail-join-by-valid-password[snippets='http-response']
