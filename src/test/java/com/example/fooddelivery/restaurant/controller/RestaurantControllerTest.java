@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.example.fooddelivery.auth.dto.LoginResDto;
 import com.example.fooddelivery.common.AbstractRestDocsTest;
+import com.example.fooddelivery.common.exception.NotFoundException;
 import com.example.fooddelivery.restaurant.dto.CreateRestaurantReqDto;
 import com.example.fooddelivery.restaurant.service.RestaurantService;
 
@@ -66,6 +67,23 @@ class RestaurantControllerTest extends AbstractRestDocsTest {
 					)
 				)
 			);
+	}
+
+	@Test
+	@DisplayName("식당 주인이 존재하지 않을 경우 식당 등록 실패")
+	void failCreateRestaurantByNotFoundOwner() throws Exception {
+		//given
+		CreateRestaurantReqDto reqDto = new CreateRestaurantReqDto("치킨집", 10000, 3000);
+		given(restaurantService.createRestaurant(anyString(), any(CreateRestaurantReqDto.class)))
+			.willThrow(new NotFoundException("사용자를 찾을 수 없습니다."));
+
+		//when
+		ResultActions resultActions = createRestaurant(reqDto);
+
+		//then
+		resultActions
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.message").value("사용자를 찾을 수 없습니다."));
 	}
 
 	private ResultActions createRestaurant(CreateRestaurantReqDto reqDto) throws Exception {

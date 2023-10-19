@@ -9,3 +9,11 @@ operation::restaurant-controller-test/success-create-restaurant[snippets='reques
 
 ==== 응답
 operation::restaurant-controller-test/success-create-restaurant[snippets='http-response']
+
+=== 식당 등록 실패(식당 주인 NotFound)
+
+==== 요청
+operation::restaurant-controller-test/fail-create-restaurant-by-not-found-owner[snippets='http-request']
+
+==== 응답
+operation::restaurant-controller-test/fail-create-restaurant-by-not-found-owner[snippets='http-response']
