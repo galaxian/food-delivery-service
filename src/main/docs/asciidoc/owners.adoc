@@ -41,3 +41,11 @@ operation::owner-controller-test/fail-join-by-empty-identifier[snippets='http-re
 
 ==== 응답
 operation::owner-controller-test/fail-join-by-empty-identifier[snippets='http-response']
+
+=== 회원가입 실패(비밀번호 미입력)
+
+==== 요청
+operation::owner-controller-test/fail-join-by-empty-password[snippets='http-request']
+
+==== 응답
+operation::owner-controller-test/fail-join-by-empty-password[snippets='http-response']
