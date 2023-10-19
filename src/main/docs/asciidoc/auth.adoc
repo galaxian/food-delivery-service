@@ -19,3 +19,10 @@ operation::auth-controller-test/fail-login-by-not-found-identifier[snippets='htt
 ==== 응답
 operation::auth-controller-test/fail-login-by-not-found-identifier[snippets='http-response']
 
+=== 로그인 실패(비밀번호 불일치)
+
+==== 요청
+operation::auth-controller-test/fail-login-by-miss-match-password[snippets='http-request']
+
+==== 응답
+operation::auth-controller-test/fail-login-by-miss-match-password[snippets='http-response']
