@@ -17,3 +17,11 @@ operation::restaurant-controller-test/fail-create-restaurant-by-not-found-owner[
 
 ==== 응답
 operation::restaurant-controller-test/fail-create-restaurant-by-not-found-owner[snippets='http-response']
+
+=== 식당 등록 실패(식당 이름 중복)
+
+==== 요청
+operation::restaurant-controller-test/fail-create-restaurant-by-duplicate-name[snippets='http-request']
+
+==== 응답
+operation::restaurant-controller-test/fail-create-restaurant-by-duplicate-name[snippets='http-response']
