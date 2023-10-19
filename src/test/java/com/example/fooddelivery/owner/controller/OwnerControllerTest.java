@@ -19,6 +19,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.example.fooddelivery.common.AbstractRestDocsTest;
+import com.example.fooddelivery.common.exception.BadRequestException;
 import com.example.fooddelivery.common.exception.DuplicateException;
 import com.example.fooddelivery.owner.dto.OwnerJoinReqDto;
 import com.example.fooddelivery.owner.service.OwnerService;
@@ -78,6 +79,23 @@ class OwnerControllerTest extends AbstractRestDocsTest {
 		resultActions
 			.andExpect(status().is4xxClientError())
 			.andExpect(jsonPath("$.message").value("이미 존재하는 아이디입니다."));
+	}
+
+	@Test
+	@DisplayName("아이디 형식이 맞지 않는 경우 회원가입 실패")
+	void failJoinByValidIdentifier() throws Exception {
+		//given
+		OwnerJoinReqDto reqDto = new OwnerJoinReqDto("아이디형식이틀림", "utop8372!~");
+		given(ownerService.join(any(OwnerJoinReqDto.class)))
+			.willThrow(new BadRequestException("영문자와 숫자를 포함한 아이디를 입력해주세요"));
+
+		//when
+		ResultActions resultActions = joinOwner(reqDto);
+
+		//then
+		resultActions
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.message").value("영문자와 숫자를 포함한 아이디를 입력해주세요"));
 	}
 
 	private ResultActions joinOwner(OwnerJoinReqDto reqDto) throws Exception {
