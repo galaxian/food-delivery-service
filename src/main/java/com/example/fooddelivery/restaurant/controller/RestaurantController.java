@@ -40,7 +40,7 @@ public class RestaurantController {
     public ResponseEntity<Void> createRestaurant(@OwnerIdentifier String identifier,
         @RequestBody CreateRestaurantReqDto reqDto) {
         Long id = restaurantService.createRestaurant(identifier ,reqDto);
-        return ResponseEntity.created(URI.create("/api/v1/restaurants" + id)).build();
+        return ResponseEntity.created(URI.create("/api/v1/restaurants/" + id)).build();
     }
 
     @Authenticated
