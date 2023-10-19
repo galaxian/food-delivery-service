@@ -19,6 +19,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.example.fooddelivery.common.AbstractRestDocsTest;
+import com.example.fooddelivery.common.exception.DuplicateException;
 import com.example.fooddelivery.owner.dto.OwnerJoinReqDto;
 import com.example.fooddelivery.owner.service.OwnerService;
 
@@ -60,6 +61,23 @@ class OwnerControllerTest extends AbstractRestDocsTest {
 					)
 				)
 			);
+	}
+
+	@Test
+	@DisplayName("아이디 중복으로 인한 회원가입 실패")
+	void failJoinByDuplicateIdentifier() throws Exception {
+		//given
+		OwnerJoinReqDto reqDto = new OwnerJoinReqDto("duplicate12", "utop8372!~");
+		given(ownerService.join(any(OwnerJoinReqDto.class)))
+			.willThrow(new DuplicateException("이미 존재하는 아이디입니다."));
+
+		//when
+		ResultActions resultActions = joinOwner(reqDto);
+
+		//then
+		resultActions
+			.andExpect(status().is4xxClientError())
+			.andExpect(jsonPath("$.message").value("이미 존재하는 아이디입니다."));
 	}
 
 	private ResultActions joinOwner(OwnerJoinReqDto reqDto) throws Exception {
