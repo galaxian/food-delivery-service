@@ -10,3 +10,12 @@ operation::auth-controller-test/success-login[snippets='request-fields']
 ==== 응답
 operation::auth-controller-test/success-login[snippets='http-response']
 operation::auth-controller-test/success-login[snippets='response-fields']
+
+=== 로그인 실패(아이디 NotFound)
+
+==== 요청
+operation::auth-controller-test/fail-login-by-not-found-identifier[snippets='http-request']
+
+==== 응답
+operation::auth-controller-test/fail-login-by-not-found-identifier[snippets='http-response']
+
