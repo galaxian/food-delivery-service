@@ -29,7 +29,7 @@ public class OwnerJoinReqDto {
 	@NotNull(message = "비밀번호를 입력해주세요")
 	@Size(min = PASSWORD_MIN_SIZE, max = PASSWORD_MAX_SIZE,
 		message = "8~15자 사이의 비밀번호를 입력해주세요")
-	@Pattern(regexp = PASSWORD_REGEX, message = "영문자와 숫자를 포함한 비밀번호를 입력해주세요")
+	@Pattern(regexp = PASSWORD_REGEX, message = "영문자와 숫자, 특수문자를 포함한 비밀번호를 입력해주세요")
 	private String password;
 
 	public OwnerJoinReqDto(String identifier, String password) {

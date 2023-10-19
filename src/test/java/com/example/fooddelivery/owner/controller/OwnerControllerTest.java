@@ -98,6 +98,23 @@ class OwnerControllerTest extends AbstractRestDocsTest {
 			.andExpect(jsonPath("$.message").value("영문자와 숫자를 포함한 아이디를 입력해주세요"));
 	}
 
+	@Test
+	@DisplayName("비밀번호 형식이 맞지 않는 경우 회원가입 실패")
+	void failJoinByValidPassword() throws Exception {
+		//given
+		OwnerJoinReqDto reqDto = new OwnerJoinReqDto("hackle5783", "비밀번호형식이틀림");
+		given(ownerService.join(any(OwnerJoinReqDto.class)))
+			.willThrow(new BadRequestException("영문자와 숫자, 특수문자를 포함한 비밀번호를 입력해주세요"));
+
+		//when
+		ResultActions resultActions = joinOwner(reqDto);
+
+		//then
+		resultActions
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.message").value("영문자와 숫자, 특수문자를 포함한 비밀번호를 입력해주세요"));
+	}
+
 	private ResultActions joinOwner(OwnerJoinReqDto reqDto) throws Exception {
 		return mockMvc.perform(post("/api/v1/owners")
 			.contentType(APPLICATION_JSON)
