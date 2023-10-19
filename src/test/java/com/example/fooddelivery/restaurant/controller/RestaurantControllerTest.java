@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.example.fooddelivery.auth.dto.LoginResDto;
 import com.example.fooddelivery.common.AbstractRestDocsTest;
+import com.example.fooddelivery.common.exception.DuplicateException;
 import com.example.fooddelivery.common.exception.NotFoundException;
 import com.example.fooddelivery.restaurant.dto.CreateRestaurantReqDto;
 import com.example.fooddelivery.restaurant.service.RestaurantService;
@@ -84,6 +85,23 @@ class RestaurantControllerTest extends AbstractRestDocsTest {
 		resultActions
 			.andExpect(status().isNotFound())
 			.andExpect(jsonPath("$.message").value("사용자를 찾을 수 없습니다."));
+	}
+
+	@Test
+	@DisplayName("식당 이름이 중복인 경우 식당 등록 실패")
+	void failCreateRestaurantByDuplicateName() throws Exception {
+		//given
+		CreateRestaurantReqDto reqDto = new CreateRestaurantReqDto("식당명 중복", 10000, 3000);
+		given(restaurantService.createRestaurant(anyString(), any(CreateRestaurantReqDto.class)))
+			.willThrow(new DuplicateException("동일한 식당 이름이 존재합니다."));
+
+		//when
+		ResultActions resultActions = createRestaurant(reqDto);
+
+		//then
+		resultActions
+			.andExpect(status().is4xxClientError())
+			.andExpect(jsonPath("$.message").value("동일한 식당 이름이 존재합니다."));
 	}
 
 	private ResultActions createRestaurant(CreateRestaurantReqDto reqDto) throws Exception {
