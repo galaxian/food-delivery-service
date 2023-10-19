@@ -16,4 +16,11 @@ public class RestaurantResDto {
         this.minPrice = restaurant.getMinPrice();
         this.deliveryFee = restaurant.getDeliveryFee();
     }
+
+    public RestaurantResDto(Long id, String name, int minPrice, int deliveryFee) {
+        this.id = id;
+        this.name = name;
+        this.minPrice = minPrice;
+        this.deliveryFee = deliveryFee;
+    }
 }

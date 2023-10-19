@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,7 +33,9 @@ import com.example.fooddelivery.menu.domain.MenuStatus;
 import com.example.fooddelivery.menu.dto.MenuResDto;
 import com.example.fooddelivery.restaurant.dto.CreateRestaurantReqDto;
 import com.example.fooddelivery.restaurant.dto.RestaurantDetailResDto;
+import com.example.fooddelivery.restaurant.dto.RestaurantResDto;
 import com.example.fooddelivery.restaurant.service.RestaurantService;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 @WebMvcTest(RestaurantController.class)
 @MockBean(JpaMetamodelMappingContext.class)
@@ -200,6 +203,60 @@ class RestaurantControllerTest extends AbstractRestDocsTest {
 
 	}
 
+	@Test
+	@DisplayName("식당 목록 조회 성공")
+	void successFindRestaurants() throws Exception {
+		//given
+		given(restaurantService.findAllRestaurant())
+			.willReturn(new ArrayList<>(Arrays.asList(
+				new RestaurantResDto(1L, "치킨집", 10000, 3000),
+				new RestaurantResDto(2L, "분식집", 5000, 2000)
+			)));
+
+		//when
+		ResultActions resultActions = findRestaurants();
+
+		//then
+		MvcResult mvcResult = resultActions
+			.andExpect(status().isOk())
+			.andDo(
+				restDocs.document(
+					responseFields(
+						fieldWithPath("[].id")
+							.type(JsonFieldType.NUMBER)
+							.description("식별자"),
+						fieldWithPath("[].name")
+							.type(JsonFieldType.STRING)
+							.description("식당 이름"),
+						fieldWithPath("[].minPrice")
+							.type(JsonFieldType.NUMBER)
+							.description("최소 주문 가격"),
+						fieldWithPath("[].deliveryFee")
+							.type(JsonFieldType.NUMBER)
+							.description("배달비")
+					)
+				)
+			)
+			.andReturn();
+
+		List<RestaurantResDto> restaurantResDto = objectMapper.readValue(
+			mvcResult.getResponse().getContentAsString(),
+			new TypeReference<List<RestaurantResDto>>() {
+			}
+		);
+
+		assertThat(restaurantResDto.get(0).getId()).isEqualTo(1L);
+		assertThat(restaurantResDto.get(0).getName()).isEqualTo("치킨집");
+		assertThat(restaurantResDto.get(0).getMinPrice()).isEqualTo(10000);
+		assertThat(restaurantResDto.get(0).getDeliveryFee()).isEqualTo(3000);
+
+		assertThat(restaurantResDto.get(1).getId()).isEqualTo(2L);
+		assertThat(restaurantResDto.get(1).getName()).isEqualTo("분식집");
+		assertThat(restaurantResDto.get(1).getMinPrice()).isEqualTo(5000);
+		assertThat(restaurantResDto.get(1).getDeliveryFee()).isEqualTo(2000);
+
+	}
+
 	private ResultActions createRestaurant(CreateRestaurantReqDto reqDto) throws Exception {
 		return mockMvc.perform(post("/api/v1/restaurants")
 			.header(AUTHORIZATION, TOKEN_DTO.getAccessToken())
@@ -212,4 +269,9 @@ class RestaurantControllerTest extends AbstractRestDocsTest {
 			.contentType(APPLICATION_JSON));
 	}
 
+
+	private ResultActions findRestaurants() throws Exception {
+		return mockMvc.perform(get("/api/v1/restaurants")
+			.contentType(APPLICATION_JSON));
+	}
 }
