@@ -34,6 +34,7 @@ import com.example.fooddelivery.menu.dto.MenuResDto;
 import com.example.fooddelivery.restaurant.dto.CreateRestaurantReqDto;
 import com.example.fooddelivery.restaurant.dto.RestaurantDetailResDto;
 import com.example.fooddelivery.restaurant.dto.RestaurantResDto;
+import com.example.fooddelivery.restaurant.dto.UpdateRestaurantReqDto;
 import com.example.fooddelivery.restaurant.service.RestaurantService;
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -257,6 +258,37 @@ class RestaurantControllerTest extends AbstractRestDocsTest {
 
 	}
 
+	@Test
+	@DisplayName("식당 정보 수정 성공")
+	void successUpdateRestaurant() throws Exception {
+		//given
+		Long restaurantId = 1L;
+		UpdateRestaurantReqDto reqDto = new UpdateRestaurantReqDto("치킨집", 9000, 3300);
+		doNothing().when(restaurantService).updateRestaurant(anyString(), any(UpdateRestaurantReqDto.class), anyLong());
+
+		//when
+		ResultActions resultActions = updateRestaurant(reqDto, restaurantId);
+
+		//then
+		resultActions
+			.andExpect(status().isOk())
+			.andDo(
+				restDocs.document(
+					requestFields(
+						fieldWithPath("name")
+							.type(JsonFieldType.STRING)
+							.description("식당 이름"),
+						fieldWithPath("minPrice")
+							.type(JsonFieldType.NUMBER)
+							.description("주문 최소 금액"),
+						fieldWithPath("deliveryFee")
+							.type(JsonFieldType.NUMBER)
+							.description("배달비")
+					)
+				)
+			);
+	}
+
 	private ResultActions createRestaurant(CreateRestaurantReqDto reqDto) throws Exception {
 		return mockMvc.perform(post("/api/v1/restaurants")
 			.header(AUTHORIZATION, TOKEN_DTO.getAccessToken())
@@ -273,5 +305,12 @@ class RestaurantControllerTest extends AbstractRestDocsTest {
 	private ResultActions findRestaurants() throws Exception {
 		return mockMvc.perform(get("/api/v1/restaurants")
 			.contentType(APPLICATION_JSON));
+	}
+
+	private ResultActions updateRestaurant(UpdateRestaurantReqDto reqDto, Long restaurantId) throws Exception {
+		return mockMvc.perform(put("/api/v1/restaurants/{restaurantId}", restaurantId)
+			.header(AUTHORIZATION, TOKEN_DTO.getAccessToken())
+			.contentType(APPLICATION_JSON)
+			.content(objectMapper.writeValueAsString(reqDto)));
 	}
 }
