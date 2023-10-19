@@ -26,6 +26,6 @@ public class OwnerController {
 	@PostMapping()
 	public ResponseEntity<Void> join(@RequestBody @Valid OwnerJoinReqDto reqDto) {
 		Long id = ownerService.join(reqDto);
-		return ResponseEntity.created(URI.create("/api/v1/owners" + id)).build();
+		return ResponseEntity.created(URI.create("/api/v1/owners/" + id)).build();
 	}
 }
