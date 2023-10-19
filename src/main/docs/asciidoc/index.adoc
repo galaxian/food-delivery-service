@@ -8,3 +8,4 @@
 :sectlinks:
 
 include::foods.adoc[]
+include::restaurants.adoc[]

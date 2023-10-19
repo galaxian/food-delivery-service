@@ -1,0 +1,63 @@
+[[restaurant]]
+== 식당 API
+
+=== 식당 등록 성공
+
+==== 요청
+operation::restaurant-controller-test/success-create-restaurant[snippets='http-request']
+operation::restaurant-controller-test/success-create-restaurant[snippets='request-fields']
+
+==== 응답
+operation::restaurant-controller-test/success-create-restaurant[snippets='http-response']
+
+=== 식당 등록 실패(식당 주인 NotFound)
+
+==== 요청
+operation::restaurant-controller-test/fail-create-restaurant-by-not-found-owner[snippets='http-request']
+
+==== 응답
+operation::restaurant-controller-test/fail-create-restaurant-by-not-found-owner[snippets='http-response']
+
+=== 식당 등록 실패(식당 이름 중복)
+
+==== 요청
+operation::restaurant-controller-test/fail-create-restaurant-by-duplicate-name[snippets='http-request']
+
+==== 응답
+operation::restaurant-controller-test/fail-create-restaurant-by-duplicate-name[snippets='http-response']
+
+=== 식당 조회 성공
+
+==== 요청
+operation::restaurant-controller-test/success-find-restaurant[snippets='http-request']
+
+==== 응답
+operation::restaurant-controller-test/success-find-restaurant[snippets='http-response']
+operation::restaurant-controller-test/success-find-restaurant[snippets='response-fields']
+
+=== 식당 조회 실패(식당 NotFound)
+
+==== 요청
+operation::restaurant-controller-test/fail-find-restaurant-by-not-found-restaurant[snippets='http-request']
+
+==== 응답
+operation::restaurant-controller-test/fail-find-restaurant-by-not-found-restaurant[snippets='http-response']
+
+=== 식당 목록 조회 성공
+
+==== 요청
+operation::restaurant-controller-test/success-find-restaurants[snippets='http-request']
+
+==== 응답
+operation::restaurant-controller-test/success-find-restaurants[snippets='http-response']
+operation::restaurant-controller-test/success-find-restaurants[snippets='response-fields']
+
+=== 식당 정보 수정 성공
+
+==== 요청
+operation::restaurant-controller-test/success-update-restaurant[snippets='http-request']
+operation::restaurant-controller-test/success-update-restaurant[snippets='request-fields']
+
+==== 응답
+operation::restaurant-controller-test/success-update-restaurant[snippets='http-response']
+
