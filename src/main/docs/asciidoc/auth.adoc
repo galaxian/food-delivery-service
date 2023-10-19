@@ -1,0 +1,28 @@
+[[Auth]]
+== 인증 API
+
+=== 로그인 성공
+
+==== 요청
+operation::auth-controller-test/success-login[snippets='http-request']
+operation::auth-controller-test/success-login[snippets='request-fields']
+
+==== 응답
+operation::auth-controller-test/success-login[snippets='http-response']
+operation::auth-controller-test/success-login[snippets='response-fields']
+
+=== 로그인 실패(아이디 NotFound)
+
+==== 요청
+operation::auth-controller-test/fail-login-by-not-found-identifier[snippets='http-request']
+
+==== 응답
+operation::auth-controller-test/fail-login-by-not-found-identifier[snippets='http-response']
+
+=== 로그인 실패(비밀번호 불일치)
+
+==== 요청
+operation::auth-controller-test/fail-login-by-miss-match-password[snippets='http-request']
+
+==== 응답
+operation::auth-controller-test/fail-login-by-miss-match-password[snippets='http-response']
