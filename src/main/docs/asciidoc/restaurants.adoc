@@ -1,0 +1,11 @@
+[[restaurant]]
+== 식당 API
+
+=== 식당 등록 성공
+
+==== 요청
+operation::restaurant-controller-test/success-create-restaurant[snippets='http-request']
+operation::restaurant-controller-test/success-create-restaurant[snippets='request-fields']
+
+==== 응답
+operation::restaurant-controller-test/success-create-restaurant[snippets='http-response']
