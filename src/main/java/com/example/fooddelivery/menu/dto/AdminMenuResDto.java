@@ -19,4 +19,13 @@ public class AdminMenuResDto {
         this.isDisplay = menu.isDisplay();
         this.status = menu.getMenuStatus();
     }
+
+    public AdminMenuResDto(Long id, String name, int price, boolean isDisplay,
+        MenuStatus status) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.isDisplay = isDisplay;
+        this.status = status;
+    }
 }

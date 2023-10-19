@@ -1,6 +1,7 @@
 package com.example.fooddelivery.restaurant.dto;
 
 import com.example.fooddelivery.menu.dto.AdminMenuResDto;
+import com.example.fooddelivery.menu.dto.MenuResDto;
 import com.example.fooddelivery.restaurant.domain.Restaurant;
 import lombok.Getter;
 
@@ -15,7 +16,7 @@ public class RestaurantDetailResDto {
     private String name;
     private int minPrice;
     private int deliveryFee;
-    private List<AdminMenuResDto> menuList;
+    private List<MenuResDto> menuList;
 
     public RestaurantDetailResDto(Restaurant restaurant) {
         this.id = restaurant.getId();
@@ -23,6 +24,15 @@ public class RestaurantDetailResDto {
         this.minPrice = restaurant.getMinPrice();
         this.deliveryFee = restaurant.getDeliveryFee();
         this.menuList = Optional.ofNullable(restaurant.getMenus()).orElseGet(Collections::emptyList).stream().map(
-			AdminMenuResDto::new).collect(Collectors.toList());
+			MenuResDto::new).collect(Collectors.toList());
+    }
+
+    public RestaurantDetailResDto(Long id, String name, int minPrice, int deliveryFee,
+        List<MenuResDto> menuList) {
+        this.id = id;
+        this.name = name;
+        this.minPrice = minPrice;
+        this.deliveryFee = deliveryFee;
+        this.menuList = menuList;
     }
 }
