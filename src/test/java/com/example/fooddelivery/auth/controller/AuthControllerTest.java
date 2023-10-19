@@ -22,6 +22,7 @@ import com.example.fooddelivery.auth.dto.LoginReqDto;
 import com.example.fooddelivery.auth.dto.LoginResDto;
 import com.example.fooddelivery.auth.service.AuthService;
 import com.example.fooddelivery.common.AbstractRestDocsTest;
+import com.example.fooddelivery.common.exception.UnauthorizedException;
 
 @WebMvcTest(AuthController.class)
 @MockBean(JpaMetamodelMappingContext.class)
@@ -70,6 +71,24 @@ class AuthControllerTest extends AbstractRestDocsTest {
 		);
 
 		assertThat(loginResDto.getAccessToken()).isEqualTo("accessToken");
+
+	}
+
+	@Test
+	@DisplayName("DB에 아이디가 없는 경우 로그인 실패")
+	void failLoginByNotFoundIdentifier() throws Exception {
+		//given
+		LoginReqDto reqDto = new LoginReqDto("hackle1234", "swede!!123");
+		given(authService.login(any(LoginReqDto.class)))
+			.willThrow(new UnauthorizedException("존재하지 않는 아이디입니다."));
+
+		//when
+		ResultActions resultActions = login(reqDto);
+
+		//then
+		resultActions
+			.andExpect(status().isUnauthorized())
+			.andExpect(jsonPath("$.message").value("존재하지 않는 아이디입니다."));
 
 	}
 
