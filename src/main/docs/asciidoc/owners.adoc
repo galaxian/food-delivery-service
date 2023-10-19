@@ -9,3 +9,11 @@ operation::owner-controller-test/success-join[snippets='request-fields']
 
 ==== 응답
 operation::owner-controller-test/success-join[snippets='http-response']
+
+=== 회원가입 실패(아이디 중복)
+
+==== 요청
+operation::owner-controller-test/fail-join-by-duplicate-identifier[snippets='http-request']
+
+==== 응답
+operation::owner-controller-test/fail-join-by-duplicate-identifier[snippets='http-response']
