@@ -209,7 +209,6 @@ class RestaurantControllerTest extends AbstractRestDocsTest {
 
 	private ResultActions findRestaurant(Long restaurantId) throws Exception {
 		return mockMvc.perform(get("/api/v1/restaurants/{restaurantId}", restaurantId)
-			.header(AUTHORIZATION, TOKEN_DTO.getAccessToken())
 			.contentType(APPLICATION_JSON));
 	}
 
