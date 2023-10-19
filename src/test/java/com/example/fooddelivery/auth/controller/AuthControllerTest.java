@@ -92,6 +92,24 @@ class AuthControllerTest extends AbstractRestDocsTest {
 
 	}
 
+	@Test
+	@DisplayName("비밀번호가 일치하지 않을 경우 로그인 실패")
+	void failLoginByMissMatchPassword() throws Exception {
+		//given
+		LoginReqDto reqDto = new LoginReqDto("hackle1234", "swede!!123");
+		given(authService.login(any(LoginReqDto.class)))
+			.willThrow(new UnauthorizedException("비밀번호가 일치하지 않습니다."));
+
+		//when
+		ResultActions resultActions = login(reqDto);
+
+		//then
+		resultActions
+			.andExpect(status().isUnauthorized())
+			.andExpect(jsonPath("$.message").value("비밀번호가 일치하지 않습니다."));
+
+	}
+
 	private ResultActions login(LoginReqDto reqDto) throws Exception {
 		return mockMvc.perform(get("/api/v1/login")
 			.contentType(APPLICATION_JSON)
