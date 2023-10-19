@@ -34,3 +34,11 @@ operation::restaurant-controller-test/success-find-restaurant[snippets='http-req
 ==== 응답
 operation::restaurant-controller-test/success-find-restaurant[snippets='http-response']
 operation::restaurant-controller-test/success-find-restaurant[snippets='response-fields']
+
+=== 식당 조회 성공(식당 NotFound)
+
+==== 요청
+operation::restaurant-controller-test/fail-find-restaurant-by-not-found-restaurant[snippets='http-request']
+
+==== 응답
+operation::restaurant-controller-test/fail-find-restaurant-by-not-found-restaurant[snippets='http-response']
