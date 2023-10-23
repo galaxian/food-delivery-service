@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.example.fooddelivery.auth.dto.LoginResDto;
 import com.example.fooddelivery.common.AbstractRestDocsTest;
+import com.example.fooddelivery.common.exception.BadRequestException;
 import com.example.fooddelivery.common.exception.NotFoundException;
 import com.example.fooddelivery.common.exception.UnauthorizedException;
 import com.example.fooddelivery.menu.dto.CreateMenuReqDto;
@@ -144,6 +145,25 @@ class MenuControllerTest extends AbstractRestDocsTest {
 		resultActions
 			.andExpect(status().isNotFound())
 			.andExpect(jsonPath("$.message").value("음식을 찾지 못했습니다."));
+	}
+
+	@DisplayName("메뉴 가격이 구성 음식 가격의 합보다 큰 경우 메뉴 생성 실패")
+	@Test
+	void failCreateMenuByPrice() throws Exception {
+		//given
+		Long restaurantId = 1L;
+		CreateMenuReqDto reqDto = new CreateMenuReqDto("양념치킨", 10000,
+			"비법 소스로 만든 양념치킨", FOOD_REQ_LIST);
+		given(menuService.createMenu(anyString(), any(CreateMenuReqDto.class), anyLong()))
+			.willThrow(new BadRequestException("메뉴 가격은 구성된 음식 가격의 합보다 같거나 작아야 합니다."));
+
+		//when
+		ResultActions resultActions = createMenu(reqDto, restaurantId);
+
+		//then
+		resultActions
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.message").value("메뉴 가격은 구성된 음식 가격의 합보다 같거나 작아야 합니다."));
 	}
 
 	private ResultActions createMenu(CreateMenuReqDto reqDto, Long restaurantId) throws Exception {

@@ -33,3 +33,11 @@ operation::menu-controller-test/fail-create-menu-by-not-found-food[snippets='htt
 
 ==== 응답
 operation::menu-controller-test/fail-create-menu-by-not-found-food[snippets='http-response']
+
+=== 메뉴 생성 실패(음식 가격이 구성 음식 가격보다 비싼 경우)
+
+==== 요청
+operation::menu-controller-test/fail-create-menu-by-price[snippets='http-request']
+
+==== 응답
+operation::menu-controller-test/fail-create-menu-by-price[snippets='http-response']
