@@ -247,6 +247,24 @@ class MenuControllerTest extends AbstractRestDocsTest {
 
 	}
 
+	@DisplayName("메뉴가 존재하지 않는 경우 메뉴 조회 실패")
+	@Test
+	void failFindMenuByNotFoundMenu() throws Exception {
+		//given
+		Long menuId = 1L;
+		given(menuService.findMenu(anyLong()))
+			.willThrow(new NotFoundException("메뉴가 존재하지 않습니다."));
+
+		//when
+		ResultActions resultActions = findMenu(menuId);
+
+		//then
+		resultActions
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.message").value("메뉴가 존재하지 않습니다."));
+
+	}
+
 	private ResultActions createMenu(CreateMenuReqDto reqDto, Long restaurantId) throws Exception {
 		return mockMvc.perform(post("/api/v1/restaurants/{restaurantId}/menus", restaurantId)
 			.header(AUTHORIZATION, TOKEN_DTO.getAccessToken())
