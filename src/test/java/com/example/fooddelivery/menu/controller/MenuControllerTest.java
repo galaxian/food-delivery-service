@@ -317,6 +317,50 @@ class MenuControllerTest extends AbstractRestDocsTest {
 
 	}
 
+	@DisplayName("메뉴 수정 성공")
+	@Test
+	void successUpdateMenu() throws Exception {
+		//given
+		Long restaurantId = 1L;
+		Long menuId = 1L;
+		CreateMenuReqDto reqDto = new CreateMenuReqDto("양념치킨세트", 12000,
+			"비법 소스로 만든 양념치킨과 콜라", FOOD_REQ_LIST);
+		doNothing()
+			.when(menuService)
+			.updateMenu(anyString(), anyLong(), anyLong(), any(CreateMenuReqDto.class));
+
+		//when
+		ResultActions resultActions = updateMenu(reqDto, restaurantId, menuId);
+
+		//then
+		resultActions
+			.andExpect(status().isOk())
+			.andDo(
+				restDocs.document(
+					requestFields(
+						fieldWithPath("name")
+							.type(JsonFieldType.STRING)
+							.description("메뉴 이름"),
+						fieldWithPath("price")
+							.type(JsonFieldType.NUMBER)
+							.description("메뉴 가격"),
+						fieldWithPath("describe")
+							.type(JsonFieldType.STRING)
+							.description("메뉴 설명"),
+						fieldWithPath("foodReqList")
+							.type(JsonFieldType.ARRAY)
+							.description("음식 요구 리스트"),
+						fieldWithPath("foodReqList[].id")
+							.type(JsonFieldType.NUMBER)
+							.description("음식 식별자"),
+						fieldWithPath("foodReqList[].quantity")
+							.type(JsonFieldType.NUMBER)
+							.description("음식 갯수")
+					)
+				)
+			);
+	}
+
 	private ResultActions createMenu(CreateMenuReqDto reqDto, Long restaurantId) throws Exception {
 		return mockMvc.perform(post("/api/v1/restaurants/{restaurantId}/menus", restaurantId)
 			.header(AUTHORIZATION, TOKEN_DTO.getAccessToken())
@@ -332,6 +376,13 @@ class MenuControllerTest extends AbstractRestDocsTest {
 	private ResultActions findMenus(Long restaurantId) throws Exception {
 		return mockMvc.perform(get("/api/v1/restaurants/{restaurantId}/menus", restaurantId)
 			.contentType(APPLICATION_JSON));
+	}
+
+	private ResultActions updateMenu(CreateMenuReqDto reqDto, Long restaurantId, Long menuId) throws Exception {
+		return mockMvc.perform(put("/api/v1/restaurants/{restaurantId}/menus/{menuId}", restaurantId, menuId)
+			.header(AUTHORIZATION, TOKEN_DTO.getAccessToken())
+			.contentType(APPLICATION_JSON)
+			.content(objectMapper.writeValueAsString(reqDto)));
 	}
 
 }

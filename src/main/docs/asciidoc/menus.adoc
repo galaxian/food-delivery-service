@@ -68,3 +68,12 @@ operation::menu-controller-test/success-find-menus[snippets='http-request']
 ==== 응답
 operation::menu-controller-test/success-find-menus[snippets='http-response']
 operation::menu-controller-test/success-find-menus[snippets='response-fields']
+
+=== 메뉴 수정 성공
+
+==== 요청
+operation::menu-controller-test/success-update-menu[snippets='http-request']
+operation::menu-controller-test/success-update-menu[snippets='request-fields']
+
+==== 응답
+operation::menu-controller-test/success-update-menu[snippets='http-response']
