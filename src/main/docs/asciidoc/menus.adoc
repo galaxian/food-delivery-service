@@ -17,3 +17,11 @@ operation::menu-controller-test/fail-create-menu-by-not-found-restaurant[snippet
 
 ==== 응답
 operation::menu-controller-test/fail-create-menu-by-not-found-restaurant[snippets='http-response']
+
+=== 메뉴 생성 실패(UnAuth)
+
+==== 요청
+operation::menu-controller-test/fail-create-menu-by-un-auth[snippets='http-request']
+
+==== 응답
+operation::menu-controller-test/fail-create-menu-by-un-auth[snippets='http-response']
