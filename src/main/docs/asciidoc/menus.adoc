@@ -1,0 +1,11 @@
+[[Menu]]
+== 메뉴 API
+
+=== 메뉴 생성 성공
+
+==== 요청
+operation::menu-controller-test/success-create-menu[snippets='http-request']
+operation::menu-controller-test/success-create-menu[snippets='request-fields']
+
+==== 응답
+operation::menu-controller-test/success-create-menu[snippets='http-response']
