@@ -127,6 +127,25 @@ class MenuControllerTest extends AbstractRestDocsTest {
 			.andExpect(jsonPath("$.message").value("식당 주인만 사용할 수 있는 기능입니다."));
 	}
 
+	@DisplayName("음식이 없는 경우 메뉴 생성 실패")
+	@Test
+	void failCreateMenuByNotFoundFood() throws Exception {
+		//given
+		Long restaurantId = 1L;
+		CreateMenuReqDto reqDto = new CreateMenuReqDto("양념치킨", 10000,
+			"비법 소스로 만든 양념치킨", FOOD_REQ_LIST);
+		given(menuService.createMenu(anyString(), any(CreateMenuReqDto.class), anyLong()))
+			.willThrow(new NotFoundException("음식을 찾지 못했습니다."));
+
+		//when
+		ResultActions resultActions = createMenu(reqDto, restaurantId);
+
+		//then
+		resultActions
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.message").value("음식을 찾지 못했습니다."));
+	}
+
 	private ResultActions createMenu(CreateMenuReqDto reqDto, Long restaurantId) throws Exception {
 		return mockMvc.perform(post("/api/v1/restaurants/{restaurantId}/menus", restaurantId)
 			.header(AUTHORIZATION, TOKEN_DTO.getAccessToken())
