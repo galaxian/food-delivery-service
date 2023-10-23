@@ -1,5 +1,6 @@
 package com.example.fooddelivery.menu.controller;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.http.HttpHeaders.*;
@@ -20,6 +21,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.example.fooddelivery.auth.dto.LoginResDto;
@@ -27,8 +29,11 @@ import com.example.fooddelivery.common.AbstractRestDocsTest;
 import com.example.fooddelivery.common.exception.BadRequestException;
 import com.example.fooddelivery.common.exception.NotFoundException;
 import com.example.fooddelivery.common.exception.UnauthorizedException;
+import com.example.fooddelivery.menu.domain.MenuStatus;
 import com.example.fooddelivery.menu.dto.CreateMenuReqDto;
 import com.example.fooddelivery.menu.dto.FoodQuantityReqDto;
+import com.example.fooddelivery.menu.dto.MenuDetailResDto;
+import com.example.fooddelivery.menu.dto.MenuFoodResDto;
 import com.example.fooddelivery.menu.service.MenuService;
 
 @WebMvcTest(MenuController.class)
@@ -166,11 +171,92 @@ class MenuControllerTest extends AbstractRestDocsTest {
 			.andExpect(jsonPath("$.message").value("메뉴 가격은 구성된 음식 가격의 합보다 같거나 작아야 합니다."));
 	}
 
+	@DisplayName("메뉴 조회 성공")
+	@Test
+	void successFindMenu() throws Exception {
+		//given
+		Long menuId = 1L;
+		given(menuService.findMenu(anyLong()))
+			.willReturn(new MenuDetailResDto(menuId, "양념치킨", 10000, "비법 소스로 만든 양념치킨",
+				MenuStatus.SALE, new ArrayList<>(Arrays.asList(
+					new MenuFoodResDto(1L, "양념치킨", 9000, 1),
+				new MenuFoodResDto(2L, "콜라", 1, 1000)
+			)
+				)
+				)
+			);
+
+		//when
+		ResultActions resultActions = findMenu(menuId);
+
+		//then
+		MvcResult mvcResult = resultActions
+			.andExpect(status().isOk())
+			.andDo(
+				restDocs.document(
+					responseFields(
+						fieldWithPath("id")
+							.type(JsonFieldType.NUMBER)
+							.description("메뉴 식별자"),
+						fieldWithPath("name")
+							.type(JsonFieldType.STRING)
+							.description("메뉴 이름"),
+						fieldWithPath("price")
+							.type(JsonFieldType.NUMBER)
+							.description("메뉴 가격"),
+						fieldWithPath("describe")
+							.type(JsonFieldType.STRING)
+							.description("메뉴 설명"),
+						fieldWithPath("status")
+							.type(JsonFieldType.VARIES)
+							.description("메뉴 상태"),
+						fieldWithPath("menuFoodList")
+							.type(JsonFieldType.ARRAY)
+							.description("메뉴 구성 음식 목록"),
+						fieldWithPath("menuFoodList[].id")
+							.type(JsonFieldType.NUMBER)
+							.description("음식 식별자"),
+						fieldWithPath("menuFoodList[].name")
+							.type(JsonFieldType.STRING)
+							.description("음식 이름"),
+						fieldWithPath("menuFoodList[].quantity")
+							.type(JsonFieldType.NUMBER)
+							.description("음식 갯수"),
+						fieldWithPath("menuFoodList[].price")
+							.type(JsonFieldType.NUMBER)
+							.description("음식 가격")
+					)
+				)
+			)
+			.andReturn();
+
+		MenuDetailResDto menuDetailResDto = objectMapper.readValue(
+			mvcResult.getResponse().getContentAsString(),
+			MenuDetailResDto.class
+		);
+
+		assertThat(menuDetailResDto.getId()).isEqualTo(menuId);
+		assertThat(menuDetailResDto.getName()).isEqualTo("양념치킨");
+		assertThat(menuDetailResDto.getPrice()).isEqualTo(10000);
+		assertThat(menuDetailResDto.getDescribe()).isEqualTo("비법 소스로 만든 양념치킨");
+		assertThat(menuDetailResDto.getStatus()).isEqualTo(MenuStatus.SALE);
+		assertThat(menuDetailResDto.getMenuFoodList().get(1).getId()).isEqualTo(2L);
+		assertThat(menuDetailResDto.getMenuFoodList().get(1).getName()).isEqualTo("콜라");
+		assertThat(menuDetailResDto.getMenuFoodList().get(1).getQuantity()).isEqualTo(1);
+		assertThat(menuDetailResDto.getMenuFoodList().get(1).getPrice()).isEqualTo(1000);
+
+	}
+
 	private ResultActions createMenu(CreateMenuReqDto reqDto, Long restaurantId) throws Exception {
 		return mockMvc.perform(post("/api/v1/restaurants/{restaurantId}/menus", restaurantId)
 			.header(AUTHORIZATION, TOKEN_DTO.getAccessToken())
 			.contentType(APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(reqDto)));
+	}
+
+	private ResultActions findMenu(Long menuId) throws Exception {
+		return mockMvc.perform(get("/api/v1/menus/{menuId}", menuId)
+			.contentType(APPLICATION_JSON));
 	}
 
 }

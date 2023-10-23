@@ -41,3 +41,13 @@ operation::menu-controller-test/fail-create-menu-by-price[snippets='http-request
 
 ==== 응답
 operation::menu-controller-test/fail-create-menu-by-price[snippets='http-response']
+
+
+=== 메뉴 조회 성공
+
+==== 요청
+operation::menu-controller-test/success-find-menu[snippets='http-request']
+
+==== 응답
+operation::menu-controller-test/success-find-menu[snippets='http-response']
+operation::menu-controller-test/success-find-menu[snippets='response-fields']
