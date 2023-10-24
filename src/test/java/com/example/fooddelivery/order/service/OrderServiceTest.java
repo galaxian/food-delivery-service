@@ -76,7 +76,7 @@ class OrderServiceTest {
 
 		//when
 		//then
-		assertDoesNotThrow(() -> orderService.createOrder("주인", createOrderReqDto, restaurantId));
+		assertDoesNotThrow(() -> orderService.createOrder(createOrderReqDto, restaurantId));
 
 	}
 
@@ -98,7 +98,7 @@ class OrderServiceTest {
 
 		//when
 		//then
-		assertThatThrownBy(() -> orderService.createOrder("주인", createOrderReqDto, restaurantId))
+		assertThatThrownBy(() -> orderService.createOrder( createOrderReqDto, restaurantId))
 			.isInstanceOf(NotFoundException.class);
 	}
 
@@ -122,7 +122,7 @@ class OrderServiceTest {
 
 		//when
 		//then
-		assertThatThrownBy(() -> orderService.createOrder("주인", createOrderReqDto, restaurantId))
+		assertThatThrownBy(() -> orderService.createOrder( createOrderReqDto, restaurantId))
 			.isInstanceOf(NotFoundException.class);
 
 	}
