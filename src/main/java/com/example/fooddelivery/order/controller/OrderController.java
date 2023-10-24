@@ -44,12 +44,11 @@ public class OrderController {
         return ResponseEntity.ok(orderService.findAllOrderByPhoneNumber(reqDto));
     }
 
-    @Authenticated
     @PostMapping("/restaurants/{restaurantsId}/orders")
-    public ResponseEntity<Void> createOrder(@OwnerIdentifier String identifier,
+    public ResponseEntity<Void> createOrder(
         @RequestBody @Valid CreateOrderReqDto reqDto,
         @PathVariable Long restaurantsId) {
-        Long id = orderService.createOrder(identifier, reqDto, restaurantsId);
+        Long id = orderService.createOrder(reqDto, restaurantsId);
         return ResponseEntity.created(URI.create("/api/v1/orders/" + id)).build();
     }
 
