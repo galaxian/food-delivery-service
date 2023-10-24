@@ -1,0 +1,11 @@
+[[Order]]
+== 주문 API
+
+=== 주문 생성 성공
+
+==== 요청
+operation::order-controller-test/success-create-order[snippets='http-request']
+operation::order-controller-test/success-create-order[snippets='request-fields']
+
+==== 응답
+operation::order-controller-test/success-create-order[snippets='http-response']
