@@ -43,3 +43,11 @@ operation::order-controller-test/fail-find-order-by-not-found-order[snippets='ht
 ==== 응답
 operation::order-controller-test/fail-find-order-by-not-found-order[snippets='http-response']
 
+=== 전화번호를 통한 주문 목록 조회 성공
+
+==== 요청
+operation::order-controller-test/success-find-orders-by-phone[snippets='http-request']
+
+==== 응답
+operation::order-controller-test/success-find-orders-by-phone[snippets='http-response']
+operation::order-controller-test/success-find-orders-by-phone[snippets='response-fields']
