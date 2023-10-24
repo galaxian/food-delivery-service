@@ -107,6 +107,30 @@ class OrderControllerTest extends AbstractRestDocsTest {
 
 	}
 
+	@DisplayName("주문한 메뉴가 없는 경우 주문 생성 실패")
+	@Test
+	void failCreateOrderByNotFoundMenu() throws Exception {
+		//given
+		Long restaurantId = 1L;
+		CreateOrderReqDto reqDto = new CreateOrderReqDto("010-1234-5678", new ArrayList<>(
+			Arrays.asList(
+				new MenuQuantityReqDto(1L, 1),
+				new MenuQuantityReqDto(2L, 1)
+			)
+		));
+		given(orderService.createOrder(any(CreateOrderReqDto.class), anyLong()))
+			.willThrow(new NotFoundException("메뉴를 찾을 수 없습니다."));
+
+		//when
+		ResultActions resultActions = createOrder(reqDto, restaurantId);
+
+		//then
+		resultActions
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.message").value("메뉴를 찾을 수 없습니다."));
+
+	}
+
 	private ResultActions createOrder(CreateOrderReqDto reqDto, Long restaurantId) throws Exception {
 		return mockMvc.perform(post("/api/v1/restaurants/{restaurantId}/orders", restaurantId)
 			.contentType(APPLICATION_JSON)

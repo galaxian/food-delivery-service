@@ -18,3 +18,10 @@ operation::order-controller-test/fail-create-order[snippets='http-request']
 ==== 응답
 operation::order-controller-test/fail-create-order[snippets='http-response']
 
+=== 주문 생성 실패(메뉴 NotFound)
+
+==== 요청
+operation::order-controller-test/fail-create-order-by-not-found-menu[snippets='http-request']
+
+==== 응답
+operation::order-controller-test/fail-create-order-by-not-found-menu[snippets='http-response']
