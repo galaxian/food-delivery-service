@@ -25,3 +25,12 @@ operation::order-controller-test/fail-create-order-by-not-found-menu[snippets='h
 
 ==== 응답
 operation::order-controller-test/fail-create-order-by-not-found-menu[snippets='http-response']
+
+=== 주문 조회 성공
+
+==== 요청
+operation::order-controller-test/success-find-order[snippets='http-request']
+
+==== 응답
+operation::order-controller-test/success-find-order[snippets='http-response']
+operation::order-controller-test/success-find-order[snippets='response-fields']
