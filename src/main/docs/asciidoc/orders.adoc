@@ -9,3 +9,12 @@ operation::order-controller-test/success-create-order[snippets='request-fields']
 
 ==== 응답
 operation::order-controller-test/success-create-order[snippets='http-response']
+
+=== 주문 생성 실패(식당 NotFound)
+
+==== 요청
+operation::order-controller-test/fail-create-order[snippets='http-request']
+
+==== 응답
+operation::order-controller-test/fail-create-order[snippets='http-response']
+
