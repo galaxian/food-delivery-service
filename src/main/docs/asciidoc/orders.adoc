@@ -34,3 +34,12 @@ operation::order-controller-test/success-find-order[snippets='http-request']
 ==== 응답
 operation::order-controller-test/success-find-order[snippets='http-response']
 operation::order-controller-test/success-find-order[snippets='response-fields']
+
+=== 주문 조회 실패(주문 Not Found)
+
+==== 요청
+operation::order-controller-test/fail-find-order-by-not-found-order[snippets='http-request']
+
+==== 응답
+operation::order-controller-test/fail-find-order-by-not-found-order[snippets='http-response']
+

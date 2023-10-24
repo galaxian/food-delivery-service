@@ -205,6 +205,23 @@ class OrderControllerTest extends AbstractRestDocsTest {
 
 	}
 
+	@DisplayName("주문이 없는 경우 주문 조회 실패")
+	@Test
+	void failFindOrderByNotFoundOrder() throws Exception {
+		//given
+		Long orderId = 1L;
+		given(orderService.findOrder(anyLong()))
+			.willThrow(new NotFoundException("주문을 찾을 수 없습니다."));
+
+		//when
+		ResultActions resultActions = findOrder(orderId);
+
+		//then
+		resultActions
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.message").value("주문을 찾을 수 없습니다."));
+	}
+
 	private ResultActions createOrder(CreateOrderReqDto reqDto, Long restaurantId) throws Exception {
 		return mockMvc.perform(post("/api/v1/restaurants/{restaurantId}/orders", restaurantId)
 			.contentType(APPLICATION_JSON)
