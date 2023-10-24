@@ -40,9 +40,8 @@ public class OrderService {
     }
 
     @Transactional
-    public Long createOrder(String identifier, CreateOrderReqDto reqDto, Long restaurantsId) {
+    public Long createOrder(CreateOrderReqDto reqDto, Long restaurantsId) {
         Restaurant restaurant = findRestaurantById(restaurantsId);
-        validateOwner(identifier, restaurant);
         String phoneNumber = deleteDashPhoneNumber(reqDto.getPhoneNumber());
         Order order = Order.createOrder(restaurant, phoneNumber);
         Order saveOrder = orderRepository.save(order);

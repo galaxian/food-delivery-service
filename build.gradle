@@ -72,14 +72,6 @@ task createDocument(type: Copy) {
     into file("src/main/resources/static/docs")
 }
 
-task displaceDocument(type: Copy) {
-    dependsOn asciidoctor
-
-    from("${asciidoctor.outputDir}")
-    into("build/resources/main/static")
-}
-
 bootJar {
     dependsOn createDocument
-    dependsOn displaceDocument
 }
