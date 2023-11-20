@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import com.example.fooddelivery.common.exception.BadRequestException;
+
 class CityTest {
 
 	@ParameterizedTest
@@ -38,7 +40,7 @@ class CityTest {
 		//when
 		//then
 		assertThatThrownBy(() -> City.getEnumCity(null))
-			.isInstanceOf(IndexOutOfBoundsException.class);
+			.isInstanceOf(BadRequestException.class);
 	}
 
 }

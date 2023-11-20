@@ -3,6 +3,8 @@ package com.example.fooddelivery.restaurant.domain;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import com.example.fooddelivery.common.exception.BadRequestException;
+
 public enum City {
 	GANGNAM("강남구"),
 	GANGDONG("강동구"),
@@ -41,10 +43,17 @@ public enum City {
 	}
 
 	public static City getEnumCity(String city) {
+		isNull(city);
 		return Arrays.stream(City.values())
 			.filter(c -> c.getCity().equals(city))
 			.sequential()
 			.collect(Collectors.toList())
 			.get(0);
+	}
+
+	private static void isNull(String city) {
+		if (city == null) {
+			throw new BadRequestException("");
+		}
 	}
 }
