@@ -35,6 +35,9 @@ public class Restaurant extends TimeStamped {
     @Column(name = "delivery_fee")
     private int deliveryFee;
 
+    @Embedded
+    private Address restaurantAddress;
+
     @ManyToOne()
     @JoinColumn(name = "owner_id")
     private Owner owner;
@@ -54,10 +57,11 @@ public class Restaurant extends TimeStamped {
         this.deliveryFee = deliveryFee;
     }
 
-    public Restaurant(String name, int minPrice, int deliveryFee, Owner owner) {
+    public Restaurant(String name, int minPrice, int deliveryFee, Address address, Owner owner) {
         this.name = name;
         this.minPrice = minPrice;
         this.deliveryFee = deliveryFee;
+        this.restaurantAddress = address;
         this.owner = owner;
     }
 

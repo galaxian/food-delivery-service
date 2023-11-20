@@ -19,7 +19,10 @@ import com.example.fooddelivery.food.dto.FoodRequestDto;
 import com.example.fooddelivery.food.dto.FoodResponseDto;
 import com.example.fooddelivery.food.repository.FoodRepository;
 import com.example.fooddelivery.owner.domain.Owner;
+import com.example.fooddelivery.restaurant.domain.Address;
+import com.example.fooddelivery.restaurant.domain.City;
 import com.example.fooddelivery.restaurant.domain.Restaurant;
+import com.example.fooddelivery.restaurant.domain.State;
 import com.example.fooddelivery.restaurant.repository.RestaurantRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,7 +30,9 @@ class FoodServiceTest {
 
 	private static final Owner OWNER = new Owner(1L, "주인", "비밀번호", "salt");
 	private static final Restaurant RESTAURANT = new Restaurant(1L, "식당이름",
-		10000, 3000, OWNER, null, null, null);
+			10000, 3000,
+		new Address("서울특별시", "서초구", "선릉", "상세주소"),
+		OWNER, null, null, null);
 
 
 	@Mock

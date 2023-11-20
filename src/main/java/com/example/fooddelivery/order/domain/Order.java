@@ -30,18 +30,22 @@ public class Order extends TimeStamped {
     @Column(name = "phone_number")
     private String phoneNumber;
 
+    @Embedded
+    private DeliveredAddress deliveredAddress;
+
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
-    private Order(Restaurant restaurant, String phoneNumber) {
+    private Order(Restaurant restaurant, String phoneNumber, DeliveredAddress deliveredAddress) {
         this.orderStatus = OrderStatus.WAITING;
         this.orderTime = LocalDateTime.now();
         this.restaurant = restaurant;
         this.phoneNumber = phoneNumber;
+        this.deliveredAddress = deliveredAddress;
     }
 
-    public static Order createOrder(Restaurant restaurant, String phoneNumber) {
-        return new Order(restaurant, phoneNumber);
+    public static Order createOrder(Restaurant restaurant, String phoneNumber, DeliveredAddress deliveredAddress) {
+        return new Order(restaurant, phoneNumber, deliveredAddress);
     }
 }

@@ -5,6 +5,7 @@ import com.example.fooddelivery.common.exception.NotFoundException;
 import com.example.fooddelivery.common.exception.UnauthorizedException;
 import com.example.fooddelivery.menu.domain.Menu;
 import com.example.fooddelivery.menu.repository.MenuRepository;
+import com.example.fooddelivery.order.domain.DeliveredAddress;
 import com.example.fooddelivery.order.domain.Order;
 import com.example.fooddelivery.order.dto.CreateOrderReqDto;
 import com.example.fooddelivery.order.dto.GetAllOrderByPhoneReqDto;
@@ -43,12 +44,22 @@ public class OrderService {
     public Long createOrder(CreateOrderReqDto reqDto, Long restaurantsId) {
         Restaurant restaurant = findRestaurantById(restaurantsId);
         String phoneNumber = deleteDashPhoneNumber(reqDto.getPhoneNumber());
-        Order order = Order.createOrder(restaurant, phoneNumber);
+        DeliveredAddress deliveredAddress = convertEnumAddress(reqDto);
+        Order order = Order.createOrder(restaurant, phoneNumber, deliveredAddress);
         Order saveOrder = orderRepository.save(order);
 
         List<OrderMenu> orderMenuList = makeOrderMenuList(reqDto.getMenuReqList(), saveOrder);
         orderMenuRepository.saveAll(orderMenuList);
         return saveOrder.getId();
+    }
+
+    private DeliveredAddress convertEnumAddress(CreateOrderReqDto reqDto) {
+        return new DeliveredAddress(
+            reqDto.getState(),
+            reqDto.getCity(),
+            reqDto.getStreet(),
+            reqDto.getEtcAddress()
+        );
     }
 
     private void validateOwner(String identifier, Restaurant restaurant) {
