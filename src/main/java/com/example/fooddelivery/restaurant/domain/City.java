@@ -1,5 +1,8 @@
 package com.example.fooddelivery.restaurant.domain;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 public enum City {
 	GANGNAM("강남구"),
 	GANGDONG("강동구"),
@@ -31,5 +34,17 @@ public enum City {
 
 	City(String city) {
 		this.city = city;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public static City getEnumCity(String city) {
+		return Arrays.stream(City.values())
+			.filter(c -> c.getCity().equals(city))
+			.sequential()
+			.collect(Collectors.toList())
+			.get(0);
 	}
 }
