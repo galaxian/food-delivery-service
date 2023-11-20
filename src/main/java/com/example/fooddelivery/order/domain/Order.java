@@ -30,6 +30,9 @@ public class Order extends TimeStamped {
     @Column(name = "phone_number")
     private String phoneNumber;
 
+    @Embedded
+    private Address deliveredAddress;
+
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
