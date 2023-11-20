@@ -6,12 +6,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import com.example.fooddelivery.restaurant.domain.Address;
+import com.example.fooddelivery.restaurant.domain.City;
 import com.example.fooddelivery.restaurant.domain.Restaurant;
+import com.example.fooddelivery.restaurant.domain.State;
 
 class MenuTest {
 
 	private static final Restaurant restaurant = new Restaurant(1L, "치킨집", 10000,
-		3000, null, null, null, null);
+		3000,
+		new Address("서울특별시", "서초구", "선릉", "기타주소"),
+		null, null, null, null);
 
 	@ParameterizedTest
 	@ValueSource(ints = {0, 10, 200, 231231})

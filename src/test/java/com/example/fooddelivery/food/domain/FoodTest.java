@@ -6,7 +6,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import com.example.fooddelivery.restaurant.domain.Address;
+import com.example.fooddelivery.restaurant.domain.City;
 import com.example.fooddelivery.restaurant.domain.Restaurant;
+import com.example.fooddelivery.restaurant.domain.State;
 
 class FoodTest {
 
@@ -16,6 +19,7 @@ class FoodTest {
 		//given
 		String name = "음식이름";
 		Restaurant restaurant = new Restaurant(1L, "식당이름", 10000, 1000,
+			new Address("서울특별시", "서초구", "선릉", "기타주소"),
 			null, null, null, null);
 
 		//when
@@ -30,6 +34,7 @@ class FoodTest {
 		//given
 		String name = "음식이름";
 		Restaurant restaurant = new Restaurant(1L, "식당이름", 10000, 1000,
+			new Address("서울특별시", "서초구", "선릉", "기타주소"),
 			null, null, null, null);
 
 		//when

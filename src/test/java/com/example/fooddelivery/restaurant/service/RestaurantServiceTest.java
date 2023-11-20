@@ -4,6 +4,7 @@ import com.example.fooddelivery.common.exception.DuplicateException;
 import com.example.fooddelivery.common.exception.NotFoundException;
 import com.example.fooddelivery.owner.domain.Owner;
 import com.example.fooddelivery.owner.repository.OwnerRepository;
+import com.example.fooddelivery.restaurant.domain.Address;
 import com.example.fooddelivery.restaurant.domain.Restaurant;
 import com.example.fooddelivery.restaurant.dto.CreateRestaurantReqDto;
 import com.example.fooddelivery.restaurant.dto.RestaurantDetailResDto;
@@ -29,6 +30,7 @@ import java.util.Optional;
 class RestaurantServiceTest {
 
     private static final Owner OWNER = new Owner(1L, "주인", "비밀번호", "salt");
+    private static final Address ADDRESS = new Address("서울특별시", "서초구", "선릉", "상세주소");
 
     @Mock
     private RestaurantRepository restaurantRepository;
@@ -43,10 +45,10 @@ class RestaurantServiceTest {
     void 정상적으로_식당_생성() {
         //given
         CreateRestaurantReqDto createRestaurantReqDto = new CreateRestaurantReqDto("ㅁㅁ식당",
-            10000, 3000);
+            10000, 3000, "서울특별시", "서초구", "선릉", "상세주소");
 
         given(restaurantRepository.save(any())).willReturn(new Restaurant(1L, createRestaurantReqDto.getName(),
-            createRestaurantReqDto.getMinPrice(), createRestaurantReqDto.getDeliveryFee(), OWNER,
+            createRestaurantReqDto.getMinPrice(), createRestaurantReqDto.getDeliveryFee(), ADDRESS, OWNER,
             null, null, null));
         given(ownerRepository.findByIdentifier(any()))
             .willReturn(Optional.of(OWNER));
@@ -62,11 +64,11 @@ class RestaurantServiceTest {
     void 식당_이름_중복_시_에러() {
         //given
         CreateRestaurantReqDto createRestaurantReqDto = new CreateRestaurantReqDto("중복식당",
-            10000, 3000);
+            10000, 3000, "서울특별시", "서초구", "선릉", "상세주소");
 
         given(restaurantRepository.findByName(any())).willReturn(Optional.of(new Restaurant(1L, "중복식당",
             10000, 3000,
-            OWNER, null, null, null)));
+            ADDRESS, OWNER, null, null, null)));
         given(ownerRepository.findByIdentifier(any()))
             .willReturn(Optional.of(OWNER));
 
@@ -85,7 +87,7 @@ class RestaurantServiceTest {
 
         given(restaurantRepository.findById(any())).willReturn(Optional.of(new Restaurant(restaurantId, name,
             minPrice, deliveryFee,
-            OWNER, null, null, null)));
+            ADDRESS, OWNER, null, null, null)));
 
         //when
         RestaurantDetailResDto result = restaurantService.findRestaurant(restaurantId);
@@ -125,9 +127,9 @@ class RestaurantServiceTest {
         int deliveryFee2 = 3000;
 
         List<Restaurant> restaurantList = new ArrayList<>();
-        restaurantList.add(new Restaurant(restaurantId1, name1, minPrice1, deliveryFee1, OWNER,
+        restaurantList.add(new Restaurant(restaurantId1, name1, minPrice1, deliveryFee1, ADDRESS, OWNER,
             null, null, null));
-        restaurantList.add(new Restaurant(restaurantId2, name2, minPrice2, deliveryFee2, OWNER,
+        restaurantList.add(new Restaurant(restaurantId2, name2, minPrice2, deliveryFee2, ADDRESS, OWNER,
             null, null, null));
 
         given(restaurantRepository.findAll()).willReturn(restaurantList);

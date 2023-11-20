@@ -56,7 +56,8 @@ class RestaurantControllerTest extends AbstractRestDocsTest {
 	@DisplayName("식당 등록 성공")
 	void successCreateRestaurant() throws Exception {
 		//given
-		CreateRestaurantReqDto reqDto = new CreateRestaurantReqDto("치킨집", 10000, 3000);
+		CreateRestaurantReqDto reqDto = new CreateRestaurantReqDto("치킨집", 10000, 3000
+		, "서울특별시", "서초구", "선릉", "상세주소");
 		given(restaurantService.createRestaurant(anyString(), any(CreateRestaurantReqDto.class)))
 			.willReturn(1L);
 
@@ -78,7 +79,19 @@ class RestaurantControllerTest extends AbstractRestDocsTest {
 							.description("주문 최소 금액"),
 						fieldWithPath("deliveryFee")
 							.type(JsonFieldType.NUMBER)
-							.description("배달비")
+							.description("배달비"),
+						fieldWithPath("state")
+							.type(JsonFieldType.STRING)
+							.description("도/특별시/광역시"),
+						fieldWithPath("city")
+							.type(JsonFieldType.STRING)
+							.description("시/군/구"),
+						fieldWithPath("street")
+							.type(JsonFieldType.STRING)
+							.description("로/길/대로"),
+						fieldWithPath("etcAddress")
+							.type(JsonFieldType.STRING)
+							.description("기타주소")
 					),
 					responseHeaders(
 						headerWithName(LOCATION).description("생성된 식당 URL")
@@ -91,7 +104,8 @@ class RestaurantControllerTest extends AbstractRestDocsTest {
 	@DisplayName("식당 주인이 존재하지 않을 경우 식당 등록 실패")
 	void failCreateRestaurantByNotFoundOwner() throws Exception {
 		//given
-		CreateRestaurantReqDto reqDto = new CreateRestaurantReqDto("치킨집", 10000, 3000);
+		CreateRestaurantReqDto reqDto = new CreateRestaurantReqDto("치킨집", 10000, 3000
+		, "서울특별시", "서초구", "선릉", "상세주소");
 		given(restaurantService.createRestaurant(anyString(), any(CreateRestaurantReqDto.class)))
 			.willThrow(new NotFoundException("사용자를 찾을 수 없습니다."));
 
@@ -108,7 +122,8 @@ class RestaurantControllerTest extends AbstractRestDocsTest {
 	@DisplayName("식당 이름이 중복인 경우 식당 등록 실패")
 	void failCreateRestaurantByDuplicateName() throws Exception {
 		//given
-		CreateRestaurantReqDto reqDto = new CreateRestaurantReqDto("식당명 중복", 10000, 3000);
+		CreateRestaurantReqDto reqDto = new CreateRestaurantReqDto("식당명 중복", 10000, 3000,
+			"서울특별시", "서초구", "선릉", "상세주소");
 		given(restaurantService.createRestaurant(anyString(), any(CreateRestaurantReqDto.class)))
 			.willThrow(new DuplicateException("동일한 식당 이름이 존재합니다."));
 
