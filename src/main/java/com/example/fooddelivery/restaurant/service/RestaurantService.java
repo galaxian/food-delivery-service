@@ -5,6 +5,7 @@ import com.example.fooddelivery.common.exception.NotFoundException;
 import com.example.fooddelivery.common.exception.UnauthorizedException;
 import com.example.fooddelivery.owner.domain.Owner;
 import com.example.fooddelivery.owner.repository.OwnerRepository;
+import com.example.fooddelivery.restaurant.domain.Address;
 import com.example.fooddelivery.restaurant.domain.Restaurant;
 import com.example.fooddelivery.restaurant.dto.CreateRestaurantReqDto;
 import com.example.fooddelivery.restaurant.dto.RestaurantDetailResDto;
@@ -51,7 +52,17 @@ public class RestaurantService {
     }
 
     private Restaurant convertToRestaurant(CreateRestaurantReqDto reqDto, Owner owner) {
-        return new Restaurant(reqDto.getName(), reqDto.getMinPrice(), reqDto.getDeliveryFee(), owner);
+        return new Restaurant(reqDto.getName(), reqDto.getMinPrice(), reqDto.getDeliveryFee(),
+            convertEnumAddress(reqDto), owner);
+    }
+
+    private Address convertEnumAddress(CreateRestaurantReqDto reqDto) {
+        return new Address(
+            reqDto.getState(),
+            reqDto.getCity(),
+            reqDto.getStreet(),
+            reqDto.getEtcAddress()
+        );
     }
 
     private Owner findOwnerByIdentifier(String identifier) {
