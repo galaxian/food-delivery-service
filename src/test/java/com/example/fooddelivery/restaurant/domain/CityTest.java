@@ -31,4 +31,14 @@ class CityTest {
 			.isInstanceOf(IndexOutOfBoundsException.class);
 	}
 
+	@Test
+	@DisplayName("Null 입력 시 생성 실패")
+	void failGetEnumCityNull() {
+		//given
+		//when
+		//then
+		assertThatThrownBy(() -> City.getEnumCity(null))
+			.isInstanceOf(IndexOutOfBoundsException.class);
+	}
+
 }
