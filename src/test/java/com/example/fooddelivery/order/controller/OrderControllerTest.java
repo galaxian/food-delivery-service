@@ -52,7 +52,12 @@ class OrderControllerTest extends AbstractRestDocsTest {
 	void successCreateOrder() throws Exception {
 		//given
 		Long restaurantId = 1L;
-		CreateOrderReqDto reqDto = new CreateOrderReqDto("010-1234-5678", new ArrayList<>(
+		CreateOrderReqDto reqDto = new CreateOrderReqDto("010-1234-5678",
+			"서울특별시",
+			"서초구",
+			"선릉",
+			"기타주소",
+			new ArrayList<>(
 			Arrays.asList(
 				new MenuQuantityReqDto(1L, 1),
 				new MenuQuantityReqDto(2L, 1)
@@ -74,6 +79,18 @@ class OrderControllerTest extends AbstractRestDocsTest {
 						fieldWithPath("phoneNumber")
 							.type(JsonFieldType.STRING)
 							.description("전화번호"),
+						fieldWithPath("state")
+							.type(JsonFieldType.STRING)
+							.description("도/특별시/광역시"),
+						fieldWithPath("city")
+							.type(JsonFieldType.STRING)
+							.description("시/군/구"),
+						fieldWithPath("street")
+							.type(JsonFieldType.STRING)
+							.description("로/대로"),
+						fieldWithPath("etcAddress")
+							.type(JsonFieldType.STRING)
+							.description("상세주소"),
 						fieldWithPath("menuReqList")
 							.type(JsonFieldType.ARRAY)
 							.description("주문 메뉴 리스트"),
@@ -97,7 +114,11 @@ class OrderControllerTest extends AbstractRestDocsTest {
 	void failCreateOrder() throws Exception {
 		//given
 		Long restaurantId = 1L;
-		CreateOrderReqDto reqDto = new CreateOrderReqDto("010-1234-5678", new ArrayList<>(
+		CreateOrderReqDto reqDto = new CreateOrderReqDto("010-1234-5678","서울특별시",
+			"서초구",
+			"선릉",
+			"기타주소",
+		new ArrayList<>(
 			Arrays.asList(
 				new MenuQuantityReqDto(1L, 1),
 				new MenuQuantityReqDto(2L, 1)
@@ -121,7 +142,12 @@ class OrderControllerTest extends AbstractRestDocsTest {
 	void failCreateOrderByNotFoundMenu() throws Exception {
 		//given
 		Long restaurantId = 1L;
-		CreateOrderReqDto reqDto = new CreateOrderReqDto("010-1234-5678", new ArrayList<>(
+		CreateOrderReqDto reqDto = new CreateOrderReqDto("010-1234-5678",
+			"서울특별시",
+			"서초구",
+			"선릉",
+			"기타주소",
+			new ArrayList<>(
 			Arrays.asList(
 				new MenuQuantityReqDto(1L, 1),
 				new MenuQuantityReqDto(2L, 1)
