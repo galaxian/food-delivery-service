@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Address {
+public class DeliveredAddress {
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -29,7 +29,7 @@ public class Address {
 	@Column(nullable = false)
 	private String etcAddress;
 
-	public Address(String  state, String city, String street, String etcAddress) {
+	public DeliveredAddress(String  state, String city, String street, String etcAddress) {
 		this.state = State.getEnumState(state);
 		this.city = City.getEnumCity(city);
 		this.street = street;
