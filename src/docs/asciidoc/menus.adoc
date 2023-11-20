@@ -1,0 +1,79 @@
+[[Menu]]
+== 메뉴 API
+
+=== 메뉴 생성 성공
+
+==== 요청
+operation::menu-controller-test/success-create-menu[snippets='http-request']
+operation::menu-controller-test/success-create-menu[snippets='request-fields']
+
+==== 응답
+operation::menu-controller-test/success-create-menu[snippets='http-response']
+
+=== 메뉴 생성 실패(식당 NotFound)
+
+==== 요청
+operation::menu-controller-test/fail-create-menu-by-not-found-restaurant[snippets='http-request']
+
+==== 응답
+operation::menu-controller-test/fail-create-menu-by-not-found-restaurant[snippets='http-response']
+
+=== 메뉴 생성 실패(UnAuth)
+
+==== 요청
+operation::menu-controller-test/fail-create-menu-by-un-auth[snippets='http-request']
+
+==== 응답
+operation::menu-controller-test/fail-create-menu-by-un-auth[snippets='http-response']
+
+=== 메뉴 생성 실패(음식 NotFound)
+
+==== 요청
+operation::menu-controller-test/fail-create-menu-by-not-found-food[snippets='http-request']
+
+==== 응답
+operation::menu-controller-test/fail-create-menu-by-not-found-food[snippets='http-response']
+
+=== 메뉴 생성 실패(음식 가격이 구성 음식 가격보다 비싼 경우)
+
+==== 요청
+operation::menu-controller-test/fail-create-menu-by-price[snippets='http-request']
+
+==== 응답
+operation::menu-controller-test/fail-create-menu-by-price[snippets='http-response']
+
+
+=== 메뉴 조회 성공
+
+==== 요청
+operation::menu-controller-test/success-find-menu[snippets='http-request']
+
+==== 응답
+operation::menu-controller-test/success-find-menu[snippets='http-response']
+operation::menu-controller-test/success-find-menu[snippets='response-fields']
+
+=== 메뉴 조회 실패(메뉴 NotFound)
+
+==== 요청
+operation::menu-controller-test/fail-find-menu-by-not-found-menu[snippets='http-request']
+
+==== 응답
+operation::menu-controller-test/fail-find-menu-by-not-found-menu[snippets='http-response']
+
+=== 메뉴 목록 조회 성공
+
+==== 요청
+operation::menu-controller-test/success-find-menus[snippets='http-request']
+
+==== 응답
+operation::menu-controller-test/success-find-menus[snippets='http-response']
+operation::menu-controller-test/success-find-menus[snippets='response-fields']
+
+=== 메뉴 수정 성공
+
+==== 요청
+operation::menu-controller-test/success-update-menu[snippets='http-request']
+operation::menu-controller-test/success-update-menu[snippets='request-fields']
+
+==== 응답
+operation::menu-controller-test/success-update-menu[snippets='http-response']

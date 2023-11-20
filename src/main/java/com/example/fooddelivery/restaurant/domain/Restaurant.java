@@ -4,6 +4,8 @@ import com.example.fooddelivery.common.TimeStamped;
 import com.example.fooddelivery.food.domain.Food;
 import com.example.fooddelivery.menu.domain.Menu;
 import com.example.fooddelivery.order.domain.Order;
+import com.example.fooddelivery.owner.domain.Owner;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,6 +14,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Table(name = "restaurants")
 @Getter
@@ -32,6 +35,10 @@ public class Restaurant extends TimeStamped {
     @Column(name = "delivery_fee")
     private int deliveryFee;
 
+    @ManyToOne()
+    @JoinColumn(name = "owner_id")
+    private Owner owner;
+
     @OneToMany(mappedBy = "restaurant")
     private List<Order> orders = new ArrayList<>();
 
@@ -47,13 +54,14 @@ public class Restaurant extends TimeStamped {
         this.deliveryFee = deliveryFee;
     }
 
-    private Restaurant(String name, int minPrice, int deliveryFee) {
+    public Restaurant(String name, int minPrice, int deliveryFee, Owner owner) {
         this.name = name;
         this.minPrice = minPrice;
         this.deliveryFee = deliveryFee;
+        this.owner = owner;
     }
 
-    public static Restaurant createRestaurant(String name, int minPrice, int deliveryFee) {
-        return new Restaurant(name, minPrice, deliveryFee);
+    public boolean isOwner(String identifier) {
+        return Objects.equals(this.owner.getIdentifier(), identifier);
     }
 }

@@ -16,7 +16,7 @@ class FoodTest {
 		//given
 		String name = "음식이름";
 		Restaurant restaurant = new Restaurant(1L, "식당이름", 10000, 1000,
-			null, null, null);
+			null, null, null, null);
 
 		//when
 		//then
@@ -30,7 +30,7 @@ class FoodTest {
 		//given
 		String name = "음식이름";
 		Restaurant restaurant = new Restaurant(1L, "식당이름", 10000, 1000,
-			null, null, null);
+			null, null, null, null);
 
 		//when
 		//then

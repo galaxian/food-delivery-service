@@ -1,6 +1,10 @@
 package com.example.fooddelivery.menu.controller;
 
+import com.example.fooddelivery.common.interceptor.Authenticated;
+import com.example.fooddelivery.common.resolver.OwnerIdentifier;
 import com.example.fooddelivery.menu.dto.CreateMenuReqDto;
+import com.example.fooddelivery.menu.dto.AdminMenuDetailResDto;
+import com.example.fooddelivery.menu.dto.AdminMenuResDto;
 import com.example.fooddelivery.menu.dto.MenuDetailResDto;
 import com.example.fooddelivery.menu.dto.MenuResDto;
 import com.example.fooddelivery.menu.service.MenuService;
@@ -24,31 +28,56 @@ public class MenuController {
         this.menuService = menuService;
     }
 
+    @Authenticated
     @PostMapping("/restaurants/{restaurantId}/menus")
-    public ResponseEntity<Void> createMenu(@RequestBody @Valid CreateMenuReqDto requestDto, @PathVariable Long restaurantId) {
-        Long id = menuService.createMenu(requestDto, restaurantId);
+    public ResponseEntity<Void> createMenu(@OwnerIdentifier String identifier,
+        @RequestBody @Valid CreateMenuReqDto requestDto,
+        @PathVariable Long restaurantId) {
+        Long id = menuService.createMenu(identifier, requestDto, restaurantId);
         return ResponseEntity.created(URI.create("/api/v1/menus/" + id)).build();
     }
 
-    @GetMapping("/restaurants/{restaurantsId}/menus")
-    public ResponseEntity<List<MenuResDto>> findAllMenu(@PathVariable Long restaurantsId) {
-        return ResponseEntity.ok(menuService.findAllMenu(restaurantsId));
+    @Authenticated
+    @GetMapping("/restaurants/{restaurantId}/menus/admin")
+    public ResponseEntity<List<AdminMenuResDto>> adminFindAllMenu(@OwnerIdentifier String identifier,
+        @PathVariable Long restaurantId) {
+        return ResponseEntity.ok(menuService.adminFindAllMenu(identifier, restaurantId));
     }
 
-    @GetMapping("/menus/{id}")
-    public ResponseEntity<MenuDetailResDto> findMenu(@PathVariable Long id) {
-        return ResponseEntity.ok(menuService.findMenu(id));
+    @GetMapping("/restaurants/{restaurantId}/menus")
+    public ResponseEntity<List<MenuResDto>> findAllMenu(@PathVariable Long restaurantId) {
+        return ResponseEntity.ok(menuService.findAllMenu(restaurantId));
     }
 
-    @PutMapping("/menus/{id}")
-    public ResponseEntity<Void> updateMenu(@PathVariable Long id, @RequestBody @Valid CreateMenuReqDto reqDto) {
-        menuService.updateMenu(id, reqDto);
+    @Authenticated
+    @GetMapping("/restaurants/{restaurantId}/menus/{menuId}/admin")
+    public ResponseEntity<AdminMenuDetailResDto> adminFindMenu(@OwnerIdentifier String identifier,
+        @PathVariable Long restaurantId,
+        @PathVariable Long menuId) {
+        return ResponseEntity.ok(menuService.adminFindMenu(identifier, restaurantId, menuId));
+    }
+
+    @GetMapping("/menus/{menuId}")
+    public ResponseEntity<MenuDetailResDto> findMenu(@PathVariable Long menuId) {
+        return ResponseEntity.ok(menuService.findMenu(menuId));
+    }
+
+    @Authenticated
+    @PutMapping("/restaurants/{restaurantsId}/menus/{menuId}")
+    public ResponseEntity<Void> updateMenu(@OwnerIdentifier String identifier,
+        @PathVariable Long restaurantsId,
+        @PathVariable Long menuId,
+        @RequestBody @Valid CreateMenuReqDto reqDto) {
+        menuService.updateMenu(identifier, restaurantsId, menuId, reqDto);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/menus/{id}")
-    public ResponseEntity<Void> deleteMenu(@PathVariable Long id) {
-        menuService.deleteMenu(id);
+    @Authenticated
+    @DeleteMapping("/restaurants/{restaurantsId}/menus/{menuId}")
+    public ResponseEntity<Void> deleteMenu(@OwnerIdentifier String identifier,
+        @PathVariable Long restaurantsId,
+        @PathVariable Long menuId) {
+        menuService.deleteMenu(identifier, restaurantsId, menuId);
         return ResponseEntity.ok().build();
     }
 }

@@ -2,10 +2,12 @@ package com.example.fooddelivery.order.service;
 
 import com.example.fooddelivery.common.exception.BadRequestException;
 import com.example.fooddelivery.common.exception.NotFoundException;
+import com.example.fooddelivery.common.exception.UnauthorizedException;
 import com.example.fooddelivery.menu.domain.Menu;
 import com.example.fooddelivery.menu.repository.MenuRepository;
 import com.example.fooddelivery.order.domain.Order;
 import com.example.fooddelivery.order.dto.CreateOrderReqDto;
+import com.example.fooddelivery.order.dto.GetAllOrderByPhoneReqDto;
 import com.example.fooddelivery.order.dto.MenuQuantityReqDto;
 import com.example.fooddelivery.order.dto.OrderDetailResDto;
 import com.example.fooddelivery.order.dto.OrderMenuResDto;
@@ -40,12 +42,19 @@ public class OrderService {
     @Transactional
     public Long createOrder(CreateOrderReqDto reqDto, Long restaurantsId) {
         Restaurant restaurant = findRestaurantById(restaurantsId);
-        Order order = Order.createOrder(restaurant);
+        String phoneNumber = deleteDashPhoneNumber(reqDto.getPhoneNumber());
+        Order order = Order.createOrder(restaurant, phoneNumber);
         Order saveOrder = orderRepository.save(order);
 
         List<OrderMenu> orderMenuList = makeOrderMenuList(reqDto.getMenuReqList(), saveOrder);
         orderMenuRepository.saveAll(orderMenuList);
         return saveOrder.getId();
+    }
+
+    private void validateOwner(String identifier, Restaurant restaurant) {
+        if (!restaurant.isOwner(identifier)) {
+            throw new UnauthorizedException("식당 주인만 사용할 수 있는 기능입니다.");
+        }
     }
 
     private List<OrderMenu> makeOrderMenuList(List<MenuQuantityReqDto> reqDtoList, Order order) {
@@ -104,7 +113,9 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public List<OrderDetailResDto> findAllOrder(Long restaurantId) {
+    public List<OrderDetailResDto> findAllOrder(String identifier, Long restaurantId) {
+        Restaurant restaurant = findRestaurantById(restaurantId);
+        validateOwner(identifier, restaurant);
         List<Order> orderList = findOrdersByRestaurantId(restaurantId);
         return makeOrderDetailResDtoList(orderList);
     }
@@ -126,8 +137,23 @@ public class OrderService {
         return orderRepository.findAllByRestaurantId(restaurantId);
     }
 
+    @Transactional(readOnly = true)
+    public List<OrderDetailResDto> findAllOrderByPhoneNumber(GetAllOrderByPhoneReqDto reqDto) {
+        String phoneNumber = deleteDashPhoneNumber(reqDto.getPhoneNumber());
+        System.out.println(phoneNumber);
+        List<Order> orderList = orderRepository.findAllByPhoneNumber(phoneNumber);
+        return makeOrderDetailResDtoList(orderList);
+    }
+
+    private String deleteDashPhoneNumber(String phoneNumber) {
+        return phoneNumber.replaceAll("-", "");
+    }
+
     @Transactional
-    public void updateOrder(List<MenuQuantityReqDto> reqDto, Long orderId) {
+    public void updateOrder(String identifier, Long restaurantsId, List<MenuQuantityReqDto> reqDto,
+        Long orderId) {
+        Restaurant restaurant = findRestaurantById(restaurantsId);
+        validateOwner(identifier, restaurant);
         validateMenuEmpty(reqDto);
         Order order = findOrderById(orderId);
         orderMenuRepository.deleteAllByOrderId(orderId);
@@ -142,7 +168,9 @@ public class OrderService {
     }
 
     @Transactional
-    public void deleteOrder(Long orderId) {
+    public void deleteOrder(String identifier, Long restaurantsId, Long orderId) {
+        Restaurant restaurant = findRestaurantById(restaurantsId);
+        validateOwner(identifier, restaurant);
         orderRepository.deleteById(orderId);
     }
 }

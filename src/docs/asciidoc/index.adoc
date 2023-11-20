@@ -1,0 +1,15 @@
+= API Docs
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc-title: API Docs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+include::foods.adoc[]
+include::restaurants.adoc[]
+include::owners.adoc[]
+include::auth.adoc[]
+include::menus.adoc[]
+include::orders.adoc[]

@@ -1,5 +1,7 @@
 package com.example.fooddelivery.food.controller;
 
+import com.example.fooddelivery.common.interceptor.Authenticated;
+import com.example.fooddelivery.common.resolver.OwnerIdentifier;
 import com.example.fooddelivery.food.dto.FoodRequestDto;
 import com.example.fooddelivery.food.service.FoodService;
 import com.example.fooddelivery.food.dto.FoodResponseDto;
@@ -22,31 +24,46 @@ public class FoodController {
         this.foodService = foodService;
     }
 
-    @GetMapping("/foods/{id}")
-    public ResponseEntity<FoodResponseDto> getFood(@PathVariable Long id) {
-        return ResponseEntity.ok().body(foodService.findFood(id));
+    @Authenticated
+    @GetMapping("/restaurants/{restaurantId}/foods/{foodId}")
+    public ResponseEntity<FoodResponseDto> getFood(@OwnerIdentifier String identifier,
+        @PathVariable Long restaurantId, @PathVariable Long foodId) {
+        return ResponseEntity.ok().body(foodService.findFood(identifier, restaurantId, foodId));
     }
 
+    @Authenticated
     @GetMapping("/restaurants/{restaurantId}/foods")
-    public ResponseEntity<List<FoodResponseDto>> getAllFood(@PathVariable Long restaurantId) {
-        return ResponseEntity.ok().body(foodService.findAllFood(restaurantId));
+    public ResponseEntity<List<FoodResponseDto>> getAllFood(@OwnerIdentifier String identifier,
+        @PathVariable Long restaurantId) {
+        return ResponseEntity.ok().body(foodService.findAllFood(identifier, restaurantId));
     }
 
+    @Authenticated
     @PostMapping("/restaurants/{restaurantId}/foods")
-    public ResponseEntity<Void> createFood(@RequestBody @Valid FoodRequestDto requestDto, @PathVariable Long restaurantId) {
-        Long id = foodService.createFood(requestDto, restaurantId);
+    public ResponseEntity<Void> createFood(@OwnerIdentifier String identifier,
+        @RequestBody @Valid FoodRequestDto requestDto,
+        @PathVariable Long restaurantId)
+    {
+        Long id = foodService.createFood(identifier, requestDto, restaurantId);
         return ResponseEntity.created(URI.create("/api/v1/foods/" + id)).build();
     }
 
-    @PutMapping("/foods/{id}")
-    public ResponseEntity<Void> updateFood(@PathVariable Long id, @RequestBody @Valid FoodRequestDto requestDto) {
-        foodService.updateFood(id, requestDto);
+    @Authenticated
+    @PutMapping("/restaurants/{restaurantId}/foods/{foodId}")
+    public ResponseEntity<Void> updateFood(@OwnerIdentifier String identifier,
+        @PathVariable Long restaurantId,
+        @PathVariable Long foodId,
+        @RequestBody @Valid FoodRequestDto requestDto) {
+        foodService.updateFood(identifier, restaurantId, foodId, requestDto);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("foods/{id}")
-    public ResponseEntity<Void> deleteFood(@PathVariable Long id) {
-        foodService.deleteFood(id);
+    @Authenticated
+    @DeleteMapping("/restaurants/{restaurantId}/foods/{foodId}")
+    public ResponseEntity<Void> deleteFood(@OwnerIdentifier String identifier,
+        @PathVariable Long restaurantId,
+        @PathVariable Long foodId) {
+        foodService.deleteFood(identifier, restaurantId, foodId);
         return ResponseEntity.ok().build();
     }
 }

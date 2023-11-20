@@ -2,6 +2,7 @@ package com.example.fooddelivery.menu.service;
 
 import com.example.fooddelivery.common.exception.BadRequestException;
 import com.example.fooddelivery.common.exception.NotFoundException;
+import com.example.fooddelivery.common.exception.UnauthorizedException;
 import com.example.fooddelivery.food.domain.Food;
 import com.example.fooddelivery.food.repository.FoodRepository;
 import com.example.fooddelivery.menu.domain.Menu;
@@ -35,14 +36,21 @@ public class MenuService {
     }
 
     @Transactional
-    public Long createMenu(CreateMenuReqDto requestDto, Long restaurantId) {
+    public Long createMenu(String identifier, CreateMenuReqDto requestDto, Long restaurantId) {
         Restaurant restaurant = findRestaurantById(restaurantId);
+        validateOwner(identifier, restaurant);
         Menu menu = convertToMenu(requestDto, restaurant);
         Menu saveMenu = menuRepository.save(menu);
         List<MenuFood> menuFoodList = makeMenuFoodList(requestDto.getFoodReqList(), saveMenu);
         validateMenuPrice(menuFoodList, menu);
         menuFoodRepository.saveAll(menuFoodList);
         return saveMenu.getId();
+    }
+
+    private void validateOwner(String identifier, Restaurant restaurant) {
+        if (!restaurant.isOwner(identifier)) {
+            throw new UnauthorizedException("식당 주인만 사용할 수 있는 기능입니다.");
+        }
     }
 
     private int getFoodsPrice(List<MenuFood> menuFoodList) {
@@ -82,27 +90,44 @@ public class MenuService {
     }
 
     @Transactional(readOnly = true)
-    public List<MenuResDto> findAllMenu(Long restaurantId) {
-        List<Menu> menuList = findRestaurants(restaurantId);
-        return makeMenuResDtoList(menuList);
+    public List<AdminMenuResDto> adminFindAllMenu(String identifier, Long restaurantId) {
+        Restaurant restaurant = findRestaurantById(restaurantId);
+        validateOwner(identifier, restaurant);
+        List<Menu> menuList = findMenusByRestaurantId(restaurantId);
+        return makeAdminMenuResDtoList(menuList);
     }
 
-    private List<Menu> findRestaurants(Long restaurantId) {
+    private List<Menu> findMenusByRestaurantId(Long restaurantId) {
         return menuRepository.findAllByRestaurantId(restaurantId);
+    }
+
+    private List<AdminMenuResDto> makeAdminMenuResDtoList(List<Menu> menuList) {
+        return menuList.stream()
+            .map(AdminMenuResDto::new)
+            .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<MenuResDto> findAllMenu(Long restaurantId) {
+        List<Menu> menuList = findMenusByRestaurantId(restaurantId);
+        return makeMenuResDtoList(menuList);
     }
 
     private List<MenuResDto> makeMenuResDtoList(List<Menu> menuList) {
         return menuList.stream()
+            .filter(Menu::isDisplay)
             .map(MenuResDto::new)
             .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public MenuDetailResDto findMenu(Long id) {
-        Menu menu = findMenuById(id);
-        List<MenuFood> menuFoodList = findMenuFoodById(id);
+    public AdminMenuDetailResDto adminFindMenu(String identifier, Long restaurantId, Long menuId) {
+        Restaurant restaurant = findRestaurantById(restaurantId);
+        validateOwner(identifier, restaurant);
+        Menu menu = findMenuById(menuId);
+        List<MenuFood> menuFoodList = findMenuFoodById(menuId);
         List<MenuFoodResDto> resDtoList = makeMenuFoodResDtoList(menuFoodList);
-        return new MenuDetailResDto(menu, resDtoList);
+        return new AdminMenuDetailResDto(menu, resDtoList);
     }
 
     private List<MenuFood> findMenuFoodById(Long id) {
@@ -121,9 +146,19 @@ public class MenuService {
         );
     }
 
+    @Transactional(readOnly = true)
+    public MenuDetailResDto findMenu(Long menuId) {
+        Menu menu = findMenuById(menuId);
+        List<MenuFood> menuFoodList = findMenuFoodById(menuId);
+        List<MenuFoodResDto> resDtoList = makeMenuFoodResDtoList(menuFoodList);
+        return new MenuDetailResDto(menu, resDtoList);
+    }
+
     @Transactional
-    public void updateMenu(Long id, CreateMenuReqDto reqDto) {
-        Menu menu = findMenuById(id);
+    public void updateMenu(String identifier, Long restaurantsId, Long menuId, CreateMenuReqDto reqDto) {
+        Restaurant restaurant = findRestaurantById(restaurantsId);
+        validateOwner(identifier, restaurant);
+        Menu menu = findMenuById(menuId);
         updateMenu(reqDto, menu);
         validateFoodReq(reqDto.getFoodReqList());
         menuFoodRepository.deleteAllByMenuId(menu.getId());
@@ -143,7 +178,9 @@ public class MenuService {
     }
 
     @Transactional
-    public void deleteMenu(Long id) {
+    public void deleteMenu(String identifier, Long restaurantsId, Long id) {
+        Restaurant restaurant = findRestaurantById(restaurantsId);
+        validateOwner(identifier, restaurant);
         menuFoodRepository.deleteAllByMenuId(id);
         menuRepository.deleteById(id);
     }

@@ -1,5 +1,7 @@
 package com.example.fooddelivery.restaurant.controller;
 
+import com.example.fooddelivery.common.interceptor.Authenticated;
+import com.example.fooddelivery.common.resolver.OwnerIdentifier;
 import com.example.fooddelivery.restaurant.dto.CreateRestaurantReqDto;
 import com.example.fooddelivery.restaurant.dto.RestaurantDetailResDto;
 import com.example.fooddelivery.restaurant.dto.RestaurantResDto;
@@ -33,21 +35,28 @@ public class RestaurantController {
         return ResponseEntity.ok(restaurantService.findAllRestaurant());
     }
 
+    @Authenticated
     @PostMapping("")
-    public ResponseEntity<Void> createRestaurant(@RequestBody CreateRestaurantReqDto reqDto) {
-        Long id = restaurantService.createRestaurant(reqDto);
-        return ResponseEntity.created(URI.create("/api/v1/restaurants" + id)).build();
+    public ResponseEntity<Void> createRestaurant(@OwnerIdentifier String identifier,
+        @RequestBody CreateRestaurantReqDto reqDto) {
+        Long id = restaurantService.createRestaurant(identifier ,reqDto);
+        return ResponseEntity.created(URI.create("/api/v1/restaurants/" + id)).build();
     }
 
+    @Authenticated
     @PutMapping("/{restaurantId}")
-    public ResponseEntity<Void> updateRestaurant(@RequestBody UpdateRestaurantReqDto reqDto, @PathVariable Long restaurantId) {
-        restaurantService.updateRestaurant(reqDto, restaurantId);
+    public ResponseEntity<Void> updateRestaurant(@OwnerIdentifier String identifier,
+        @RequestBody UpdateRestaurantReqDto reqDto,
+        @PathVariable Long restaurantId)     {
+        restaurantService.updateRestaurant(identifier, reqDto, restaurantId);
         return ResponseEntity.ok().build();
     }
 
+    @Authenticated
     @DeleteMapping("/{restaurantId}")
-    public ResponseEntity<Void> deleteRestaurant(@PathVariable Long restaurantId) {
-        restaurantService.deleteRestaurant(restaurantId);
+    public ResponseEntity<Void> deleteRestaurant(@OwnerIdentifier String identifier,
+        @PathVariable Long restaurantId) {
+        restaurantService.deleteRestaurant(identifier, restaurantId);
         return ResponseEntity.ok().build();
     }
 }
