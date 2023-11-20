@@ -35,6 +35,9 @@ public class Restaurant extends TimeStamped {
     @Column(name = "delivery_fee")
     private int deliveryFee;
 
+    @Embedded
+    private Address restaurantAddress;
+
     @ManyToOne()
     @JoinColumn(name = "owner_id")
     private Owner owner;
