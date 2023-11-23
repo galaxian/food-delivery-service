@@ -52,6 +52,16 @@ operation::restaurant-controller-test/success-find-restaurants[snippets='http-re
 operation::restaurant-controller-test/success-find-restaurants[snippets='http-response']
 operation::restaurant-controller-test/success-find-restaurants[snippets='response-fields']
 
+=== 식당 목록 검색 성공
+
+==== 요청
+operation::restaurant-controller-test/success-filter-restaurants[snippets='http-request']
+
+==== 응답
+operation::restaurant-controller-test/success-filter-restaurants[snippets='http-response']
+operation::restaurant-controller-test/success-filter-restaurants[snippets='response-fields']
+
+
 === 식당 정보 수정 성공
 
 ==== 요청
