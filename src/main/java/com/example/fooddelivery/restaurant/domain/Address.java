@@ -34,4 +34,9 @@ public class Address {
 		this.street = street;
 		this.etcAddress = etcAddress;
 	}
+
+	@Override
+	public String toString() {
+		return state.getState() + city.getCity() + getStreet() + getEtcAddress();
+	}
 }
