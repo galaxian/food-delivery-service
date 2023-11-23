@@ -160,4 +160,45 @@ class RestaurantServiceTest {
         assertThatThrownBy(() -> restaurantService.updateRestaurant("주인", reqDto, restaurantId))
             .isInstanceOf(NotFoundException.class);
     }
+
+    @Test
+    void 식당_검색_성공() {
+        //given
+        String keyword = "치킨";
+        String state = "서울특별시";
+        String city = "서초구";
+
+        Long restaurantId1 = 1L;
+        String name1 = "맛있는 치킨집";
+        int minPrice1 = 10000;
+        int deliveryFee1 = 3000;
+
+        Long restaurantId2 = 2L;
+        String name2 = "치킨명가";
+        int minPrice2 = 10000;
+        int deliveryFee2 = 3000;
+
+        List<Restaurant> restaurantList = new ArrayList<>();
+        restaurantList.add(new Restaurant(restaurantId1, name1, minPrice1, deliveryFee1, ADDRESS, OWNER,
+            null, null, null));
+        restaurantList.add(new Restaurant(restaurantId2, name2, minPrice2, deliveryFee2, ADDRESS, OWNER,
+            null, null, null));
+
+        given(restaurantRepository.findAllByKeywordAndAddress(any(), any(), any()))
+            .willReturn(restaurantList);
+
+        //when
+        List<RestaurantResDto> result = restaurantService.filterRestaurant(keyword, state, city);
+
+        //then
+        assertThat(result.get(0).getId()).isEqualTo(restaurantId1);
+        assertThat(result.get(1).getId()).isEqualTo(restaurantId2);
+        assertThat(result.get(0).getName()).contains(name1);
+        assertThat(result.get(0).getAddress()).contains(state);
+        assertThat(result.get(0).getAddress()).contains(city);
+        assertThat(result.get(1).getName()).contains(name2);
+        assertThat(result.get(1).getAddress()).contains(state);
+        assertThat(result.get(1).getAddress()).contains(city);
+        assertThatThrownBy(() -> result.get(result.size())).isInstanceOf(IndexOutOfBoundsException.class);
+    }
 }

@@ -6,7 +6,9 @@ import com.example.fooddelivery.common.exception.UnauthorizedException;
 import com.example.fooddelivery.owner.domain.Owner;
 import com.example.fooddelivery.owner.repository.OwnerRepository;
 import com.example.fooddelivery.restaurant.domain.Address;
+import com.example.fooddelivery.restaurant.domain.City;
 import com.example.fooddelivery.restaurant.domain.Restaurant;
+import com.example.fooddelivery.restaurant.domain.State;
 import com.example.fooddelivery.restaurant.dto.CreateRestaurantReqDto;
 import com.example.fooddelivery.restaurant.dto.RestaurantDetailResDto;
 import com.example.fooddelivery.restaurant.dto.RestaurantResDto;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -121,5 +124,13 @@ public class RestaurantService {
         Restaurant restaurant = findRestaurantById(restaurantId);
         validateOwner(identifier, restaurant);
         restaurantRepository.deleteById(restaurantId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<RestaurantResDto> filterRestaurant(String keyword, String state, String city) {
+        State enumState = State.getEnumState(state);
+        City enumCity = City.getEnumCity(city);
+        List<Restaurant> restaurantList = restaurantRepository.findAllByKeywordAndAddress(keyword, enumState, enumCity);
+        return makeRestaurantResDtoList(restaurantList);
     }
 }

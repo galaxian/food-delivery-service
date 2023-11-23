@@ -38,6 +38,8 @@ dependencies {
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
     testImplementation 'org.springframework.restdocs:spring-restdocs-restassured'
 
+    implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '3.1.4'
+
 }
 
 ext {

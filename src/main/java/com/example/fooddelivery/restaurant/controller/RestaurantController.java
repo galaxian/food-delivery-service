@@ -35,6 +35,15 @@ public class RestaurantController {
         return ResponseEntity.ok(restaurantService.findAllRestaurant());
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<?> filterRestaurant(
+        @RequestParam("keyword") String keyword,
+        @RequestParam("state") String state,
+        @RequestParam("city") String city)
+    {
+        return ResponseEntity.ok(restaurantService.filterRestaurant(keyword, state, city));
+    }
+
     @Authenticated
     @PostMapping("")
     public ResponseEntity<Void> createRestaurant(@OwnerIdentifier String identifier,

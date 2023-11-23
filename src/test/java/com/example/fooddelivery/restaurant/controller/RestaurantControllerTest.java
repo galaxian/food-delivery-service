@@ -142,7 +142,8 @@ class RestaurantControllerTest extends AbstractRestDocsTest {
 		//given
 		Long restaurantId = 1L;
 		given(restaurantService.findRestaurant(anyLong()))
-			.willReturn(new RestaurantDetailResDto(restaurantId, "치킨집", 10000, 3000, MENU_LIST));
+			.willReturn(new RestaurantDetailResDto(restaurantId, "치킨집", 10000, 3000,
+				"서울특별시 강남구 ㅁㅁ3로 12-13", MENU_LIST));
 
 		//when
 		ResultActions resultActions = findRestaurant(restaurantId);
@@ -165,6 +166,9 @@ class RestaurantControllerTest extends AbstractRestDocsTest {
 						fieldWithPath("deliveryFee")
 							.type(JsonFieldType.NUMBER)
 							.description("배달비"),
+						fieldWithPath("address")
+							.type(JsonFieldType.STRING)
+							.description("주소"),
 						fieldWithPath("menuList")
 							.type(JsonFieldType.ARRAY)
 							.description("메뉴 목록"),
@@ -225,8 +229,8 @@ class RestaurantControllerTest extends AbstractRestDocsTest {
 		//given
 		given(restaurantService.findAllRestaurant())
 			.willReturn(new ArrayList<>(Arrays.asList(
-				new RestaurantResDto(1L, "치킨집", 10000, 3000),
-				new RestaurantResDto(2L, "분식집", 5000, 2000)
+				new RestaurantResDto(1L, "치킨집", 10000, 3000, "서울특별시 강남구 선릉로 112-3"),
+				new RestaurantResDto(2L, "분식집", 5000, 2000, "서울특별시 강남구 선릉로 115-3")
 			)));
 
 		//when
@@ -249,7 +253,10 @@ class RestaurantControllerTest extends AbstractRestDocsTest {
 							.description("최소 주문 가격"),
 						fieldWithPath("[].deliveryFee")
 							.type(JsonFieldType.NUMBER)
-							.description("배달비")
+							.description("배달비"),
+						fieldWithPath("[].address")
+							.type(JsonFieldType.STRING)
+							.description("주소")
 					)
 				)
 			)
@@ -304,6 +311,67 @@ class RestaurantControllerTest extends AbstractRestDocsTest {
 			);
 	}
 
+	@Test
+	@DisplayName("식당 목록 검색 성공")
+	void successFilterRestaurants() throws Exception {
+		//given
+		String keyword = "치킨";
+		String state = "서울특별시";
+		String city = "강남구";
+
+		given(restaurantService.filterRestaurant(anyString(), anyString(), anyString()))
+			.willReturn(new ArrayList<>(Arrays.asList(
+				new RestaurantResDto(1L, "맛있는 치킨집", 10000, 3000, "서울특별시 강남구 선릉로 112-3"),
+				new RestaurantResDto(2L, "치킨명가", 5000, 2000, "서울특별시 강남구 선릉로 115-3")
+			)));
+
+		//when
+		ResultActions resultActions = filterRestaurants(keyword, state, city);
+
+		//then
+		MvcResult mvcResult = resultActions
+			.andExpect(status().isOk())
+			.andDo(
+				restDocs.document(
+					responseFields(
+						fieldWithPath("[].id")
+							.type(JsonFieldType.NUMBER)
+							.description("식별자"),
+						fieldWithPath("[].name")
+							.type(JsonFieldType.STRING)
+							.description("식당 이름"),
+						fieldWithPath("[].minPrice")
+							.type(JsonFieldType.NUMBER)
+							.description("최소 주문 가격"),
+						fieldWithPath("[].deliveryFee")
+							.type(JsonFieldType.NUMBER)
+							.description("배달비"),
+						fieldWithPath("[].address")
+							.type(JsonFieldType.STRING)
+							.description("주소")
+					)
+				)
+			)
+			.andReturn();
+
+		List<RestaurantResDto> restaurantResDto = objectMapper.readValue(
+			mvcResult.getResponse().getContentAsString(),
+			new TypeReference<List<RestaurantResDto>>() {
+			}
+		);
+
+		assertThat(restaurantResDto.get(0).getId()).isEqualTo(1L);
+		assertThat(restaurantResDto.get(0).getName()).contains(keyword);
+		assertThat(restaurantResDto.get(0).getAddress()).contains(state);
+		assertThat(restaurantResDto.get(0).getAddress()).contains(city);
+
+		assertThat(restaurantResDto.get(1).getId()).isEqualTo(2L);
+		assertThat(restaurantResDto.get(1).getName()).contains(keyword);
+		assertThat(restaurantResDto.get(1).getAddress()).contains(state);
+		assertThat(restaurantResDto.get(1).getAddress()).contains(city);
+
+	}
+
 	private ResultActions createRestaurant(CreateRestaurantReqDto reqDto) throws Exception {
 		return mockMvc.perform(post("/api/v1/restaurants")
 			.header(AUTHORIZATION, TOKEN_DTO.getAccessToken())
@@ -319,6 +387,14 @@ class RestaurantControllerTest extends AbstractRestDocsTest {
 
 	private ResultActions findRestaurants() throws Exception {
 		return mockMvc.perform(get("/api/v1/restaurants")
+			.contentType(APPLICATION_JSON));
+	}
+
+	private ResultActions filterRestaurants(String keyword, String state, String city) throws Exception {
+		return mockMvc.perform(get("/api/v1/restaurants/search")
+			.param("keyword", keyword)
+			.param("state", state)
+			.param("city", city)
 			.contentType(APPLICATION_JSON));
 	}
 
