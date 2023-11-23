@@ -142,7 +142,8 @@ class RestaurantControllerTest extends AbstractRestDocsTest {
 		//given
 		Long restaurantId = 1L;
 		given(restaurantService.findRestaurant(anyLong()))
-			.willReturn(new RestaurantDetailResDto(restaurantId, "치킨집", 10000, 3000, MENU_LIST));
+			.willReturn(new RestaurantDetailResDto(restaurantId, "치킨집", 10000, 3000,
+				"서울특별시 강남구 ㅁㅁ3로 12-13", MENU_LIST));
 
 		//when
 		ResultActions resultActions = findRestaurant(restaurantId);
@@ -165,6 +166,9 @@ class RestaurantControllerTest extends AbstractRestDocsTest {
 						fieldWithPath("deliveryFee")
 							.type(JsonFieldType.NUMBER)
 							.description("배달비"),
+						fieldWithPath("address")
+							.type(JsonFieldType.STRING)
+							.description("주소"),
 						fieldWithPath("menuList")
 							.type(JsonFieldType.ARRAY)
 							.description("메뉴 목록"),
@@ -225,8 +229,8 @@ class RestaurantControllerTest extends AbstractRestDocsTest {
 		//given
 		given(restaurantService.findAllRestaurant())
 			.willReturn(new ArrayList<>(Arrays.asList(
-				new RestaurantResDto(1L, "치킨집", 10000, 3000),
-				new RestaurantResDto(2L, "분식집", 5000, 2000)
+				new RestaurantResDto(1L, "치킨집", 10000, 3000, "서울특별시 강남구 선릉로 112-3"),
+				new RestaurantResDto(2L, "분식집", 5000, 2000, "서울특별시 강남구 선릉로 115-3")
 			)));
 
 		//when
@@ -249,7 +253,10 @@ class RestaurantControllerTest extends AbstractRestDocsTest {
 							.description("최소 주문 가격"),
 						fieldWithPath("[].deliveryFee")
 							.type(JsonFieldType.NUMBER)
-							.description("배달비")
+							.description("배달비"),
+						fieldWithPath("[].address")
+							.type(JsonFieldType.STRING)
+							.description("주소")
 					)
 				)
 			)
